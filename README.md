@@ -32,6 +32,10 @@ This framework was designed on a basic Debian LAMP stack, YMMV with other setups
 * Edit the configuration file to your requirements (found in /src/config)
 * Start application development!
 
+###### Default Account (change on first login):
+- Username: root
+- Password: dynamicsuite
+
 ## Todo
 * Create documentation on module development
 * Clean up and refactor
