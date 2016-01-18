@@ -24,6 +24,7 @@ The Dynamic Suite includes the following third party libraries:
 * Access to apache configuration (Virtual Hosts)
 * PHP 5.6+
 * PHP PDO compatable database (mysql/mariadb tested)
+
 This framework was designed on a basic Debian LAMP stack, YMMV with other setups, although others should theoretically work.
 #### Setup
 * Set your apache rewrite rules and vhost (found in /apache)
