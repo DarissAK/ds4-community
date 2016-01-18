@@ -1,0 +1,184 @@
+/* Dynamic Suite Colors */
+/* Reset */
+html, body {
+  margin: 0;
+  padding: 0 !important;
+  border: none;
+  height: 100%; }
+
+/* Center element vertically */
+.ds-y-center {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%); }
+
+/* Error page padding */
+.ds-error {
+  padding: 2em; }
+
+/* Login Form */
+.ds-login {
+  /* Can't login button spacing */
+  /* Login form header */
+  /* The login form itself */
+  /* Login form footer */ }
+  .ds-login a {
+    margin-left: 0.8em; }
+  .ds-login > div:nth-child(1) {
+    border: 1px solid #ddd;
+    border-radius: 0.2em 0.2em 0 0;
+    padding: 0.4em;
+    font-size: 1.2em;
+    font-weight: bold;
+    text-align: center;
+    background: #eee; }
+  .ds-login form {
+    /* Login form body */ }
+    .ds-login form > div {
+      border: 1px solid #ddd;
+      border-top: none;
+      border-radius: 0 0 0.3em 0.3em;
+      padding: 1em;
+      /* Addon adjustment */ }
+      .ds-login form > div .input-group-addon {
+        min-width: 36px; }
+  .ds-login > div:nth-child(3) {
+    color: #777;
+    text-align: center;
+    font-size: 0.8em;
+    padding: 0.5em; }
+
+/* Navigation Bar - Fluid Container */
+@media (min-width: 992px) {
+  .ds-nav {
+    height: 100% !important; }
+
+  .ds-body {
+    height: 100% !important; } }
+/* Navigation Bar - Primary */
+.ds-nav {
+  background: #435a73;
+  min-width: 215px;
+  padding: 0;
+  overflow-y: auto;
+  /* Navigation bar outer container */ }
+  .ds-nav nav {
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    /* Reset */ }
+    .ds-nav nav div {
+      padding: 0 !important;
+      margin: 0 !important;
+      /* The fluid header */
+      /* The navigation bar itself */ }
+      .ds-nav nav div div:nth-child(1) {
+        margin: 0 !important;
+        /* Fluid header text */
+        /* Fluid header list button */
+        /* Fluid header list button on hover */ }
+        .ds-nav nav div div:nth-child(1) div {
+          color: #fff !important;
+          font-size: 1.2em;
+          vertical-align: middle;
+          padding: 1em !important;
+          height: 2.5em; }
+        .ds-nav nav div div:nth-child(1) i {
+          color: #ddd;
+          font-size: 1.4em;
+          float: right; }
+        .ds-nav nav div div:nth-child(1) button:hover > i {
+          color: #fff; }
+      .ds-nav nav div div:nth-child(2) {
+        /* The navigation bar header container (non collapsed) */
+        /* The navigation bar items */ }
+        .ds-nav nav div div:nth-child(2) div {
+          color: #fff;
+          height: 2.5em;
+          font-size: 1.2em;
+          line-height: 2.5em;
+          padding-left: 1em !important;
+          border-color: #3a526b;
+          border-style: solid;
+          border-top-width: 0;
+          border-right-width: 1px;
+          border-bottom-width: 1px;
+          border-left-width: 0;
+          /* The logout button (inactive) */
+          /* The logout button (active) */ }
+          .ds-nav nav div div:nth-child(2) div i {
+            cursor: pointer;
+            font-size: 1em;
+            line-height: 2.5em;
+            padding-right: 0.5em; }
+          .ds-nav nav div div:nth-child(2) div i:hover {
+            color: #fff; }
+        .ds-nav nav div div:nth-child(2) ul {
+          color: #ddd;
+          /* The primary navigation bar buttons (categories) */
+          /* On hover of navigation bar items */
+          /* Module groups (Sub Menu) */ }
+          .ds-nav nav div div:nth-child(2) ul a {
+            color: #ddd;
+            cursor: pointer;
+            border-style: solid;
+            border-color: #3a526b;
+            border-top-width: 0;
+            border-right-width: 1px;
+            border-bottom-width: 1px;
+            border-left-width: 0; }
+          .ds-nav nav div div:nth-child(2) ul li {
+            /* For chevron if it has children */
+            /* Spacing between category icon and the text */ }
+            .ds-nav nav div div:nth-child(2) ul li i:nth-child(even) {
+              float: right;
+              font-size: 0.6em;
+              line-height: 2.4em; }
+            .ds-nav nav div div:nth-child(2) ul li i:nth-child(odd) {
+              padding-right: 0.4em; }
+          .ds-nav nav div div:nth-child(2) ul a:hover {
+            background: #6685a3 !important;
+            color: #fff; }
+          .ds-nav nav div div:nth-child(2) ul ul {
+            background: #496380;
+            /* Chevron spacing */
+            /* Text Spacing */ }
+            .ds-nav nav div div:nth-child(2) ul ul i {
+              font-size: 0.6em;
+              vertical-align: middle;
+              padding: 0 2em 0 2.2em !important; }
+            .ds-nav nav div div:nth-child(2) ul ul a {
+              font-size: 0.9em;
+              padding: 0.4em !important; }
+
+/* Body Content */
+.ds-body {
+  /* Body Container */
+  height: calc(100% - 58px);
+  overflow: hidden;
+  /* Header Ribbon (Module information) */
+  /* Header tabs (if any) */
+  /* Module Body (content) */ }
+  .ds-body > div:nth-child(1) {
+    background: #eee;
+    font-size: 1.2em;
+    font-weight: bold;
+    padding: 0.25em;
+    border-bottom: 1px solid #ddd;
+    /* Module icon (if any) */ }
+    .ds-body > div:nth-child(1) i {
+      padding: 0 0.75em 0 0.5em; }
+  .ds-body > div:nth-child(2) {
+    padding: 0 1em 0 1em;
+    margin-top: 0.8em;
+    margin-bottom: 0.4em; }
+  .ds-body > div:nth-child(3) {
+    padding: 0 1em 1em 1em;
+    overflow: auto; }
+
+/* Active navigation tab add class */
+.ds-nav-active {
+  background: #6685a3;
+  color: #fff !important; }
+
+/*# sourceMappingURL=dynamicsuite4.css.map */

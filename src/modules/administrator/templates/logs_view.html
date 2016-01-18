@@ -1,0 +1,41 @@
+<div class="ds-logs-view">
+    <div class="col-sm-12">
+        <h3>System Logs</h3>
+        <div class="alert alert-warning" role="alert">
+            <i>
+                This page only gives a quick view at the last 250 events.
+                For more in depth searching and history,
+                it is recommended to use some kind of SQL browser.
+                Refer to documentation for type code descriptions.
+            </i>
+        </div>
+    </div>
+    <div class="col-sm-12">
+        <div class="col-sm-4">
+            <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                <input type="text" class="form-control" placeholder="Search" autofocus>
+            </div>
+        </div>
+        <div class="col-sm-8">
+            <span>Events listed: <strong>0</strong></span>
+        </div>
+    </div>
+    <table class="table table-hover table-striped">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Timestamp</th>
+            <th>Type</th>
+            <th>Creator</th>
+            <th>Affected</th>
+            <th>Event</th>
+            <th>IP</th>
+            <th>Session ID</th>
+        </tr>
+        </thead>
+        <tbody>
+        %TBODY%
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,66 @@
+{
+  "administrator" : {
+    "name"    : "Administrator",
+    "version" : "1.0",
+    "author"  : "Simplusoft LLC",
+    "about"   : "A module for managing users and logs",
+    "perm"    : "ds_admin",
+    "active"  : true,
+    "icon"    : "fa-cogs",
+    "content" : {
+      "users" : {
+        "name"   : "User Management",
+        "perm"   : "ds_admin_user",
+        "active" : true,
+        "icon"   : "fa-users",
+        "content" : {
+          "list" : {
+            "name"    : "Users",
+            "perm"    : "ds_admin_user",
+            "active"  : true,
+            "content" : "/modules/administrator/pages/user_list.php"
+          },
+          "add" : {
+            "name"    : "Add User",
+            "perm"    : "ds_admin_user",
+            "active"  : true,
+            "content" : "/modules/administrator/pages/user_add.php"
+          }
+        }
+      },
+      "permissions" : {
+        "name"   : "Permissions",
+        "perm"   : "ds_admin_permission",
+        "active" : true,
+        "icon"   : "fa-gavel",
+        "content" : {
+          "groups" : {
+            "name"    : "Groups",
+            "perm"    : "ds_admin_permission",
+            "active"  : true,
+            "content" : "/modules/administrator/pages/group_list.php"
+          },
+          "list" : {
+            "name"    : "Permissions",
+            "perm"    : "ds_admin_permission",
+            "active"  : true,
+            "content" : "/modules/administrator/pages/permission_list.php"
+          }
+        }
+      },
+      "logs" : {
+        "name"   : "System logs",
+        "perm"   : "ds_admin_logs",
+        "active" : true,
+        "icon"   : "fa-list",
+        "content" : "/modules/administrator/pages/logs_viewer.php"
+      }
+    },
+    "css" : {
+      "0" : "/modules/administrator/client/administrator.css"
+    },
+    "js" : {
+      "0" : "/modules/administrator/client/administrator.js"
+    }
+  }
+}

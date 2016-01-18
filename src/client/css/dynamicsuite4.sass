@@ -1,0 +1,233 @@
+/* Dynamic Suite Colors */
+$ds-primary:             #435a73
+$ds-primary-txt:         #ddd
+$ds-primary-txt-light:   #777
+$ds-primary-txt-lighter: #eee
+$ds-primary-active:      #6685a3
+$ds-primary-active-txt:  #fff
+$ds-primary-light:       #496380
+$ds-primary-dark:        #3a526b
+$ds-primary-bg:          #e4e8ed
+
+/* Reset */
+html, body
+  margin: 0
+  padding: 0 !important
+  border: none
+  height: 100%
+
+/* Center element vertically */
+.ds-y-center
+  position: absolute
+  top: 50%
+  transform: translateY(-50%)
+
+/* Error page padding */
+.ds-error
+  padding: 2em
+
+/* Login Form */
+.ds-login
+
+  /* Can't login button spacing */
+  a
+    margin-left: 0.8em
+
+  /* Login form header */
+  > div:nth-child(1)
+    border: 1px solid $ds-primary-txt
+    border-radius: 0.2em 0.2em 0 0
+    padding: 0.4em
+    font-size: 1.2em
+    font-weight: bold
+    text-align: center
+    background: $ds-primary-txt-lighter
+
+  /* The login form itself */
+  form
+
+    /* Login form body */
+    > div
+      border: 1px solid $ds-primary-txt
+      border-top: none
+      border-radius: 0 0 0.3em 0.3em
+      padding: 1em
+
+      /* Addon adjustment */
+      .input-group-addon
+        min-width: 36px
+
+  /* Login form footer */
+  > div:nth-child(3)
+    color: $ds-primary-txt-light
+    text-align: center
+    font-size: 0.8em
+    padding: 0.5em
+
+/* Navigation Bar - Fluid Container */
+@media (min-width: 992px)
+  .ds-nav
+    height: 100% !important
+
+  .ds-body
+    height: 100% !important
+
+/* Navigation Bar - Primary */
+.ds-nav
+  background: $ds-primary
+  min-width: 215px
+  padding: 0
+  overflow-y: auto
+
+  /* Navigation bar outer container */
+  nav
+    border: none !important
+    padding: 0 !important
+    margin: 0 !important
+
+    /* Reset */
+    div
+      padding: 0 !important
+      margin: 0 !important
+
+      /* The fluid header */
+      div:nth-child(1)
+        margin: 0 !important
+
+        /* Fluid header text */
+        div
+          color: $ds-primary-active-txt !important
+          font-size: 1.2em
+          vertical-align: middle
+          padding: 1em !important
+          height: 2.5em
+
+        /* Fluid header list button */
+        i
+          color: $ds-primary-txt
+          font-size: 1.4em
+          float: right
+
+        /* Fluid header list button on hover */
+        button:hover > i
+          color: $ds-primary-active-txt
+
+      /* The navigation bar itself */
+      div:nth-child(2)
+
+        /* The navigation bar header container (non collapsed) */
+        div
+          color: $ds-primary-active-txt
+          height: 2.5em
+          font-size: 1.2em
+          line-height: 2.5em
+          padding-left: 1em !important
+          border:
+            color: $ds-primary-dark
+            style: solid
+            top:
+              width: 0
+            right:
+              width: 1px
+            bottom:
+              width: 1px
+            left:
+              width: 0
+
+          /* The logout button (inactive) */
+          i
+            cursor: pointer
+            font-size: 1em
+            line-height: 2.5em
+            padding-right: 0.5em
+
+          /* The logout button (active) */
+          i:hover
+            color: $ds-primary-active-txt
+
+        /* The navigation bar items */
+        ul
+          color: $ds-primary-txt
+
+          /* The primary navigation bar buttons (categories) */
+          a
+            color: $ds-primary-txt
+            cursor: pointer
+            border:
+              style: solid
+              color: $ds-primary-dark
+              top:
+                width: 0
+              right:
+                width: 1px
+              bottom:
+                width: 1px
+              left:
+                width: 0
+
+          li
+
+            /* For chevron if it has children */
+            i:nth-child(even)
+              float: right
+              font-size: 0.6em
+              line-height: 2.4em
+
+            /* Spacing between category icon and the text */
+            i:nth-child(odd)
+              padding-right: 0.4em
+
+          /* On hover of navigation bar items */
+          a:hover
+            background: $ds-primary-active !important
+            color: $ds-primary-active-txt
+
+          /* Module groups (Sub Menu) */
+          ul
+            background: $ds-primary-light
+
+            /* Chevron spacing */
+            i
+              font-size: 0.6em
+              vertical-align: middle
+              padding: 0 2em 0 2.2em !important
+
+            /* Text Spacing */
+            a
+              font-size: 0.9em
+              padding: 0.4em !important
+
+/* Body Content */
+.ds-body
+
+  /* Body Container */
+  height: calc(100% - 58px)
+  overflow: hidden
+
+  /* Header Ribbon (Module information) */
+  > div:nth-child(1)
+    background: $ds-primary-txt-lighter
+    font-size: 1.2em
+    font-weight: bold
+    padding: 0.25em
+    border-bottom: 1px solid $ds-primary-txt
+
+    /* Module icon (if any) */
+    i
+      padding: 0 0.75em 0 0.5em
+
+  /* Header tabs (if any) */
+  > div:nth-child(2)
+    padding: 0 1em 0 1em
+    margin-top: 0.8em
+    margin-bottom: 0.4em
+
+  /* Module Body (content) */
+  > div:nth-child(3)
+    padding: 0 1em 1em 1em
+    overflow: auto
+
+/* Active navigation tab add class */
+.ds-nav-active
+  background: $ds-primary-active
+  color: $ds-primary-active-txt !important

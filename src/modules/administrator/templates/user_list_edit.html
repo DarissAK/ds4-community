@@ -1,0 +1,73 @@
+<div class="ds-user-edit">
+    <h3>Edit User</h3>
+    <table class="table table-bordered">
+        <tr>
+            <td>Username</td>
+            <td id="ds-user">%DS_USER%</td>
+        </tr>
+        <tr>
+            <td>Added On</td>
+            <td>%DS_USER_ADDED%</td>
+        </tr>
+        <tr>
+            <td>Added By</td>
+            <td>%DS_USER_ADDED_BY%</td>
+        </tr>
+        <tr>
+            <td>Last Login</td>
+            <td>%DS_USER_LAST_LOGIN_SUCCESS%</td>
+        </tr>
+        <tr>
+            <td>Last Login IP</td>
+            <td>%DS_USER_LAST_LOGIN_IP%</td>
+        </tr>
+    </table>
+    <div class="form-group">
+        <label for="ds-user-status">Status</label>
+        <select id="ds-user-status" class="form-control">
+            %DS_USER_STATUS%
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="ds-user-group">Permission Group</label>
+        <select id="ds-user-group" class="form-control">
+            %DS_USER_GROUP%
+        </select>
+    </div>
+    %DS_USER_ADMINISTRATOR%
+    <div class="alert alert-warning">
+        Only fill out the password fields if you want to change the user's password
+    </div>
+    <div class="form-group password-grp">
+        <label for="ds-user-password-1">Password</label>
+        <input type="password" class="form-control" id="ds-user-password-1">
+    </div>
+    <div class="form-group password-grp">
+        <label for="ds-user-password-2">Confirm Password</label>
+        <input type="password" class="form-control" id="ds-user-password-2">
+    </div>
+
+    <button class="btn btn-primary">Update User</button>
+    <button class="btn btn-danger" data-toggle="modal" data-target="#delete-user">Delete User</button>
+
+    <div class="modal fade" id="delete-user">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                    <h4 class="modal-title">Delete User</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete the user <strong>%DS_USER%</strong>?</p>
+                    <p>Event logs for the user will NOT be deleted</p>
+                    <p><i>This cannot be undone!</i></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger">Delete User</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

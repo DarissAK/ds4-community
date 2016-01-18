@@ -1,0 +1,20 @@
+{
+  "about" : {
+    "name"    : "About",
+    "version" : "1.0",
+    "author"  : "Simplusoft LLC",
+    "about"   : "A module viewing framework credits",
+    "perm"    : false,
+    "active"  : true,
+    "icon"    : "fa-question-circle",
+    "content" : {
+      "credits" : {
+        "name"    : "About the Dynamic Suite",
+        "perm"    : false,
+        "active"  : true,
+        "icon"    : "fa-question-circle",
+        "content" : "/modules/about/pages/about.php"
+      }
+    }
+  }
+}
