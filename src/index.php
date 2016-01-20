@@ -67,13 +67,38 @@ if($ds->validateView()) {
 
         // If the current view content exists, include it
         if(file_exists($_SERVER['DOCUMENT_ROOT'] . $ds->getView())) {
+
+            // Look for included header files
+            if(
+                isset($ds->mod_all[$ds->url[0]]['include']) &&
+                is_array($ds->mod_all[$ds->url[0]]['include'])
+            ) {
+
+                // Loop through all available header files
+                foreach($ds->mod_all[$ds->url[0]]['include'] as $file) {
+
+                    // If the header file exists
+                    if(file_exists($_SERVER['DOCUMENT_ROOT'] . $file)) {
+
+                        // Include it
+                        require_once($_SERVER['DOCUMENT_ROOT'] . $file);
+
+                    }
+
+                }
+
+            }
+
             require_once($_SERVER['DOCUMENT_ROOT'] . $ds->getView());
+
         }
 
         // Content not found
         else {
+
             echo '<h3>Content not found</h3>';
             echo '<h5>Missing File: ' . $ds->getView() . '</h5>';
+
         }
 
         // End Module content

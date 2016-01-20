@@ -66,7 +66,7 @@ class sdc {
             );
         }
 
-            // On database connection (PDOException) failure
+        // On database connection (PDOException) failure
         catch (PDOException $e) {
 
             // Set database error state to true
