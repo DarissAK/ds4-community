@@ -24,13 +24,13 @@
 require_once($_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php');
 
 // Login API Responses
-define('MANUAL_LOCKOUT_FAIL',   $cfg['lock_out_message']);
-define('ACCT_FAIL',             'Invalid username or password');
-define('ACTIVE_FAIL',           'Account Inactive');
-define('LOCKOUT_FAIL',          'Too many login attempts');
+define('MANUAL_LOCKOUT_FAIL', $cfg['lock_out_message']);
+define('ACCT_FAIL',           'Invalid username or password');
+define('ACTIVE_FAIL',         'Account Inactive');
+define('LOCKOUT_FAIL',        'Too many login attempts');
 
 // If no username or password is given
-if(!isSet($_POST['username']) || !isSet($_POST['password']))
+if(!isset($_POST['username']) || !isset($_POST['password']))
     die($ds->APIResponse());
 
 // Response if the given username or password isn't valid

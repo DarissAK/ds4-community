@@ -20,25 +20,40 @@
 // |  02110-1301, USA.                                                       |
 // +-------------------------------------------------------------------------+
 
-// Get permission groups
-$data = $ds->getPermissionGroups();
 
-// Option string
-$groups = '<option></option>';
+// If the user has the proper permissions and session
+if(
+    $ds->checkSession() &&
+    $ds->checkPermission('ds_admin_user')
+) {
 
-// Build the option string for each permission group
-foreach($data as $k => $group) {
+    // Get permission groups
+    $data = $ds->getPermissionGroups();
 
-    // Append the group
-    $groups .= "<option value='$k'>$k</option>";
+    // Option string
+    $groups = '<option></option>';
+
+    // Build the option string for each permission group
+    foreach ($data as $k => $group) {
+
+        // Append the group
+        $groups .= "<option value='$k'>$k</option>";
+
+    }
+
+    // Load the template
+    $template = $ds->loadTemplate('/modules/administrator/templates/user_add.html');
+
+    // Update the template
+    $template = str_replace('%DS_USER_GROUP%', $groups, $template);
+
+    // Render the template
+    die($template);
 
 }
 
-// Load the template
-$template = $ds->loadTemplate('/modules/administrator/templates/user_add.html');
+else {
 
-// Update the template
-$template = str_replace('%DS_USER_GROUP%', $groups, $template);
+    die('Permission denied');
 
-// Render the template
-echo $template;
+}

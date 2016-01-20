@@ -20,50 +20,64 @@
 // |  02110-1301, USA.                                                       |
 // +-------------------------------------------------------------------------+
 
-// Table body
-$tbody = '';
+// If the user has the proper permissions and session
+if(
+    $ds->checkSession() &&
+    $ds->checkPermission('ds_admin_logs')
+) {
 
-// Query for getting all of the active users
-$query = 'SELECT * FROM `ds_log` ' .
-         'ORDER BY `log_id` DESC ' .
-         'LIMIT 250';
+    // Table body
+    $tbody = '';
 
-// Execute the query and continue if success
-if($logs = $ds->query($query)) {
+    // Query for getting all of the active users
+    $query = 'SELECT * FROM `ds_log` ' .
+             'ORDER BY `log_id` DESC ' .
+             'LIMIT 250';
 
-    // Loop through last 250 logs
-    foreach($logs as $log) {
+    // Execute the query and continue if success
+    if($logs = $ds->query($query)) {
 
-        // Format the timestamp
-        $log_time =
-            $ds->timestampSQL2Format($log['log_time']);
+        // Loop through last 250 logs
+        foreach($logs as $log) {
 
-        // Create the body row
-        $tbody .= '<tr>';
-        $tbody .= "<td>{$log['log_id']}</td>";
-        $tbody .= "<td>$log_time</td>";
-        $tbody .= "<td>{$log['log_type']}</td>";
-        $tbody .= "<td>{$log['log_creator']}</td>";
-        $tbody .= "<td>{$log['log_affected']}</td>";
-        $tbody .= "<td>{$log['log_event']}</td>";
-        $tbody .= "<td>{$log['log_ip']}</td>";
-        $tbody .= "<td>{$log['log_session_id']}</td>";
-        $tbody .= '</tr>';
+            // Format the timestamp
+            $log_time =
+                $ds->timestampSQL2Format($log['log_time']);
+
+            // Create the body row
+            $tbody .= '<tr>';
+            $tbody .= "<td>{$log['log_id']}</td>";
+            $tbody .= "<td>$log_time</td>";
+            $tbody .= "<td>{$log['log_type']}</td>";
+            $tbody .= "<td>{$log['log_creator']}</td>";
+            $tbody .= "<td>{$log['log_affected']}</td>";
+            $tbody .= "<td>{$log['log_event']}</td>";
+            $tbody .= "<td>{$log['log_ip']}</td>";
+            $tbody .= "<td>{$log['log_session_id']}</td>";
+            $tbody .= '</tr>';
+
+        }
+
+        // Load the template
+        $template =
+            $ds->loadTemplate('/modules/administrator/templates/logs_view.html');
+
+        // Add the table body to the template, then display it
+        die(str_replace('%TBODY%', $tbody, $template));
 
     }
 
-    // Load the template
-    $template =
-        $ds->loadTemplate('/modules/administrator/templates/logs_view.html');
+    // Error loading logs
+    else {
 
-    // Add the table body to the template, then display it
-    echo str_replace('%TBODY%', $tbody, $template);
+        die('Error loading logs');
+
+    }
 
 }
 
-// Error loading logs
 else {
 
-    echo 'Error loading logs';
+    die('Permission denied');
 
 }

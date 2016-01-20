@@ -31,10 +31,10 @@ if(
 
     // Display edit permission page
     if(
-        isSet($ds->clean_url[3]) &&
-        $ds->clean_url[3] === 'edit' &&
-        isSet($ds->clean_url[4]) &&
-        array_key_exists($ds->clean_url[4], $permissions)
+        isset($ds->url[3]) &&
+        $ds->url[3] === 'edit' &&
+        isset($ds->url[4]) &&
+        array_key_exists($ds->url[4], $permissions)
     ) {
 
         // Template file location
@@ -44,8 +44,8 @@ if(
         $template = $ds->loadTemplate($file);
 
         // Get the permission and the description
-        $permission  = $permissions[$ds->clean_url[4]]['ds_perm'];
-        $description = $permissions[$ds->clean_url[4]]['ds_perm_desc'];
+        $permission  = $permissions[$ds->url[4]]['ds_perm'];
+        $description = $permissions[$ds->url[4]]['ds_perm_desc'];
 
         // Update the template
         $template = str_replace('%DS_PERM%', $permission, $template);

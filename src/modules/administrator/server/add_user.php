@@ -27,10 +27,10 @@ require_once($_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php');
 if(
     $ds->checkSession() &&
     $ds->checkPermission('ds_admin_user') &&
-    isSet($_POST['ds_user']) &&
-    isSet($_POST['ds_user_password_1']) &&
-    isSet($_POST['ds_user_password_2']) &&
-    isSet($_POST['ds_user_status']) &&
+    isset($_POST['ds_user']) &&
+    isset($_POST['ds_user_password_1']) &&
+    isset($_POST['ds_user_password_2']) &&
+    isset($_POST['ds_user_status']) &&
     isset($_POST['ds_user_group'])
 ) {
 
@@ -61,13 +61,13 @@ if(
                  'VALUES (?,?,?,?,?)';
 
         // Add user data
-        $data = array(
+        $data = [
             $_POST['ds_user'],
             $password,
             $_POST['ds_user_status'],
             $_POST['ds_user_group'],
-            $ds->ds_username
-        );
+            $ds->username
+        ];
 
         // Execute the query
         $ds->query($query, $data);

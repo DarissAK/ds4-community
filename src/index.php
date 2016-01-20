@@ -34,7 +34,7 @@ if($ds->validateView()) {
     echo $ds->html_page_start;
 
     // If the current location is login, include the login page
-    if($ds->clean_url[0] === 'login') {
+    if($ds->url[0] === 'login') {
         require_once($_SERVER['DOCUMENT_ROOT'] . '/pages/login.php');
 
         // Render Page End
@@ -42,7 +42,7 @@ if($ds->validateView()) {
     }
 
     // If the current location is error, include the error page
-    elseif($ds->clean_url[0] === 'error') {
+    elseif($ds->url[0] === 'error') {
         require_once($_SERVER['DOCUMENT_ROOT'] . '/pages/error.php');
         echo '</body></html>';
     }
@@ -73,7 +73,7 @@ if($ds->validateView()) {
         // Content not found
         else {
             echo '<h3>Content not found</h3>';
-            echo '<h5>Missing File: ' . $ds->getView()  . '</h5>';
+            echo '<h5>Missing File: ' . $ds->getView() . '</h5>';
         }
 
         // End Module content
