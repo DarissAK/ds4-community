@@ -21,7 +21,7 @@
 // |  02110-1301, USA.                                                       |
 // +-------------------------------------------------------------------------+
 
-$cfg = array();
+$cfg = [];
 
 // +-------------------------------------------------------------------------+
 // |  Developer Settings                                                     |
@@ -161,10 +161,10 @@ $cfg['errors_mailto'] = 'developer@example.com';
 $cfg['mod_default'] = 'about/credits';
 
 // An array of modules to load
-$cfg['ds_modules'] = array(
+$cfg['ds_modules'] = [
     'about',
     'administrator'
-);
+];
 
 // +-------------------------------------------------------------------------+
 // |  Options Settings                                                       |
