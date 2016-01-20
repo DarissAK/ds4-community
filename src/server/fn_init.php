@@ -23,6 +23,9 @@
 // Include the configuration
 require_once($_SERVER['DOCUMENT_ROOT'] . '/config/config.php');
 
+// Include the optional database wrapper
+require_once($_SERVER['DOCUMENT_ROOT'] . '/server/sdc.class.php');
+
 class dsInstance
 {
 
