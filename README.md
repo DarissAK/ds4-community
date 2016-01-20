@@ -15,7 +15,7 @@ The Dynamic Suite includes the following third party libraries:
 * jQuery JavaScript Library v2.1.4
 * Font Awesome 4.5.0
 * jQuery UI v1.11.4
-* jquery.mask.js v1.13.4
+* jQuery.mask.js v1.13.4
 * Summernote wysiwyg editor on Bootstrap v0.6.16
 
 ## Installing
