@@ -22,7 +22,7 @@
 // +-------------------------------------------------------------------------+
 
 // Log out any users that are still logged in
-$_SESSION = array();
+$_SESSION = [];
 
 ?>
 <div class="ds-y-center ds-login">

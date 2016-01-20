@@ -11,6 +11,10 @@
         <a href="http://getbootstrap.com">http://getbootstrap.com</a><br />
         Copyright 2011-2015 Twitter, Inc.<br />
         Licensed under the MIT license</li>
+    <li><strong>Bootstrap Datepicker v1.6.0-dev</strong><br />
+        <a href="https://github.com/eternicode/bootstrap-datepicker">https://github.com/eternicode/bootstrap-datepicker</a><br />
+        Copyright 2012 Stefan Petre<br />
+        Licensed under the Apache License v2.0</li>
     <li><strong>jQuery JavaScript Library v2.1.4</strong><br />
         <a href="http://jquery.com">http://jquery.com</a><br />
         Copyright 2005, 2014 jQuery Foundation, Inc. and other contributors<br />

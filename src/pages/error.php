@@ -21,7 +21,7 @@
 // +-------------------------------------------------------------------------+
 
 // Destroy any active dynamic suite instances
-if(isSet($ds)) unset($ds);
+if(isset($ds)) unset($ds);
 
 ?>
 <html>

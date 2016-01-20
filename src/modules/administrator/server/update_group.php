@@ -27,10 +27,10 @@ require_once($_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php');
 if(
     $ds->checkSession() &&
     $ds->checkPermission('ds_admin_permission') &&
-    isSet($_POST['ds_group']) &&
-    isSet($_POST['ds_group_old']) &&
-    isSet($_POST['ds_group_desc']) &&
-    isSet($_POST['ds_group_perms'])
+    isset($_POST['ds_group']) &&
+    isset($_POST['ds_group_old']) &&
+    isset($_POST['ds_group_desc']) &&
+    isset($_POST['ds_group_perms'])
 ) {
 
     // If the group name isn't changing
@@ -41,16 +41,16 @@ if(
                 '`ds_perm_group_desc` = ? WHERE `ds_perm_group` = ?';
 
         // Query meta data
-        $meta_data = array(
+        $meta_data = [
             $_POST['ds_group_desc'],
             $_POST['ds_group']
-        );
+        ];
 
         // Delete old perms query
         $delete = 'DELETE FROM `ds_perm` WHERE `ds_group` = ?';
 
         // Query perm data
-        $perm_data = array();
+        $perm_data = [];
 
         // Insert new perms query
         $update = 'INSERT INTO `ds_perm` (`ds_group`, `ds_perm`) VALUES ';
@@ -120,17 +120,17 @@ if(
                     '`ds_perm_group_desc` = ? WHERE `ds_perm_group` = ?';
 
             // Query meta data
-            $meta_data = array(
+            $meta_data = [
                 $_POST['ds_group'],
                 $_POST['ds_group_desc'],
                 $_POST['ds_group_old']
-            );
+            ];
 
             // Delete old perms query
             $delete = 'DELETE FROM `ds_perm` WHERE `ds_group` = ?';
 
             // Query perm data
-            $perm_data = array();
+            $perm_data = [];
 
             // Insert new perms query
             $update = 'INSERT INTO `ds_perm` (`ds_group`, `ds_perm`) VALUES ';

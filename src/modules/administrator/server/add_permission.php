@@ -27,8 +27,8 @@ require_once($_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php');
 if(
     $ds->checkSession() &&
     $ds->checkPermission('ds_admin_permission') &&
-    isSet($_POST['ds_perm']) &&
-    isSet($_POST['ds_perm_desc'])
+    isset($_POST['ds_perm']) &&
+    isset($_POST['ds_perm_desc'])
 ) {
 
     // If the permission already exists

@@ -27,9 +27,9 @@ require_once($_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php');
 if(
     $ds->checkSession() &&
     $ds->checkPermission('ds_admin_permission') &&
-    isSet($_POST['ds_perm']) &&
-    isSet($_POST['ds_perm_desc']) &&
-    isSet($_POST['ds_perm_old'])
+    isset($_POST['ds_perm']) &&
+    isset($_POST['ds_perm_desc']) &&
+    isset($_POST['ds_perm_old'])
 ) {
 
     // If the permission name isn't changing
@@ -40,10 +40,10 @@ if(
                  '`ds_perm_desc` = ? WHERE `ds_perm` = ?';
 
         // Query data
-        $data = array(
+        $data = [
             $_POST['ds_perm_desc'],
             $_POST['ds_perm']
-        );
+        ];
 
         // On query success
         if($ds->query($query, $data)) {
@@ -84,17 +84,17 @@ if(
                      '`ds_perm_desc` = ? WHERE `ds_perm` = ?';
 
             // Update data
-            $data = array(
+            $data = [
                 $_POST['ds_perm'],
                 $_POST['ds_perm_desc'],
                 $_POST['ds_perm_old']
-            );
+            ];
 
             // On query success
             if($ds->query($query, $data)) {
 
                 // Log the event
-                $ds->logEvent('Permission ' . $_POST['ds_perm'] . ' Updated', 6, 'SYSTEM');
+                $ds->logEvent("Permission {$_POST['ds_perm']} Updated", 6, 'SYSTEM');
 
                 // Successful response
                 die($ds->APIResponse('OK', 0, 'Permission Updated'));

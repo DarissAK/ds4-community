@@ -21,7 +21,7 @@
 // |  02110-1301, USA.                                                       |
 // +-------------------------------------------------------------------------+
 
-$cfg = array();
+$cfg = [];
 
 // +-------------------------------------------------------------------------+
 // |  Developer Settings                                                     |
@@ -57,7 +57,7 @@ $cfg['manual_lockout'] = FALSE;
 
 // System version and copyright (at login)
 $cfg['system_footer'] = 'Dynamic Suite 4 Community Edition ' .
-                        '&#8212; &#169; 2015 Simplusoft LLC';
+                        '&#8212; &#169; 2016 Simplusoft LLC';
 
 // System header text (app name)
 $cfg['system_header'] = 'DS4 Community';
@@ -161,10 +161,10 @@ $cfg['errors_mailto'] = 'developer@example.com';
 $cfg['mod_default'] = 'about/credits';
 
 // An array of modules to load
-$cfg['ds_modules'] = array(
+$cfg['ds_modules'] = [
     'about',
     'administrator'
-);
+];
 
 // +-------------------------------------------------------------------------+
 // |  Options Settings                                                       |

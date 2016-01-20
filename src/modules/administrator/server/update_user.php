@@ -26,7 +26,7 @@ require_once($_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php');
 if(
     $ds->checkSession() &&
     $ds->checkPermission('ds_admin_user') &&
-    isSet($_POST['ds_user'])
+    isset($_POST['ds_user'])
 ) {
 
     // User data query
@@ -34,11 +34,11 @@ if(
              '`ds_user_group` = ? WHERE `ds_user` = ?;';
 
     // User data
-    $data = array(
+    $data = [
         $_POST['ds_user_status'],
         $_POST['ds_user_group'],
         $_POST['ds_user']
-    );
+    ];
 
     // Execute the query
     $ds->query($query, $data);
@@ -63,10 +63,10 @@ if(
                  'WHERE `ds_user` = ?;';
 
         // Administrator data
-        $data = array(
+        $data = [
             $_POST['ds_user_administrator'],
             $_POST['ds_user']
-        );
+        ];
 
         // Execute the query
         $ds->query($query, $data);
@@ -91,10 +91,10 @@ if(
                      'WHERE `ds_user` = ?;';
 
             // Password data
-            $data = array(
+            $data = [
                 $password,
                 $_POST['ds_user']
-            );
+            ];
 
             // Execute the query
             $ds->query($query, $data);
@@ -117,7 +117,7 @@ if(
         $ds->logEvent('User Updated', 3, $_POST['ds_user']);
 
         // Send OK response
-        die($ds->APIResponse('OK', 0, 'User ' . $_POST['ds_user'] . ' Updated'));
+        die($ds->APIResponse('OK', 0, "User {$_POST['ds_user']} Updated"));
 
     }
 

@@ -27,7 +27,7 @@ require_once($_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php');
 if(
     $ds->checkSession() &&
     $ds->checkPermission('ds_admin_permission') &&
-    isSet($_POST['ds_group'])
+    isset($_POST['ds_group'])
 ) {
 
     // On delete success

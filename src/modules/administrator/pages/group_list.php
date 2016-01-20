@@ -31,10 +31,10 @@ if(
 
     // Display edit group page
     if(
-        isSet($ds->clean_url[3]) &&
-        $ds->clean_url[3] === 'edit' &&
-        isSet($ds->clean_url[4]) &&
-        array_key_exists($ds->clean_url[4], $groups)
+        isset($ds->url[3]) &&
+        $ds->url[3] === 'edit' &&
+        isset($ds->url[4]) &&
+        array_key_exists($ds->url[4], $groups)
     ) {
 
         // Template file
@@ -46,6 +46,7 @@ if(
         // Permissions body string
         $perm_body = '';
 
+        // Get all possible permissions
         $permissions = $ds->getPermissions();
 
         // Loop through all of the permissions and build the body
@@ -53,7 +54,7 @@ if(
             $perm_body .= '<div class="form-group">';
             $perm_body .= "<label for='$k'>{$v['ds_perm_desc']}</label>";
             $perm_body .= "<select id='$k' name='$k' class='form-control'>";
-            if(array_key_exists($k, $groups[$ds->clean_url[4]]['ds_perm_group_perms'])) {
+            if(array_key_exists($k, $groups[$ds->url[4]]['ds_perm_group_perms'])) {
                 $perm_body .= '<option value="1">Yes</option><option value="0">No</option>';
             }
             else {
@@ -63,10 +64,10 @@ if(
         }
 
         // Update the template
-        $template = str_replace('%DS_GROUP%', $ds->clean_url[4], $template);
+        $template = str_replace('%DS_GROUP%', $ds->url[4], $template);
         $template = str_replace(
             '%DS_GROUP_DESC%',
-            $groups[$ds->clean_url[4]]['ds_perm_group_desc'],
+            $groups[$ds->url[4]]['ds_perm_group_desc'],
             $template
         );
         $template = str_replace('%PERM_BODY%', $perm_body, $template);

@@ -27,7 +27,7 @@ require_once($_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php');
 if(
     $ds->checkSession() &&
     $ds->checkPermission('ds_admin_user') &&
-    isSet($_POST['ds_user'])
+    isset($_POST['ds_user'])
 ) {
 
     // Query for deleting users
