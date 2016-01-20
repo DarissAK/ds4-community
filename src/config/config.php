@@ -21,7 +21,7 @@
 // |  02110-1301, USA.                                                       |
 // +-------------------------------------------------------------------------+
 
-$cfg = array();
+$cfg = [];
 
 // +-------------------------------------------------------------------------+
 // |  Developer Settings                                                     |
@@ -35,7 +35,7 @@ ini_set('html_errors', 1);
 
 // Hard error log file.
 // Make sure the file is writeable
-$cfg['log_dir'] = '/path/to/my/log.log';
+$cfg['log_dir'] = '/var/www/ds/dynamicsuite.log';
 
 // PDO Exception Timeout
 // The time in seconds it takes before a database connection attempt is
@@ -56,15 +56,15 @@ $cfg['manual_lockout'] = FALSE;
 // +-------------------------------------------------------------------------+
 
 // System version and copyright (at login)
-$cfg['system_footer'] = 'Dynamic Suite 4 Community Edition ' .
-                        '&#8212; &#169; 2015 Simplusoft LLC';
+$cfg['system_footer'] = 'Dynamic Suite 4 Enterprise ' .
+                        '&#8212; &#169; 2016 Simplusoft LLC';
 
 // System header text (app name)
-$cfg['system_header'] = 'DS4 Community';
+$cfg['system_header'] = 'DS4 Enterprise';
 
 // Header for the login form
 // Usually your application name or organization name
-$cfg['system_login_header'] = 'My Organization';
+$cfg['system_login_header'] = 'Simplusoft';
 
 // System HTML title
 // If set to FALSE, prefix + module name will be used
@@ -91,16 +91,16 @@ $cfg['system_version'] = '4.0';
 $cfg['db_type'] = 'mysql';
 
 // The host address of the database
-$cfg['db_host'] = 'localhost';
+$cfg['db_host'] = '172.16.1.10';
 
 // The name of the database
-$cfg['db_name'] = 'database';
+$cfg['db_name'] = 'dynamicsuite4_dev';
 
 // Database username
-$cfg['db_user'] = 'username';
+$cfg['db_user'] = 'ds4_dev';
 
 // Database password
-$cfg['db_pass'] = 'password';
+$cfg['db_pass'] = 'SRpFUd6xySUvaQNx';
 
 // Database DSN
 $cfg['db_dsn'] = $cfg['db_type'] . ":host=" . $cfg['db_host'] . ";dbname=" .
@@ -132,14 +132,14 @@ $cfg['timestamp_format'] = 'm/d/Y \a\t g:i:s A';
 
 // The domain where the application is installed. Must include the protocol.
 // Do not include tailing slashes
-$cfg['install_domain'] = 'http://example.com';
+$cfg['install_domain'] = 'http://ds.simplusoft.com';
 
 // A unique session instance identifier
 // Unless you have a specific reason, this should be your organization name
 // or another unique identifier. If you are running multiple instances of
 // the Dynamic Suite on the same server/host, each instance must have a
 // different session ID to avoid collision
-$cfg['session_id'] = 'myOrganization';
+$cfg['session_id'] = 'ds';
 
 // +-------------------------------------------------------------------------+
 // |  Contact Settings                                                       |
@@ -147,10 +147,10 @@ $cfg['session_id'] = 'myOrganization';
 
 // Contact for account related settings, usually the email address for your
 // organizations HR or IT manager/application administrator
-$cfg['account_mailto'] = 'hr@example.com';
+$cfg['account_mailto'] = 'commgdog@gmail.com';
 
 // Report errors and feedback to this email address
-$cfg['errors_mailto'] = 'developer@example.com';
+$cfg['errors_mailto'] = 'commgdog@gmail.com';
 
 // +-------------------------------------------------------------------------+
 // |  Module Settings                                                        |
@@ -161,10 +161,11 @@ $cfg['errors_mailto'] = 'developer@example.com';
 $cfg['mod_default'] = 'about/credits';
 
 // An array of modules to load
-$cfg['ds_modules'] = array(
+$cfg['ds_modules'] = [
     'about',
-    'administrator'
-);
+    'administrator',
+    'test'
+];
 
 // +-------------------------------------------------------------------------+
 // |  Options Settings                                                       |
