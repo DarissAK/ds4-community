@@ -11,11 +11,11 @@ This framework is designed to make login-only web applications in PHP. User's ar
 ## Includes
 The Dynamic Suite includes the following third party libraries:
 * Bootstrap v3.3.5
+* Bootstrap datepicker v1.6.0-dev
 * jQuery JavaScript Library v2.1.4
-* Font Awesome 4.5.0 by @davegandy
+* Font Awesome 4.5.0
 * jQuery UI v1.11.4
 * jquery.mask.js v1.13.4
-* Spectrum Colorpicker v1.7.1
 * Summernote wysiwyg editor on Bootstrap v0.6.16
 
 ## Installing
