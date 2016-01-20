@@ -57,7 +57,7 @@ $cfg['manual_lockout'] = FALSE;
 
 // System version and copyright (at login)
 $cfg['system_footer'] = 'Dynamic Suite 4 Community Edition ' .
-                        '&#8212; &#169; 2015 Simplusoft LLC';
+                        '&#8212; &#169; 2016 Simplusoft LLC';
 
 // System header text (app name)
 $cfg['system_header'] = 'DS4 Community';
