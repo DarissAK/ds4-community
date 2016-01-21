@@ -24,7 +24,12 @@ inventory & management. Simplusoft also offers paid hosting and support
 for instances of the Dynamic Suite.
 
 With questions about commercial licensing and modules, contact Grant
-Martin @ commgdog@gmail.com
+Martin <commgdog@gmail.com>
+
+The future of the Dynamic Suite
+===============================
+Development is underway for more free and open source modules. Development
+has also begun porting the entire codebase to the Go programming language
 
 
 
