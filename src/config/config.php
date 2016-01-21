@@ -163,6 +163,7 @@ $cfg['mod_default'] = 'about/credits';
 // An array of modules to load
 $cfg['ds_modules'] = [
     'about',
+    'test',
     'administrator'
 ];
 

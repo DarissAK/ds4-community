@@ -80,7 +80,8 @@ INSERT INTO `ds_perm_meta` (`ds_perm`, `ds_perm_desc`) VALUES
 ('ds_admin', 'Access to the administrator module'),
 ('ds_admin_logs', 'Access to system logs'),
 ('ds_admin_permission', 'Access to the permissions interface'),
-('ds_admin_user', 'Access to user administraton');
+('ds_admin_user', 'Access to user administration'),
+('ds_test_sandbox', 'Access to the test script sandbox');
 
 --
 -- Triggers `ds_perm_meta`
