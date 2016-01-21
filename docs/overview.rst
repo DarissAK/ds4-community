@@ -30,6 +30,3 @@ The future of the Dynamic Suite
 ===============================
 Development is underway for more free and open source modules. Development
 has also begun porting the entire codebase to the Go programming language
-
-
-

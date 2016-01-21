@@ -30,4 +30,3 @@ server
 templates
 ---------
 - HTML templates for various pages
-
