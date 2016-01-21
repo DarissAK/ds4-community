@@ -49,7 +49,7 @@ Page Loading
 When a user queries the Dynamic Suite from their browser, the framework takes some steps
 to route the user to the proper page.
 
-It begins with the **index.php* file within the root directory. This is where all modules
+It begins with the **index.php** file within the root directory. This is where all modules
 are rendered and loaded through. On every page load, a new instance of the class ``DSInstance``
 is created. This is the main class of the application that contains much of the logic of how
 things will flow.
