@@ -89,6 +89,7 @@ if($ds->validateView()) {
 
             }
 
+            // Load the current view
             require_once($_SERVER['DOCUMENT_ROOT'] . $ds->getView());
 
         }
