@@ -1,0 +1,20 @@
+{
+  "test" : {
+    "name"    : "Test Scripts",
+    "version" : "1.0",
+    "author"  : "Simplusoft LLC",
+    "about"   : "PHP sandbox test scripts",
+    "perm"    : "ds_test_sandbox",
+    "active"  : true,
+    "icon"    : "fa-file-text-o",
+    "content" : {
+      "sandbox" : {
+        "name"    : "Sandbox",
+        "perm"    : false,
+        "active"  : true,
+        "icon"    : "fa-file-text-o",
+        "content" : "/modules/test/sandbox.php"
+      }
+    }
+  }
+}
