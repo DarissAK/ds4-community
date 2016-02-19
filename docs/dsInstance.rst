@@ -11,7 +11,7 @@ dsInstance contains most of the logic that is used on every page, such as static
 values (configuration values), or functions for running things like SQL queries.
 
 The class dsInstance is loaded automatically into a variable called $ds when you
-include the file ``/server/fn_ini.php``.
+include the file ``/server/fn_init.php``.
 
 The class is automatically included in all rendered pages/scripts withing Dynamic
 Suite modules.
