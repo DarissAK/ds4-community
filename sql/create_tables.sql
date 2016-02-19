@@ -1,3 +1,4 @@
+
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
@@ -122,9 +123,9 @@ CREATE TABLE `ds_user` (
 LOCK TABLES `ds_user` WRITE;
 /*!40000 ALTER TABLE `ds_user` DISABLE KEYS */;
 
-INSERT INTO `ds_user` (`user`, `password`, `status`, `group`, `inactive_time`, `added`, `added_by`, `login_attempts`, `last_login_attempt`, `last_login_success`, `last_login_ip`, `administrator`) VALUES
-  ('root', '$2y$10$gzNe5YLn74qraklVT0s1DepQBRJjMUtTp6t3mSDggdzcZZoqJB4ye', 1, 'Default', NULL, CURRENT_TIMESTAMP, 'SYSTEM', 0, NULL, NULL, NULL, 1);
-
+INSERT INTO `ds_user` (`user`, `password`, `group`, `status`, `inactive_time`, `added`, `added_by`, `login_attempts`, `last_login_attempt`, `last_login_success`, `last_login_ip`, `administrator`)
+VALUES
+  (X'726F6F74',X'24327924313024677A4E6535594C6E37347172616B6C56543073314465705142524A6A4D557454703674336D53446767647A635A5A6F714A42347965',X'44656661756C74',1,NULL,'0000-00-00 00:00:00',X'53595354454D',0,NULL,NULL,NULL,1);
 
 /*!40000 ALTER TABLE `ds_user` ENABLE KEYS */;
 UNLOCK TABLES;
