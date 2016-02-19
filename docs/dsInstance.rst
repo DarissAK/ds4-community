@@ -22,7 +22,7 @@ There are some things that happen automatically when a new instance is created
 Here is a list (in order) of what happens when it initializes:
 - Check to see if a PHP session is running, and create one if not.
 - Set the instance's global configuration to the data found in ``/config/config.php``
-- Set ``$ds->domain`` and ``$ds->dir``
+- Set ``$ds->domain`` and ``$ds->dir``.
 - Initialize the URL (see ``$ds->urlInit()`` below)
 - If a Dynamic Suite session is set, set the page title, and generate the page start
   including resources such as Javascript and CSS
