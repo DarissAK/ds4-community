@@ -24,7 +24,8 @@ Here is a list (in order) of what happens when it initializes:
 - Set the instance's global configuration to the data found in ``/config/config.php``
 - Set ``$ds->domain`` and ``$ds->dir``
 - Initialize the URL (see ``$ds->urlInit()`` below)
-- If a Dynamic Suite session is set, set the page title, and generate the page start including resources such as Javascript and CSS
+- If a Dynamic Suite session is set, set the page title, and generate the page start
+  including resources such as Javascript and CSS
 - Generate the page end (closing HTML tags)
 - Create a new database connection (if this fails, exit the script and display fatal error).
 - If a session is set, set ``$ds->session``, ``$ds->username``, ``$ds->permissions``,
