@@ -7,11 +7,14 @@ $(function() {
     // The active page
     var page;
 
+    // User's list module
+    var users_list = $('.ds-users-list');
+
     // If the page is the active users page or inactive users page
-    if($('.ds-users-list').length) {
+    if(users_list.length) {
 
         // Set the current page
-        page = $('.ds-users-list');
+        page = users_list;
 
         // Set user count
         page.find('strong').html(page.find('tbody tr').length);
@@ -38,11 +41,14 @@ $(function() {
 
     }
 
+    // Group list module
+    var group_list = $('.ds-group-list');
+
     // If the page is the group list page
-    if($('.ds-group-list').length) {
+    if(group_list.length) {
 
         // Set the current page
-        page = $('.ds-group-list');
+        page = group_list;
 
         // Set group count
         page.find('strong').html(page.find('tbody tr').length);
@@ -60,8 +66,8 @@ $(function() {
         page.on('click', 'a', function() {
 
             // Reset the inputs and errors
-            $('#ds-group').val('');
-            $('#ds-group-desc').val('')
+            $('#group').val('');
+            $('#description').val('');
             $('#group-alert').remove();
             ds_clear_errors();
 
@@ -100,12 +106,12 @@ $(function() {
 
             // POST request data
             var data = {
-                ds_group:      $('#ds-group').val(),
-                ds_group_desc: $('#ds-group-desc').val()
+                group:       $('#group').val(),
+                description: $('#description').val()
             };
 
             // If the group name is too short
-            if(data['ds_group'].length < 4) {
+            if(data['group'].length < 4) {
 
                 // Display alert message
                 ds_alert(
@@ -113,7 +119,7 @@ $(function() {
                     3,
                     err_loc,
                     'group-alert',
-                    '.ds-group-grp'
+                    '.group-grp'
                 );
 
                 // Re-enable the button
@@ -122,7 +128,7 @@ $(function() {
             }
 
             // If the group name contains invalid characters
-            else if(!/^[0-9A-Za-z_]+$/.test(data['ds_group'])) {
+            else if(!/^[0-9A-Za-z_]+$/.test(data['group'])) {
 
                 // Display alert message
                 ds_alert(
@@ -130,7 +136,7 @@ $(function() {
                     3,
                     err_loc,
                     'group-alert',
-                    '.ds-group-grp'
+                    '.group-grp'
                 );
 
                 // Re-enable the button
@@ -138,7 +144,7 @@ $(function() {
 
             }
 
-            else if(data['ds_group_desc'].length < 4) {
+            else if(data['description'].length < 4) {
 
                 // Display alert message
                 ds_alert(
@@ -146,7 +152,7 @@ $(function() {
                     3,
                     err_loc,
                     'group-alert',
-                    '.ds-group-desc-grp'
+                    '.description-grp'
                 );
 
                 // Re-enable the button
@@ -172,8 +178,8 @@ $(function() {
 
                         // Append the new permission to the table
                         page.find('table tbody').append(
-                            '<tr><td>' + data['ds_group'] + '</td>' +
-                            '<td>' + data['ds_group_desc'] + '</td></tr>'
+                            '<tr><td>' + data['group'] + '</td>' +
+                            '<td>' + data['description'] + '</td></tr>'
                         );
 
                         // Close the modal
@@ -183,7 +189,7 @@ $(function() {
                         ds_alert(
                             response.message,
                             response.severity,
-                            page.find('a:first'),
+                            '#alert-entry',
                             'group-alert'
                         );
 
@@ -198,7 +204,7 @@ $(function() {
                             response.severity,
                             err_loc,
                             'group-alert',
-                            '.ds-group-grp'
+                            '.group-grp'
                         );
 
                     }
@@ -229,11 +235,14 @@ $(function() {
 
     }
 
+    // Group edit module
+    var group_edit = $('.ds-group-edit');
+
     // Of the page is the edit group page
-    if($('.ds-group-edit').length) {
+    if(group_edit.length) {
 
         // Set the current page
-        page = $('.ds-group-edit');
+        page = group_edit;
 
         // On click of the update group button
         page.on('click', '> button:eq(0)', function() {
@@ -249,14 +258,14 @@ $(function() {
 
             // POST request data
             var data = {
-                ds_group:       $('#ds-group').val(),
-                ds_group_old:   $('#ds-group-old').val(),
-                ds_group_desc:  $('#ds-group-desc').val(),
-                ds_group_perms: $('form').serializeArray()
-            }
+                group:       $('#group').val(),
+                group_old:   $('#group-old').val(),
+                description: $('#description').val(),
+                permissions: $('form').serializeArray()
+            };
 
             // If the permission name is too short
-            if(data['ds_group'].length < 4) {
+            if(data['group'].length < 4) {
 
                 // Display alert message
                 ds_alert(
@@ -264,7 +273,7 @@ $(function() {
                     3,
                     '.btn-danger',
                     'group-alert',
-                    '.ds-group-grp'
+                    '.group-grp'
                 );
 
                 // Re-enable the button
@@ -273,7 +282,7 @@ $(function() {
             }
 
             // If the permission name contains invalid characters
-            else if(!/^[0-9A-Za-z_]+$/.test(data['ds_group'])) {
+            else if(!/^[0-9A-Za-z_]+$/.test(data['group'])) {
 
                 // Display alert message
                 ds_alert(
@@ -281,7 +290,7 @@ $(function() {
                     3,
                     '.btn-danger',
                     'group-alert',
-                    '.ds-group-grp'
+                    '.group-grp'
                 );
 
                 // Re-enable the button
@@ -289,7 +298,7 @@ $(function() {
 
             }
 
-            else if(data['ds_group_desc'].length < 4) {
+            else if(data['description'].length < 4) {
 
                 // Display alert message
                 ds_alert(
@@ -297,7 +306,7 @@ $(function() {
                     3,
                     '.btn-danger',
                     'group-alert',
-                    '.ds-group-desc-grp'
+                    '.description-grp'
                 );
 
                 // Re-enable the button
@@ -316,8 +325,8 @@ $(function() {
                     // Update the old values
                     if(response.status === 'OK') {
 
-                        $('#ds-group-old').val($('#ds-group').val());
-                        $('.modal-body strong').html($('#ds-group').val());
+                        $('#group-old').val(data['group']);
+                        $('.modal-body strong').html(data['group']);
 
                     }
 
@@ -351,7 +360,7 @@ $(function() {
 
             // POST request data
             var data = {
-                ds_group: $('.modal-body strong').html()
+                group: $('.modal-body strong').html()
             };
 
             // Send the POST request
@@ -397,11 +406,14 @@ $(function() {
 
     }
 
+    // Permission list page
+    var permission_list = $('.ds-permission-list');
+
     // If the page is the permission list page
-    if($('.ds-permission-list').length) {
+    if(permission_list.length) {
 
         // Set the current page
-        page = $('.ds-permission-list');
+        page = permission_list;
 
         // Set permission count
         page.find('strong').html(page.find('tbody tr').length);
@@ -419,8 +431,8 @@ $(function() {
         page.on('click', 'a', function() {
 
             // Reset the inputs and errors
-            $('#ds-perm').val('');
-            $('#ds-perm-desc').val('')
+            $('#permission').val('');
+            $('#description').val('');
             $('#perm-alert').remove();
             ds_clear_errors();
 
@@ -447,12 +459,12 @@ $(function() {
 
             // POST request data
             var data = {
-                ds_perm:      $('#ds-perm').val(),
-                ds_perm_desc: $('#ds-perm-desc').val()
+                permission:  $('#permission').val(),
+                description: $('#description').val()
             };
 
             // If the permission name is too short
-            if(data['ds_perm'].length < 4) {
+            if(data['permission'].length < 4) {
 
                 // Display alert message
                 ds_alert(
@@ -460,7 +472,7 @@ $(function() {
                     3,
                     err_loc,
                     'perm-alert',
-                    '.ds-perm-grp'
+                    '.permission-grp'
                 );
 
                 // Re-enable the button
@@ -469,7 +481,7 @@ $(function() {
             }
 
             // If the permission name contains invalid characters
-            else if(!/^[0-9A-Za-z_]+$/.test(data['ds_perm'])) {
+            else if(!/^[0-9A-Za-z_]+$/.test(data['permission'])) {
 
                 // Display alert message
                 ds_alert(
@@ -477,7 +489,7 @@ $(function() {
                     3,
                     err_loc,
                     'perm-alert',
-                    '.ds-perm-grp'
+                    '.permission-grp'
                 );
 
                 // Re-enable the button
@@ -485,7 +497,7 @@ $(function() {
 
             }
 
-            else if(data['ds_perm_desc'].length < 4) {
+            else if(data['description'].length < 4) {
 
                 // Display alert message
                 ds_alert(
@@ -493,7 +505,7 @@ $(function() {
                     3,
                     err_loc,
                     'perm-alert',
-                    '.ds-perm-desc-grp'
+                    '.description-grp'
                 );
 
                 // Re-enable the button
@@ -519,8 +531,8 @@ $(function() {
 
                         // Append the new permission to the table
                         page.find('table tbody').append(
-                            '<tr><td>' + data['ds_perm'] + '</td>' +
-                            '<td>' + data['ds_perm_desc'] + '</td></tr>'
+                            '<tr><td>' + data['permission'] + '</td>' +
+                            '<td>' + data['description'] + '</td></tr>'
                         );
 
                         // Close the modal
@@ -530,7 +542,7 @@ $(function() {
                         ds_alert(
                             response.message,
                             response.severity,
-                            page.find('a:first'),
+                            '#alert-entry',
                             'perm-alert'
                         );
 
@@ -545,7 +557,7 @@ $(function() {
                             response.severity,
                             err_loc,
                             'perm-alert',
-                            '.ds-perm-grp'
+                            '.permission-grp'
                         );
 
                     }
@@ -588,11 +600,14 @@ $(function() {
 
     }
 
+    // Permission edit page
+    var permission_edit = $('.ds-permission-edit');
+
     // If the page is the edit permission page
-    if($('.ds-permission-edit').length) {
+    if(permission_edit.length) {
 
         // Set the current page
-        page = $('.ds-permission-edit');
+        page = permission_edit;
 
         // On click of the update permission button
         page.on('click', '> button:eq(0)', function() {
@@ -608,20 +623,21 @@ $(function() {
 
             // POST request data
             var data = {
-                ds_perm:      $('#ds-perm').val(),
-                ds_perm_desc: $('#ds-perm-desc').val(),
-                ds_perm_old:  $('#ds-perm-old').val()
+                permission:     $('#permission').val(),
+                description:    $('#description').val(),
+                permission_old: $('#permission-old').val()
             };
 
             // If the permission name is too short
-            if(data['ds_perm'].length < 4) {
+            if(data['permission'].length < 4) {
 
                 // Display alert message
                 ds_alert(
                     'Permission name too short',
                     3,
                     '.btn-danger',
-                    'perm-alert'
+                    'perm-alert',
+                    '.permission-grp'
                 );
 
                 // Re-enable the button
@@ -630,14 +646,15 @@ $(function() {
             }
 
             // If the permission name contains invalid characters
-            else if(!/^[0-9A-Za-z_]+$/.test(data['ds_perm'])) {
+            else if(!/^[0-9A-Za-z_]+$/.test(data['permission'])) {
 
                 // Display alert message
                 ds_alert(
                     'Invalid permission name',
                     3,
                     '.btn-danger',
-                    'perm-alert'
+                    'perm-alert',
+                    '.permission-grp'
                 );
 
                 // Re-enable the button
@@ -645,14 +662,15 @@ $(function() {
 
             }
 
-            else if(data['ds_perm_desc'].length < 4) {
+            else if(data['description'].length < 4) {
 
                 // Display alert message
                 ds_alert(
                     'Permission description too short',
                     3,
                     '.btn-danger',
-                    'perm-alert'
+                    'perm-alert',
+                    '.description-grp'
                 );
 
                 // Re-enable the button
@@ -671,8 +689,8 @@ $(function() {
                     // Update the old values
                     if(response.status === 'OK') {
 
-                        $('#ds-perm-old').val(data['ds_perm']);
-                        $('.modal-body strong').html(data['ds_perm']);
+                        $('#permission-old').val(data['permission']);
+                        $('.modal-body strong').html(data['permission']);
 
                     }
 
@@ -706,7 +724,7 @@ $(function() {
 
             // POST request data
             var data = {
-                ds_perm: $('.modal-body strong').html()
+                permission: $('.modal-body strong').html()
             };
 
             // Send the POST request
@@ -752,11 +770,14 @@ $(function() {
 
     }
 
+    // Logs view page
+    var logs_view = $('.ds-logs-view');
+
     // If the page is the log viewer page
-    if($('.ds-logs-view').length) {
+    if(logs_view.length) {
 
         // Set the current page
-        page = $('.ds-logs-view');
+        page = logs_view;
 
         // Set user count
         page.find('strong').html(page.find('tbody tr').length);
@@ -772,37 +793,44 @@ $(function() {
 
     }
 
+    // User edit page
+    var user_edit = $('.ds-user-edit');
+
     // If the page is the edit user page
-    if($('.ds-user-edit').length) {
+    if(user_edit.length) {
 
         // Set the current page
-        page = $('.ds-user-edit');
+        page = user_edit;
 
         // On update user
         page.on('click', '.btn-primary', function() {
+
+            $('#user-alert').remove();
 
             // Disable the button to prevent multiple updates
             $(this).attr('disabled', true);
 
             // POST data
             var data = {
-                ds_user:            $('#ds-user').html(),
-                ds_user_status:     $('#ds-user-status').val(),
-                ds_user_group:      $('#ds-user-group').val(),
-                ds_user_password_1: $('#ds-user-password-1').val(),
-                ds_user_password_2: $('#ds-user-password-2').val()
+                user:       $('#user').html(),
+                status:     $('#status').val(),
+                group:      $('#group').val(),
+                password_1: $('#password-1').val(),
+                password_2: $('#password-2').val()
             };
 
-            // If the administrator selector is present
-            if($('#ds-user-administrator').length) {
+            // Administrator selector
+            var administrator_select = $('#administrator-select');
 
-                data['ds_user_administrator'] =
-                    $('#ds-user-administrator').val();
+            // If the administrator selector is present
+            if(administrator_select.length) {
+
+                data['administrator'] = administrator_select.val();
 
             }
 
             // If passwords don't match
-            if(data.ds_user_password_1 !== data.ds_user_password_2) {
+            if(data['password_1'] !== data['password_2']) {
 
                 // Display alert message
                 ds_alert(
@@ -810,7 +838,7 @@ $(function() {
                     3,
                     '.btn-danger',
                     'user-alert',
-                    $('.password-grp')
+                    '.password-grp'
                 );
 
                 // Re-enable the update button
@@ -821,11 +849,11 @@ $(function() {
             // If the passwords length are greater than 0 and less than 4
             else if(
                 (
-                    data.ds_user_password_1.length < 4 ||
-                    data.ds_user_password_2.length < 4
+                    data['password_1'].length < 4 ||
+                    data['password_2'].length < 4
                 ) && (
-                    data.ds_user_password_1.length ||
-                    data.ds_user_password_2.length
+                    data['password_1'].length ||
+                    data['password_2'].length
                 )
             ) {
 
@@ -835,7 +863,7 @@ $(function() {
                     3,
                     '.btn-danger',
                     'user-alert',
-                    $('.password-grp')
+                    '.password-grp'
                 );
 
                 // Re-enable the update button
@@ -877,7 +905,7 @@ $(function() {
 
             // User to be deleted
             var data = {
-                ds_user: $('#ds-user').html()
+                user: $('#user').html()
             };
 
             // Send the POST request
@@ -938,11 +966,11 @@ $(function() {
 
             // Request data (user data)
             var data = {
-                ds_user:            $('#ds-user').val(),
-                ds_user_password_1: $('#ds-user-password-1').val(),
-                ds_user_password_2: $('#ds-user-password-2').val(),
-                ds_user_status:     $('#ds-user-status').val(),
-                ds_user_group:      $('#ds-user-group').val()
+                user:       $('#user').val(),
+                password_1: $('#password-1').val(),
+                password_2: $('#password-2').val(),
+                status:     $('#status').val(),
+                group:      $('#group').val()
             };
 
             // Remove any feedback errors
@@ -951,7 +979,7 @@ $(function() {
             $('#user-alert').remove();
 
             // Invalid username
-            if(data.ds_user.length < 2) {
+            if(data['user'].length < 2) {
 
                 // Display alert message
                 ds_alert(
@@ -969,8 +997,8 @@ $(function() {
 
             // Passwords are too short
             else if(
-                data.ds_user_password_1.length < 4 ||
-                data.ds_user_password_2.length < 4
+                data['password_1'].length < 4 ||
+                data['password_2'].length < 4
             ) {
 
                 // Display alert message
@@ -989,8 +1017,8 @@ $(function() {
 
             // Passwords don't match
             else if(
-                data.ds_user_password_1 !==
-                data.ds_user_password_2
+                data['password_1'] !==
+                data['password_2']
             ) {
 
                 // Display alert message
@@ -1023,7 +1051,7 @@ $(function() {
                         setTimeout(function() {
 
                             document.location.href =
-                                'administrator/users/list/edit/' + data.ds_user;
+                                'administrator/users/list/edit/' + data['user'];
 
                         }, 800);
 

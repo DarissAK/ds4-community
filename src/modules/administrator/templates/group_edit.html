@@ -1,16 +1,16 @@
 <div class="ds-group-edit">
     <h3>Edit Group</h3>
-    <input value="%DS_GROUP%" type="hidden" id="ds-group-old" name="ds-group-old">
-    <div class="form-group ds-group-grp">
-        <label for="ds-group">Group Name</label>
-        <input value="%DS_GROUP%" type="text" class="form-control" id="ds-group" name="ds-group">
+    <input value="{{group}}" type="hidden" id="group-old" name="group-old">
+    <div class="form-group group-grp">
+        <label for="group">Group Name</label>
+        <input value="{{group}}" type="text" class="form-control" id="group" name="group">
     </div>
-        <div class="form-group ds-group-desc-grp">
-            <label for="ds-group-desc">Description</label>
-            <input value="%DS_GROUP_DESC%" type="text" class="form-control" id="ds-group-desc" name="ds-group-desc">
+        <div class="form-group description-grp">
+            <label for="description">Description</label>
+            <input value="{{description}}" type="text" class="form-control" id="description" name="description">
         </div>
     <form>
-    %PERM_BODY%
+    {{body}}
     </form>
     <button class="btn btn-primary">Update Group</button>
     <button class="btn btn-danger" data-toggle="modal" data-target="#delete-group">Delete Group</button>
@@ -23,7 +23,7 @@
                     <h4 class="modal-title">Delete Group</h4>
                 </div>
                 <div class="modal-body">
-                    <p>Are you sure you want to delete the group <strong>%DS_GROUP%</strong>?</p>
+                    <p>Are you sure you want to delete the group <strong>{{group}}</strong>?</p>
                     <p>
                         Event logs for the group will NOT be deleted and it will be
                         detached from any users

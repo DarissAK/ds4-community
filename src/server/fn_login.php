@@ -50,23 +50,23 @@ if(!$acct)
 // Block login attempt if a manual lockout is in effect
 // Administrators bypass lockout
 // See Dynamic Suite Configuration documentation for more information
-if($cfg['manual_lockout'] && !$acct['ds_user_administrator'])
+if($cfg['manual_lockout'] && !$acct['administrator'])
     die($ds->APIResponse('MANUAL_LOCKOUT_FAIL', 3, MANUAL_LOCKOUT_FAIL));
 
 // Update login metadata and increment login attempts
 $ds->updateLoginMetadata($_POST['username']);
 
 // If the user's account is inactive, block login
-if(!$acct['ds_user_status'])
+if(!$acct['status'])
     die($ds->APIResponse('ACTIVE_FAIL', 3, ACTIVE_FAIL));
 
 // Get the timestamp value of the last login attempt
-$last_attempt = strtotime($acct['ds_user_last_login_attempt']);
+$last_attempt = strtotime($acct['last_login_attempt']);
 
 // If the user has greater than or equal to the allowed login attempts
 // and hasn't waited out the login period
 if(
-    $acct['ds_user_login_attempts'] >= $cfg['login_attempts'] &&
+    $acct['login_attempts'] >= $cfg['login_attempts'] &&
     time() - $last_attempt <= $cfg['login_timeout']
 )
     die($ds->APIResponse('LOCKOUT_FAIL', 3, LOCKOUT_FAIL));
@@ -74,7 +74,7 @@ if(
 // Run the login attempt
 $login = $ds->attemptLogin(
     $_POST['username'],
-    $acct['ds_user_password'],
+    $acct['password'],
     $_POST['password']
 );
 

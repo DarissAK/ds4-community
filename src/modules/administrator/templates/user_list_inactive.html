@@ -1,9 +1,9 @@
 <div class="ds-users-list">
-    <div class="col-sm-12">
+    <div class="col-sm-12" id="header-area">
         <h3>Inactive Users</h3>
-        <a href="%VIEW_HREF%" target="_self">View Active Users</a>
+        <a href="{{view_href}}" target="_self">View Active Users</a>
     </div>
-    <div class="col-sm-12">
+    <div class="col-sm-12" id="search-area">
         <div class="col-sm-4">
             <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-search"></i></span>
@@ -21,8 +21,6 @@
                 <th>Inactive Date</th>
             </tr>
         </thead>
-        <tbody>
-            %TBODY%
-        </tbody>
+        <tbody>{{tbody}}</tbody>
     </table>
 </div>

@@ -25,17 +25,20 @@ require_once($_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php');
 
 // On valid request
 if(
-    $ds->checkSession() &&
     $ds->checkPermission('ds_admin_permission') &&
-    isset($_POST['ds_group']) &&
-    isset($_POST['ds_group_desc'])
+    isset($_POST['group']) &&
+    isset($_POST['description'])
 ) {
 
+    // API Responses
+    define('GROUP_FAIL', 'Group already exists');
+    define('OK',         'Group added');
+
     // If the group already exists
-    if(array_key_exists($_POST['ds_group'], $ds->getPermissionGroups())) {
+    if(array_key_exists($_POST['group'], $ds->getPermissionGroups())) {
 
         // Send failed response
-        die($ds->APIResponse('GROUP_FAIL', 3, 'Group already exists'));
+        die($ds->APIResponse('GROUP_FAIL', 3, GROUP_FAIL));
 
     }
 
@@ -43,10 +46,10 @@ if(
     else {
 
         // On add success
-        if($ds->registerGroup($_POST['ds_group'], $_POST['ds_group_desc'])) {
+        if($ds->registerGroup($_POST['group'], $_POST['description'])) {
 
             // Send the OK response
-            die($ds->APIResponse('OK', 0, 'Group added'));
+            die($ds->APIResponse('OK', 0, OK));
 
         }
 

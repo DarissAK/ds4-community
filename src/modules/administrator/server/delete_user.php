@@ -25,24 +25,24 @@ require_once($_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php');
 
 // On valid request
 if(
-    $ds->checkSession() &&
     $ds->checkPermission('ds_admin_user') &&
-    isset($_POST['ds_user'])
+    isset($_POST['user'])
 ) {
 
-    // Query for deleting users
-    $query = 'DELETE FROM `ds_user` WHERE `ds_user` = ?';
+    // API Responses
+    define('OK', 'User deleted successfully');
 
-    $ds->query($query, $_POST['ds_user']);
+    // Query for deleting users
+    $query = 'DELETE FROM `ds_user` WHERE `user` = ?';
 
     // If no database error is found on execution
-    if(!$ds->db_error) {
+    if($ds->query($query, $_POST['user'])) {
 
         // Log the event
-        $ds->logEvent('User Deleted', 4, $_POST['ds_user']);
+        $ds->logEvent('User Deleted', USER_DELETED, $_POST['user']);
 
         // Send the response
-        die($ds->APIResponse('OK', 0, 'User deleted successfully'));
+        die($ds->APIResponse('OK', 0, OK));
 
     }
 

@@ -35,7 +35,7 @@ ini_set('html_errors', 1);
 
 // Hard error log file.
 // Make sure the file is writeable
-$cfg['log_dir'] = '/path/to/my/log.log';
+$cfg['log_dir'] = '/path/to/ds/log.log';
 
 // PDO Exception Timeout
 // The time in seconds it takes before a database connection attempt is
@@ -64,7 +64,7 @@ $cfg['system_header'] = 'DS4 Community';
 
 // Header for the login form
 // Usually your application name or organization name
-$cfg['system_login_header'] = 'My Organization';
+$cfg['system_login_header'] = 'My Organisation';
 
 // System HTML title
 // If set to FALSE, prefix + module name will be used
@@ -100,7 +100,7 @@ $cfg['db_name'] = 'database';
 $cfg['db_user'] = 'username';
 
 // Database password
-$cfg['db_pass'] = 'password';
+$cfg['db_pass'] = 'Password';
 
 // Database DSN
 $cfg['db_dsn'] = $cfg['db_type'] . ":host=" . $cfg['db_host'] . ";dbname=" .
@@ -139,7 +139,7 @@ $cfg['install_domain'] = 'http://example.com';
 // or another unique identifier. If you are running multiple instances of
 // the Dynamic Suite on the same server/host, each instance must have a
 // different session ID to avoid collision
-$cfg['session_id'] = 'myOrganization';
+$cfg['session_id'] = 'myOrg';
 
 // +-------------------------------------------------------------------------+
 // |  Contact Settings                                                       |
@@ -147,10 +147,10 @@ $cfg['session_id'] = 'myOrganization';
 
 // Contact for account related settings, usually the email address for your
 // organizations HR or IT manager/application administrator
-$cfg['account_mailto'] = 'hr@example.com';
+$cfg['account_mailto'] = 'commgdog@gmail.com';
 
 // Report errors and feedback to this email address
-$cfg['errors_mailto'] = 'developer@example.com';
+$cfg['errors_mailto'] = 'commgdog@gmail.com';
 
 // +-------------------------------------------------------------------------+
 // |  Module Settings                                                        |

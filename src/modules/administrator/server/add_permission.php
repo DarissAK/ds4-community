@@ -25,17 +25,20 @@ require_once($_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php');
 
 // On valid request
 if(
-    $ds->checkSession() &&
     $ds->checkPermission('ds_admin_permission') &&
-    isset($_POST['ds_perm']) &&
-    isset($_POST['ds_perm_desc'])
+    isset($_POST['permission']) &&
+    isset($_POST['description'])
 ) {
 
+    // API Responses
+    define('PERM_FAIL', 'Permission already exists');
+    define('OK',        'Permission added');
+
     // If the permission already exists
-    if(array_key_exists($_POST['ds_perm'], $ds->getPermissions())) {
+    if(array_key_exists($_POST['permission'], $ds->getPermissions())) {
 
         // Send failed response
-        die($ds->APIResponse('PERM_FAIL', 3, 'Permission already exists'));
+        die($ds->APIResponse('PERM_FAIL', 3, PERM_FAIL));
 
     }
 
@@ -43,10 +46,10 @@ if(
     else {
 
         // On add success
-        if($ds->registerPermission($_POST['ds_perm'], $_POST['ds_perm_desc'])) {
+        if($ds->registerPermission($_POST['permission'], $_POST['description'])) {
 
             // Send the OK response
-            die($ds->APIResponse('OK', 0, 'Permission added'));
+            die($ds->APIResponse('OK', 0, OK));
 
         }
 

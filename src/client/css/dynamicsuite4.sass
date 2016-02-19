@@ -66,14 +66,14 @@ html, body
 
 /* Navigation Bar - Fluid Container */
 @media (min-width: 992px)
-  .ds-nav
+  #ds-nav-main
     height: 100% !important
 
-  .ds-body
+  #ds-body-main
     height: 100% !important
 
 /* Navigation Bar - Primary */
-.ds-nav
+#ds-nav-main
   background: $ds-primary
   min-width: 215px
   padding: 0
@@ -197,35 +197,33 @@ html, body
               font-size: 0.9em
               padding: 0.4em !important
 
-/* Body Content */
-.ds-body
-
-  /* Body Container */
+/* Main body container */
+#ds-body-main
   height: calc(100% - 58px)
   overflow: hidden
 
-  /* Header Ribbon (Module information) */
-  > div:nth-child(1)
-    background: $ds-primary-txt-lighter
-    font-size: 1.2em
-    font-weight: bold
-    padding: 0.25em
-    border-bottom: 1px solid $ds-primary-txt
+/* Header Ribbon (Module information) */
+#ds-body-header
+  background: $ds-primary-txt-lighter
+  font-size: 1.2em
+  font-weight: bold
+  padding: 0.25em
+  border-bottom: 1px solid $ds-primary-txt
 
-    /* Module icon (if any) */
-    i
-      padding: 0 0.75em 0 0.5em
+  /* Module icon (if any) */
+  i
+    padding: 0 0.75em 0 0.5em
 
-  /* Header tabs (if any) */
-  > div:nth-child(2)
-    padding: 0 1em 0 1em
-    margin-top: 0.8em
-    margin-bottom: 0.4em
+/* Module Tabs (if any) */
+#ds-body-tabs
+  padding: 0 1em 0 1em
+  margin-top: 0.8em
+  margin-bottom: 0.4em
 
-  /* Module Body (content) */
-  > div:nth-child(3)
-    padding: 0 1em 1em 1em
-    overflow: auto
+/* Module Content */
+#ds-body-content
+  padding: 0 1em 1em 1em
+  overflow: auto
 
 /* Active navigation tab add class */
 .ds-nav-active

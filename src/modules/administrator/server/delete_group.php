@@ -25,16 +25,18 @@ require_once($_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php');
 
 // On valid request
 if(
-    $ds->checkSession() &&
     $ds->checkPermission('ds_admin_permission') &&
-    isset($_POST['ds_group'])
+    isset($_POST['group'])
 ) {
 
+    // API Responses
+    define('OK', 'Group deleted successfully');
+
     // On delete success
-    if($ds->unregistergroup($_POST['ds_group'])) {
+    if($ds->unregisterGroup($_POST['group'])) {
 
         // Send OK response
-        die($ds->APIResponse('OK', 0, 'Group deleted successfully'));
+        die($ds->APIResponse('OK', 0, OK));
 
     }
 

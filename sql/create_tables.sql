@@ -1,161 +1,139 @@
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET time_zone = "+00:00";
-
-
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
--- --------------------------------------------------------
+/*!40101 SET NAMES utf8 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
---
--- Table structure for table `ds_log`
---
 
-CREATE TABLE IF NOT EXISTS `ds_log` (
-  `log_id` int(10) NOT NULL,
-  `log_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `log_type` int(10) NOT NULL,
-  `log_creator` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
-  `log_affected` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
-  `log_event` varchar(255) NOT NULL,
-  `log_ip` varchar(45) NOT NULL,
-  `log_session_id` varchar(32) NOT NULL
+# Dump of table ds_group_data
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `ds_group_data`;
+
+CREATE TABLE `ds_group_data` (
+  `group` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '',
+  `permission` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT ''
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- --------------------------------------------------------
 
---
--- Table structure for table `ds_perm`
---
 
-CREATE TABLE IF NOT EXISTS `ds_perm` (
-  `ds_group` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
-  `ds_perm` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL
+# Dump of table ds_group_meta
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `ds_group_meta`;
+
+CREATE TABLE `ds_group_meta` (
+  `group` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '',
+  `description` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`group`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- --------------------------------------------------------
+LOCK TABLES `ds_group_meta` WRITE;
+/*!40000 ALTER TABLE `ds_group_meta` DISABLE KEYS */;
 
---
--- Table structure for table `ds_perm_groups`
---
+INSERT INTO `ds_group_meta` (`group`, `description`)
+VALUES
+  (X'44656661756C74','Default Group');
 
-CREATE TABLE IF NOT EXISTS `ds_perm_groups` (
-  `ds_perm_group` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
-  `ds_perm_group_desc` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40000 ALTER TABLE `ds_group_meta` ENABLE KEYS */;
+UNLOCK TABLES;
 
---
--- Dumping data for table `ds_perm_groups`
---
-
-INSERT INTO `ds_perm_groups` (`ds_perm_group`, `ds_perm_group_desc`) VALUES
-('Default', 'Default Group');
-
---
--- Triggers `ds_perm_groups`
---
-DELIMITER $$
-CREATE TRIGGER `update_user` AFTER DELETE ON `ds_perm_groups`
- FOR EACH ROW DELETE FROM `ds_perm` WHERE `ds_perm`.`ds_group` = OLD.`ds_perm_group`
-$$
+DELIMITER ;;
+/*!50003 SET SESSION SQL_MODE="" */;;
+  /*!50003 CREATE */ /*!50017 DEFINER=`root`@`%` */ /*!50003 TRIGGER `update_user` AFTER DELETE ON `ds_group_meta` FOR EACH ROW DELETE FROM `ds_group_data` WHERE `ds_group_data`.`group` = OLD.`group` */;;
 DELIMITER ;
+/*!50003 SET SESSION SQL_MODE=@OLD_SQL_MODE */;
 
--- --------------------------------------------------------
 
---
--- Table structure for table `ds_perm_meta`
---
+# Dump of table ds_log
+# ------------------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS `ds_perm_meta` (
-  `ds_perm` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
-  `ds_perm_desc` varchar(255) NOT NULL
+DROP TABLE IF EXISTS `ds_log`;
+
+CREATE TABLE `ds_log` (
+  `id` int(10) unsigned zerofill NOT NULL AUTO_INCREMENT,
+  `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `type` int(10) unsigned NOT NULL,
+  `creator` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT 'SYSTEM',
+  `affected` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT 'SYSTEM',
+  `event` varchar(255) NOT NULL DEFAULT '',
+  `ip` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '',
+  `session` varchar(42) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Dumping data for table `ds_perm_meta`
---
 
-INSERT INTO `ds_perm_meta` (`ds_perm`, `ds_perm_desc`) VALUES
-('ds_admin', 'Access to the administrator module'),
-('ds_admin_logs', 'Access to system logs'),
-('ds_admin_permission', 'Access to the permissions interface'),
-('ds_admin_user', 'Access to user administration'),
-('ds_test_sandbox', 'Access to the test script sandbox');
 
---
--- Triggers `ds_perm_meta`
---
-DELIMITER $$
-CREATE TRIGGER `perm_delete` AFTER DELETE ON `ds_perm_meta`
- FOR EACH ROW DELETE FROM ds_perm WHERE OLD.ds_perm = ds_perm
-$$
+# Dump of table ds_permissions
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `ds_permissions`;
+
+CREATE TABLE `ds_permissions` (
+  `permission` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '',
+  `description` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`permission`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+LOCK TABLES `ds_permissions` WRITE;
+/*!40000 ALTER TABLE `ds_permissions` DISABLE KEYS */;
+
+INSERT INTO `ds_permissions` (`permission`, `description`)
+VALUES
+  (X'64735F61646D696E','Access to the administrator module'),
+  (X'64735F61646D696E5F6C6F6773','Access to system logs'),
+  (X'64735F61646D696E5F7065726D697373696F6E','Access to the permissions interface'),
+  (X'64735F61646D696E5F75736572','Access to user administration'),
+  (X'64735F746573745F73616E64626F78','Access to the test script sandbox');
+
+/*!40000 ALTER TABLE `ds_permissions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+DELIMITER ;;
+/*!50003 SET SESSION SQL_MODE="" */;;
+  /*!50003 CREATE */ /*!50017 DEFINER=`root`@`%` */ /*!50003 TRIGGER `perm_delete` AFTER DELETE ON `ds_permissions` FOR EACH ROW DELETE FROM `ds_group_data` WHERE OLD.`permission` = `permission` */;;
 DELIMITER ;
+/*!50003 SET SESSION SQL_MODE=@OLD_SQL_MODE */;
 
--- --------------------------------------------------------
 
---
--- Table structure for table `ds_user`
---
+# Dump of table ds_user
+# ------------------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS `ds_user` (
-  `ds_user` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'Unique username',
-  `ds_user_password` char(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'User''s password (hashed)',
-  `ds_user_status` tinyint(1) NOT NULL DEFAULT '0',
-  `ds_user_group` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
-  `ds_user_inactive_timestamp` timestamp NULL DEFAULT NULL,
-  `ds_user_added` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Date and time the user was added',
-  `ds_user_added_by` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT 'SYSTEM' COMMENT 'Username of who added the user to the system',
-  `ds_user_login_attempts` tinyint(2) NOT NULL DEFAULT '0',
-  `ds_user_last_login_attempt` timestamp NULL DEFAULT NULL,
-  `ds_user_last_login_success` timestamp NULL DEFAULT NULL,
-  `ds_user_last_login_ip` varchar(45) DEFAULT NULL COMMENT 'IP address where the user last logged in from',
-  `ds_user_administrator` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'If the user has administrator rights'
+DROP TABLE IF EXISTS `ds_user`;
+
+CREATE TABLE `ds_user` (
+  `user` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '',
+  `password` char(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '',
+  `group` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '',
+  `status` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `inactive_time` timestamp NULL DEFAULT NULL,
+  `added` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `added_by` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT 'SYSTEM',
+  `login_attempts` tinyint(2) NOT NULL DEFAULT '0',
+  `last_login_attempt` timestamp NULL DEFAULT NULL,
+  `last_login_success` timestamp NULL DEFAULT NULL,
+  `last_login_ip` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
+  `administrator` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Primary user data table';
 
---
--- Dumping data for table `ds_user`
---
+LOCK TABLES `ds_user` WRITE;
+/*!40000 ALTER TABLE `ds_user` DISABLE KEYS */;
 
-INSERT INTO `ds_user` (`ds_user`, `ds_user_password`, `ds_user_status`, `ds_user_group`, `ds_user_inactive_timestamp`, `ds_user_added`, `ds_user_added_by`, `ds_user_login_attempts`, `ds_user_last_login_attempt`, `ds_user_last_login_success`, `ds_user_last_login_ip`, `ds_user_administrator`) VALUES
-('root', '$2y$10$gzNe5YLn74qraklVT0s1DepQBRJjMUtTp6t3mSDggdzcZZoqJB4ye', 1, 'Default', NULL, CURRENT_TIMESTAMP, 'SYSTEM', 0, NULL, NULL, NULL, 1);
+INSERT INTO `ds_user` (`user`, `password`, `status`, `group`, `inactive_time`, `added`, `added_by`, `login_attempts`, `last_login_attempt`, `last_login_success`, `last_login_ip`, `administrator`) VALUES
+  ('root', '$2y$10$gzNe5YLn74qraklVT0s1DepQBRJjMUtTp6t3mSDggdzcZZoqJB4ye', 1, 'Default', NULL, CURRENT_TIMESTAMP, 'SYSTEM', 0, NULL, NULL, NULL, 1);
 
---
--- Indexes for dumped tables
---
 
---
--- Indexes for table `ds_log`
---
-ALTER TABLE `ds_log`
-  ADD PRIMARY KEY (`log_id`),
-  ADD UNIQUE KEY `log_id` (`log_id`);
+/*!40000 ALTER TABLE `ds_user` ENABLE KEYS */;
+UNLOCK TABLES;
 
---
--- Indexes for table `ds_perm_groups`
---
-ALTER TABLE `ds_perm_groups`
-  ADD PRIMARY KEY (`ds_perm_group`);
 
---
--- Indexes for table `ds_perm_meta`
---
-ALTER TABLE `ds_perm_meta`
-  ADD PRIMARY KEY (`ds_perm`),
-  ADD UNIQUE KEY `em_permission` (`ds_perm`);
 
---
--- Indexes for table `ds_user`
---
-ALTER TABLE `ds_user`
-  ADD PRIMARY KEY (`ds_user`),
-  ADD UNIQUE KEY `ds_user_acct` (`ds_user`);
-
---
--- AUTO_INCREMENT for table `ds_log`
---
-ALTER TABLE `ds_log`
-  MODIFY `log_id` int(10) NOT NULL AUTO_INCREMENT;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

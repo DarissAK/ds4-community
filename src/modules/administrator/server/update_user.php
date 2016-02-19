@@ -24,48 +24,51 @@
 require_once($_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php');
 
 if(
-    $ds->checkSession() &&
     $ds->checkPermission('ds_admin_user') &&
-    isset($_POST['ds_user'])
+    isset($_POST['user'])
 ) {
 
+    // API Responses
+    define('PASSWORD_ERROR', 'Invalid password given');
+    define('OK',             "User {$_POST['user']} Updated");
+
     // User data query
-    $query = 'UPDATE `ds_user` SET `ds_user_status` = ?, ' .
-             '`ds_user_group` = ? WHERE `ds_user` = ?;';
+    $query = 'UPDATE `ds_user` SET `status` = ?, ' .
+             '`group` = ? WHERE `user` = ?;';
 
     // User data
     $data = [
-        $_POST['ds_user_status'],
-        $_POST['ds_user_group'],
-        $_POST['ds_user']
+        $_POST['status'],
+        $_POST['group'],
+        $_POST['user']
     ];
 
     // Execute the query
     $ds->query($query, $data);
 
     // Set inactive date if changing user to inactive
-    if(!$_POST['ds_user_status']) {
+    if(!$_POST['status']) {
 
         // Set inactive query
-        $query = 'UPDATE `ds_user` SET `ds_user_inactive_timestamp` = NOW() ' .
-                 'WHERE `ds_user` = ?';
+        $query = 'UPDATE `ds_user` SET `inactive_time` = NOW() ' .
+                 'WHERE `user` = ?';
 
         // Execute the query
-        $ds->query($query, $_POST['ds_user']);
+        $ds->query($query, $_POST['user']);
 
     }
 
     // If the administrator value was given
-    if(isSet($_POST['ds_user_administrator'])) {
+    if(isSet($_POST['administrator'])) {
 
         // Update administrator status
-        $query = 'UPDATE `ds_user` SET `ds_user_administrator` = ? ' .
-                 'WHERE `ds_user` = ?;';
+        $query = 'UPDATE `ds_user` SET `administrator` = ? ' .
+                 'WHERE `user` = ?;';
 
         // Administrator data
         $data = [
-            $_POST['ds_user_administrator'],
-            $_POST['ds_user']
+            $_POST['administrator'],
+            $_POST['user']
         ];
 
         // Execute the query
@@ -75,25 +78,25 @@ if(
 
     // If the password values were given
     if(
-        !empty($_POST['ds_user_password_1']) &&
-        !empty($_POST['ds_user_password_2'])
+        !empty($_POST['password_1']) &&
+        !empty($_POST['password_2'])
     ) {
 
         // If the passwords match
-        if($_POST['ds_user_password_1'] === $_POST['ds_user_password_2']) {
+        if($_POST['password_1'] === $_POST['password_2']) {
 
             // Hash the given password
             $password =
-                password_hash($_POST['ds_user_password_1'], PASSWORD_BCRYPT);
+                password_hash($_POST['password_1'], PASSWORD_BCRYPT);
 
             // Password query
-            $query = 'UPDATE `ds_user` SET `ds_user_password` = ? ' .
-                     'WHERE `ds_user` = ?;';
+            $query = 'UPDATE `ds_user` SET `password` = ? ' .
+                     'WHERE `user` = ?;';
 
             // Password data
             $data = [
                 $password,
-                $_POST['ds_user']
+                $_POST['user']
             ];
 
             // Execute the query
@@ -104,7 +107,7 @@ if(
         // Passwords don't match, kill the script
         else {
 
-            die($ds->APIResponse('PASSWORD_ERROR', 3, 'Invalid password given'));
+            die($ds->APIResponse('PASSWORD_ERROR', 3, PASSWORD_ERROR));
 
         }
 
@@ -114,10 +117,10 @@ if(
     if(!$ds->db_error) {
 
         // Log the event
-        $ds->logEvent('User Updated', 3, $_POST['ds_user']);
+        $ds->logEvent('User Updated', USER_UPDATED, $_POST['user']);
 
         // Send OK response
-        die($ds->APIResponse('OK', 0, "User {$_POST['ds_user']} Updated"));
+        die($ds->APIResponse('OK', 0, OK));
 
     }
 

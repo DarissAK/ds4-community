@@ -25,34 +25,37 @@ require_once($_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php');
 
 // On valid request
 if(
-    $ds->checkSession() &&
     $ds->checkPermission('ds_admin_permission') &&
-    isset($_POST['ds_perm']) &&
-    isset($_POST['ds_perm_desc']) &&
-    isset($_POST['ds_perm_old'])
+    isset($_POST['permission']) &&
+    isset($_POST['description']) &&
+    isset($_POST['permission_old'])
 ) {
 
+    // API Responses
+    define('OK',        'Permission Updated');
+    define('PERM_FAIL', 'Permission already exists');
+
     // If the permission name isn't changing
-    if($_POST['ds_perm'] === $_POST['ds_perm_old']) {
+    if($_POST['permission'] === $_POST['permission_old']) {
 
-        // Update query
-        $query = 'UPDATE `ds_perm_meta` SET ' .
-                 '`ds_perm_desc` = ? WHERE `ds_perm` = ?';
+        // Meta update query
+        $meta = 'UPDATE `ds_permissions` SET ' .
+                '`description` = ? WHERE `permission` = ?';
 
-        // Query data
-        $data = [
-            $_POST['ds_perm_desc'],
-            $_POST['ds_perm']
+        // Meta update data
+        $meta_data = [
+            $_POST['description'],
+            $_POST['permission']
         ];
 
         // On query success
-        if($ds->query($query, $data)) {
+        if($ds->query($meta, $meta_data)) {
 
             // Log the event
-            $ds->logEvent('Permission ' . $_POST['ds_perm'] . ' Updated', 6);
+            $ds->logEvent("Permission {$_POST['permission']} Updated", PERMISSION_UPDATED);
 
             // Successful response
-            die($ds->APIResponse('OK', 0, 'Permission Updated'));
+            die($ds->APIResponse('OK', 0, OK));
 
         }
 
@@ -69,35 +72,49 @@ if(
     else {
 
         // If the permission already exists
-        if(array_key_exists($_POST['ds_perm'], $ds->getPermissions())) {
+        if(array_key_exists($_POST['permission'], $ds->getPermissions())) {
 
             // Failed response
-            die($ds->APIResponse('PERM_FAIL', 3, 'Permission already exists'));
+            die($ds->APIResponse('PERM_FAIL', 3, PERM_FAIL));
 
         }
 
         // Permission doesn't exist, update it
         else {
 
-            // Update query
-            $query = 'UPDATE `ds_perm_meta` SET `ds_perm` = ?, ' .
-                     '`ds_perm_desc` = ? WHERE `ds_perm` = ?';
+            // Meta update query
+            $meta = 'UPDATE `ds_permissions` SET `permission` = ?, ' .
+                    '`description` = ? WHERE `permission` = ?';
 
-            // Update data
-            $data = [
-                $_POST['ds_perm'],
-                $_POST['ds_perm_desc'],
-                $_POST['ds_perm_old']
+            // Update any set groups as well
+            $group = 'UPDATE `ds_group_data` SET `permission` = ? ' .
+                     'WHERE `permission` = ?';
+
+            // Meta update data
+            $meta_data = [
+                $_POST['permission'],
+                $_POST['description'],
+                $_POST['permission_old']
             ];
 
+            // Group update data
+            $group_data = [
+                $_POST['permission'],
+                $_POST['permission_old']
+            ];
+
+
             // On query success
-            if($ds->query($query, $data)) {
+            if(
+                $ds->query($meta, $meta_data) &&
+                $ds->query($group, $group_data)
+            ) {
 
                 // Log the event
-                $ds->logEvent("Permission {$_POST['ds_perm']} Updated", 6, 'SYSTEM');
+                $ds->logEvent("Permission {$_POST['permission']} Updated", PERMISSION_UPDATED);
 
                 // Successful response
-                die($ds->APIResponse('OK', 0, 'Permission Updated'));
+                die($ds->APIResponse('OK', 0, OK));
 
             }
 

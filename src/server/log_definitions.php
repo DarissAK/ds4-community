@@ -1,6 +1,6 @@
 <?php
 // +-------------------------------------------------------------------------+
-// |  Script for deleting permissions                                        |
+// |  Script for defining logging types                                      |
 // +-------------------------------------------------------------------------+
 // |  Copyright 2016 Simplusoft LLC                                          |
 // |  All Rights Reserved.                                                   |
@@ -20,38 +20,16 @@
 // |  02110-1301, USA.                                                       |
 // +-------------------------------------------------------------------------+
 
-// Include and create a new Dynamic Suite Instance
-require_once($_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php');
+// Note: 0 is reserved for debugging
 
-// On valid request
-if(
-    $ds->checkPermission('ds_admin_permission') &&
-    isset($_POST['permission'])
-) {
-
-    // API Responses
-    define('OK', 'Permission deleted successfully');
-
-    // On delete success
-    if($ds->unregisterPermission($_POST['permission'])) {
-
-        // Send OK response
-        die($ds->APIResponse('OK', 0, OK));
-
-    }
-
-    // On query failure
-    else {
-
-        die($ds->APIResponse());
-
-    }
-
-}
-
-// On invalid request
-else {
-
-    die($ds->APIResponse());
-
-}
+// Log definitions
+define('USER_LOGIN',               1);
+define('USER_ADDED',               2);
+define('USER_UPDATED',             3);
+define('USER_DELETED',             4);
+define('PERMISSION_ADDED',         5);
+define('PERMISSION_UPDATED',       6);
+define('PERMISSION_DELETED',       7);
+define('GROUP_ADDED',              8);
+define('GROUP_UPDATED',            9);
+define('GROUP_DELETED',           10);

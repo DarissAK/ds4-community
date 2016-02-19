@@ -21,10 +21,7 @@
 // +-------------------------------------------------------------------------+
 
 // If the user has the proper permissions and session
-if(
-    $ds->checkSession() &&
-    $ds->checkPermission('ds_admin_permission')
-) {
+if($ds->checkPermission('ds_admin_permission')) {
 
     // Load the groups
     $groups = $ds->getPermissionGroups();
@@ -50,11 +47,11 @@ if(
         $permissions = $ds->getPermissions();
 
         // Loop through all of the permissions and build the body
-        foreach($permissions as $k => $v) {
+        foreach($permissions as $permission => $data) {
             $perm_body .= '<div class="form-group">';
-            $perm_body .= "<label for='$k'>{$v['ds_perm_desc']}</label>";
-            $perm_body .= "<select id='$k' name='$k' class='form-control'>";
-            if(array_key_exists($k, $groups[$ds->url[4]]['ds_perm_group_perms'])) {
+            $perm_body .= "<label for='$permission'>{$data['description']}</label>";
+            $perm_body .= "<select id='$permission' name='$permission' class='form-control'>";
+            if(array_key_exists($permission, $groups[$ds->url[4]]['permissions'])) {
                 $perm_body .= '<option value="1">Yes</option><option value="0">No</option>';
             }
             else {
@@ -64,13 +61,12 @@ if(
         }
 
         // Update the template
-        $template = str_replace('%DS_GROUP%', $ds->url[4], $template);
-        $template = str_replace(
-            '%DS_GROUP_DESC%',
-            $groups[$ds->url[4]]['ds_perm_group_desc'],
-            $template
-        );
-        $template = str_replace('%PERM_BODY%', $perm_body, $template);
+        $template =
+            str_replace('{{group}}', $ds->url[4], $template);
+        $template =
+            str_replace('{{description}}', $groups[$ds->url[4]]['description'], $template);
+        $template =
+            str_replace('{{body}}', $perm_body, $template);
 
     }
 
@@ -88,23 +84,23 @@ if(
 
         // Create the table body
         foreach($groups as $group) {
-            $tbody .= "<tr><td>{$group['ds_perm_group']}</td>";
-            $tbody .= "<td>{$group['ds_perm_group_desc']}</td></tr>";
+            $tbody .= "<tr><td>{$group['group']}</td>";
+            $tbody .= "<td>{$group['description']}</td></tr>";
         }
 
         // Update the template
-        $template = str_replace('%TBODY%', $tbody, $template);
+        $template = str_replace('{{tbody}}', $tbody, $template);
 
     }
 
     // Render the template
-    die($template);
+    echo $template;
 
 }
 
 // Invalid page permissions
 else {
 
-    die('Permission denied');
+    echo 'Permission denied';
 
 }

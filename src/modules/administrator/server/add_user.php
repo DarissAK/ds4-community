@@ -25,26 +25,30 @@ require_once($_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php');
 
 // On valid request
 if(
-    $ds->checkSession() &&
     $ds->checkPermission('ds_admin_user') &&
-    isset($_POST['ds_user']) &&
-    isset($_POST['ds_user_password_1']) &&
-    isset($_POST['ds_user_password_2']) &&
-    isset($_POST['ds_user_status']) &&
-    isset($_POST['ds_user_group'])
+    isset($_POST['user']) &&
+    isset($_POST['password_1']) &&
+    isset($_POST['password_2']) &&
+    isset($_POST['status']) &&
+    isset($_POST['group'])
 ) {
 
-    // User already exists
-    if($ds->getUserAcct($_POST['ds_user'])) {
+    // API responses
+    define('USER_FAIL',     'Username already in use');
+    define('PASSWORD_FAIL', 'Passwords do not match');
+    define('OK',            'User added successfully');
 
-        die($ds->APIResponse('USER_FAIL', 3, 'Username already in use'));
+    // User already exists
+    if($ds->getUserAcct($_POST['user'])) {
+
+        die($ds->APIResponse('USER_FAIL', 3, USER_FAIL));
 
     }
 
     // Passwords don't match
-    elseif($_POST['ds_user_password_1'] !== $_POST['ds_user_password_2']) {
+    elseif($_POST['password_1'] !== $_POST['password_2']) {
 
-        die($ds->APIResponse('PASSWORD_FAIL', 3, 'Passwords do not match'));
+        die($ds->APIResponse('PASSWORD_FAIL', 3, PASSWORD_FAIL));
 
     }
 
@@ -52,34 +56,30 @@ if(
     else {
 
         // Hash the password
-        $password = password_hash($_POST['ds_user_password_1'], PASSWORD_BCRYPT);
+        $password = password_hash($_POST['password_1'], PASSWORD_BCRYPT);
 
         // Add user query
-        $query = 'INSERT INTO `ds_user` (' .
-                 '`ds_user`, `ds_user_password`, `ds_user_status`, ' .
-                 '`ds_user_group`, `ds_user_added_by`) ' .
+        $query = 'INSERT INTO `ds_user`' .
+                 '(`user`, `password`, `status`, `group`, `added_by`) ' .
                  'VALUES (?,?,?,?,?)';
 
         // Add user data
         $data = [
-            $_POST['ds_user'],
+            $_POST['user'],
             $password,
-            $_POST['ds_user_status'],
-            $_POST['ds_user_group'],
+            $_POST['status'],
+            $_POST['group'],
             $ds->username
         ];
 
-        // Execute the query
-        $ds->query($query, $data);
-
         // If the query is a success
-        if(!$ds->db_error) {
+        if($ds->query($query, $data)) {
 
             // Log the event
-            $ds->logEvent('User Added', 2, $_POST['ds_user']);
+            $ds->logEvent('User Added', USER_ADDED, $_POST['user']);
 
             // OK response
-            die($ds->APIResponse('OK', 0, 'User added successfully'));
+            die($ds->APIResponse('OK', 0, OK));
 
         }
 

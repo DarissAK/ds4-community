@@ -25,48 +25,51 @@ require_once($_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php');
 
 // On valid request
 if(
-    $ds->checkSession() &&
     $ds->checkPermission('ds_admin_permission') &&
-    isset($_POST['ds_group']) &&
-    isset($_POST['ds_group_old']) &&
-    isset($_POST['ds_group_desc']) &&
-    isset($_POST['ds_group_perms'])
+    isset($_POST['group']) &&
+    isset($_POST['group_old']) &&
+    isset($_POST['description']) &&
+    isset($_POST['permissions'])
 ) {
 
+    // API Responses
+    define('OK',        'Group Updated');
+    define('PERM_FAIL', 'Group already exists');
+
     // If the group name isn't changing
-    if($_POST['ds_group'] === $_POST['ds_group_old']) {
+    if($_POST['group'] === $_POST['group_old']) {
 
         // Update meta query
-        $meta = 'UPDATE `ds_perm_groups` SET ' .
-                '`ds_perm_group_desc` = ? WHERE `ds_perm_group` = ?';
+        $meta = 'UPDATE `ds_group_meta` SET ' .
+                '`description` = ? WHERE `group` = ?';
 
         // Query meta data
         $meta_data = [
-            $_POST['ds_group_desc'],
-            $_POST['ds_group']
+            $_POST['description'],
+            $_POST['group']
         ];
 
         // Delete old perms query
-        $delete = 'DELETE FROM `ds_perm` WHERE `ds_group` = ?';
+        $delete = 'DELETE FROM `ds_group_data` WHERE `group` = ?';
 
         // Query perm data
         $perm_data = [];
 
         // Insert new perms query
-        $update = 'INSERT INTO `ds_perm` (`ds_group`, `ds_perm`) VALUES ';
+        $update = 'INSERT INTO `ds_group_data` (`group`, `permission`) VALUES ';
 
         // Increment
         $i = 0;
 
-        foreach($_POST['ds_group_perms'] as $k => $v) {
+        foreach($_POST['permissions'] as $data) {
 
             // Skip zero values
-            if(!$v['value']) continue;
+            if(!$data['value']) continue;
 
             // Append string and add values
             $update .= '(?,?),';
-            array_push($perm_data, $_POST['ds_group']);
-            array_push($perm_data, $v['name']);
+            array_push($perm_data, $_POST['group']);
+            array_push($perm_data, $data['name']);
 
             // Increment
             $i++;
@@ -78,17 +81,17 @@ if(
 
         // Run queries
         $ds->query($meta, $meta_data);
-        $ds->query($delete, $_POST['ds_group']);
+        $ds->query($delete, $_POST['group']);
         if($i) $ds->query($update, $perm_data);
 
         // On query success
         if(!$ds->db_error) {
 
             // Log the event
-            $ds->logEvent('Group ' . $_POST['ds_group'] . ' Updated', 9);
+            $ds->logEvent('Group ' . $_POST['group'] . ' Updated', GROUP_UPDATED);
 
             // Successful response
-            die($ds->APIResponse('OK', 0, 'Group Updated'));
+            die($ds->APIResponse('OK', 0, OK));
 
         }
 
@@ -105,10 +108,10 @@ if(
     else {
 
         // If the group already exists
-        if(array_key_exists($_POST['ds_group'], $ds->getPermissionGroups())) {
+        if(array_key_exists($_POST['group'], $ds->getPermissionGroups())) {
 
             // Failed response
-            die($ds->APIResponse('PERM_FAIL', 3, 'Group already exists'));
+            die($ds->APIResponse('PERM_FAIL', 3, PERM_FAIL));
 
         }
 
@@ -116,37 +119,37 @@ if(
         else {
 
             // Update meta query
-            $meta = 'UPDATE `ds_perm_groups` SET `ds_perm_group` = ?, ' .
-                    '`ds_perm_group_desc` = ? WHERE `ds_perm_group` = ?';
+            $meta = 'UPDATE `ds_group_meta` SET `group` = ?, ' .
+                    '`description` = ? WHERE `group` = ?';
 
             // Query meta data
             $meta_data = [
-                $_POST['ds_group'],
-                $_POST['ds_group_desc'],
-                $_POST['ds_group_old']
+                $_POST['group'],
+                $_POST['description'],
+                $_POST['group_old']
             ];
 
             // Delete old perms query
-            $delete = 'DELETE FROM `ds_perm` WHERE `ds_group` = ?';
+            $delete = 'DELETE FROM `ds_group_data` WHERE `group` = ?';
 
             // Query perm data
             $perm_data = [];
 
             // Insert new perms query
-            $update = 'INSERT INTO `ds_perm` (`ds_group`, `ds_perm`) VALUES ';
+            $update = 'INSERT INTO `ds_group_data` (`group`, `permission`) VALUES ';
 
             // Increment
             $i = 0;
 
-            foreach($_POST['ds_group_perms'] as $k => $v) {
+            foreach($_POST['permissions'] as $data) {
 
                 // Skip zero values
-                if(!$v['value']) continue;
+                if(!$data['value']) continue;
 
                 // Append string and add values
                 $update .= '(?,?),';
-                array_push($perm_data, $_POST['ds_group']);
-                array_push($perm_data, $v['name']);
+                array_push($perm_data, $_POST['group']);
+                array_push($perm_data, $data['name']);
 
                 // Increment
                 $i++;
@@ -158,17 +161,17 @@ if(
 
             // Run queries
             $ds->query($meta, $meta_data);
-            $ds->query($delete, $_POST['ds_group']);
+            $ds->query($delete, $_POST['group_old']);
             if($i) $ds->query($update, $perm_data);
 
             // On query success
             if(!$ds->db_error) {
 
                 // Log the event
-                $ds->logEvent('Group ' . $_POST['ds_group'] . ' Updated', 9);
+                $ds->logEvent('Group ' . $_POST['group'] . ' Updated', GROUP_UPDATED);
 
                 // Successful response
-                die($ds->APIResponse('OK', 0, 'Group Updated'));
+                die($ds->APIResponse('OK', 0, OK));
 
             }
 

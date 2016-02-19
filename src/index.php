@@ -54,28 +54,29 @@ if($ds->validateView()) {
         echo $ds->html_nav;
 
         // Render the body content
-        echo "<div class='ds-body'>";
+        echo "<div id='ds-body-main'>";
 
         // Render the HTML header ribbon
-        echo "<div>$ds->html_header</div>";
+        echo "<div id='ds-body-header'>$ds->html_header</div>";
 
-        // Render the HTML tabs
-        echo "<div>$ds->html_tabs</div>";
+        // Render the HTML tabs (if any)
+        if(!empty($ds->html_tabs))
+            echo "<div id='ds-body-tabs'>$ds->html_tabs</div>";
 
         // Render the module content
-        echo "<div>";
+        echo "<div id='ds-body-content'>";
 
         // If the current view content exists, include it
         if(file_exists($_SERVER['DOCUMENT_ROOT'] . $ds->getView())) {
 
             // Look for included header files
             if(
-                isset($ds->mod_all[$ds->url[0]]['include']) &&
-                is_array($ds->mod_all[$ds->url[0]]['include'])
+                isset($ds->modules[$ds->url[0]]['include']) &&
+                is_array($ds->modules[$ds->url[0]]['include'])
             ) {
 
                 // Loop through all available header files
-                foreach($ds->mod_all[$ds->url[0]]['include'] as $file) {
+                foreach($ds->modules[$ds->url[0]]['include'] as $file) {
 
                     // If the header file exists
                     if(file_exists($_SERVER['DOCUMENT_ROOT'] . $file)) {

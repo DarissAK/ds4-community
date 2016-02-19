@@ -26,6 +26,9 @@ require_once($_SERVER['DOCUMENT_ROOT'] . '/config/config.php');
 // Include the optional database wrapper
 require_once($_SERVER['DOCUMENT_ROOT'] . '/server/sdc.class.php');
 
+// Include log definitions
+require_once($_SERVER['DOCUMENT_ROOT'] . '/server/log_definitions.php');
+
 class dsInstance
 {
 
@@ -74,6 +77,13 @@ class dsInstance
     // Page HTML tabs
     public $html_tabs = '';
 
+    // Domain where this software is installed
+    public $domain;
+
+    // Directory on the server where
+    // this software is installed
+    public $dir;
+
     // Current user
     public $username;
 
@@ -81,21 +91,21 @@ class dsInstance
     public $session;
 
     // Current user's account data
-    public $acct;
+    public $account;
 
     // Current user administrator status
     public $is_admin;
 
     // Array of the current user's permissions
-    public $perms;
+    public $permissions;
 
     // Array of all loaded module configurations
     // for the user. Modules with invalid permissions
     // will not be loaded
-    public $mod_all = [];
+    public $modules = [];
 
     // Currently loaded (viewed) module configuration
-    public $mod_cur;
+    public $module;
 
     /**
      * dsInstance constructor.
@@ -112,6 +122,12 @@ class dsInstance
 
         // Set configuration to given configuration array
         $this->cfg = $cfg;
+
+        // Set current domain
+        $this->domain = $cfg['install_domain'];
+
+        // Set the document root
+        $this->dir = $_SERVER['DOCUMENT_ROOT'];
 
         // Initialize the clean url array and set HTML base tag value
         $this->urlInit();
@@ -165,13 +181,13 @@ class dsInstance
                 $_SESSION[$this->cfg['session_id'] . '_username'];
 
             // Get the permissions for the current user
-            $this->perms = $this->getUserPerm($this->username);
+            $this->permissions = $this->getUserPerm($this->username);
 
             // Get the current user's account
-            $this->acct = $this->getUserAcct($this->username);
+            $this->account = $this->getUserAcct($this->username);
 
             // Check to see if the user is an administrator
-            $this->is_admin = $this->acct['ds_user_administrator']
+            $this->is_admin = $this->account['administrator']
                 ? true
                 : false;
 
@@ -340,8 +356,7 @@ class dsInstance
 
         // Log query
         $query = 'INSERT INTO `ds_log` ' .
-                 '(`log_type`, `log_creator`, `log_affected`,' .
-                 '`log_event`, `log_ip`, `log_session_id`) ' .
+                 '(`type`, `creator`, `affected`,`event`, `ip`, `session`) ' .
                  'VALUES (?,?,?,?,?,?)';
 
         // Log data
@@ -435,7 +450,7 @@ class dsInstance
         $modules = $this->cfg['ds_modules'];
 
         // Module directory
-        $mod_dir = $_SERVER['DOCUMENT_ROOT'] . '/modules';
+        $mod_dir = $this->dir . '/modules';
 
         // Loop through all of the loaded modules
         foreach($modules as $mod) {
@@ -570,38 +585,38 @@ class dsInstance
                     isset($this->url[0]) &&
                     $this->url[0] === $mod
                 )
-                    $this->mod_cur = $cfg;
-
-                // Search for any included CSS files
-                if(isset($cfg['css']) && is_array($cfg['css'])) {
-
-                    // Loop through any included files found
-                    foreach($cfg['css'] as $css) {
-
-                        // If the file exists, include it
-                        if(file_exists($_SERVER['DOCUMENT_ROOT'] . $css))
-                            $this->html_css .= "<link href='$css' rel='stylesheet' />";
-
-                    }
-
-                }
-
-                // Search for any included javascript files
-                if(isset($cfg['js']) && is_array($cfg['js'])) {
-
-                    // Loop through any included files found
-                    foreach($cfg['js'] as $js) {
-
-                        // If the file exists, include it
-                        if(file_exists($_SERVER['DOCUMENT_ROOT'] . $js))
-                            $this->html_js .= "<script src='$js'></script>";
-
-                    }
-
-                }
+                    $this->module = $cfg;
 
                 // Add the module to the master configuration array
-                $this->mod_all[$mod] = $cfg;
+                $this->modules[$mod] = $cfg;
+
+            }
+
+        }
+
+        // Search for any included CSS files
+        if(isset($this->module['css']) && is_array($this->module['css'])) {
+
+            // Loop through any included files found
+            foreach($this->module['css'] as $css) {
+
+                // If the file exists, include it
+                if(file_exists($this->dir . $css))
+                    $this->html_css .= "<link href='$css' rel='stylesheet' />";
+
+            }
+
+        }
+
+        // Search for any included javascript files
+        if(isset($this->module['js']) && is_array($this->module['js'])) {
+
+            // Loop through any included files found
+            foreach($this->module['js'] as $js) {
+
+                // If the file exists, include it
+                if(file_exists($this->dir . $js))
+                    $this->html_js .= "<script src='$js'></script>";
 
             }
 
@@ -618,10 +633,7 @@ class dsInstance
     public function loadTemplate($file) {
 
         // Load and return the template
-        return file_get_contents(
-            $_SERVER['DOCUMENT_ROOT'] .
-            $file
-        );
+        return file_get_contents($this->dir . $file);
 
     }
 
@@ -634,15 +646,81 @@ class dsInstance
      */
     public function getUserAcct($user) {
 
-        // Account query
-        $query = 'SELECT * FROM `ds_user` WHERE `ds_user`=?';
-        $acct  = $this->query($query, $user);
+        // Query to get the user's account
+        $query = 'SELECT * FROM `ds_user` WHERE `user` = ?';
 
-        if($this->db_error)
+        // Run the query to get the user's account (success)
+        if($account = $this->query($query, $user)) {
+
+            // Query success, and user found, return the account
+            if(is_array($account) && count($account) === 1) {
+
+                return $account[0];
+
+            }
+
+            // Query success, but user account not found, return false
+            else {
+
+                return false;
+
+            }
+
+        }
+
+        // Query failed, return false
+        else {
+
             return false;
 
-        // Return the account if found, false if no account found
-        return $this->db_stmt->rowCount() === 1 ? $acct[0] : false;
+        }
+
+    }
+
+    /**
+     * Get a list of active or inactive users
+     * Will return false on query fail, array on anything else
+     *
+     * If you give no arguments, it will get active users,
+     * if you pass it false, it will get inactive users
+     *
+     * @param bool $active
+     * @return array|bool
+     */
+    public function getUsers($active = true) {
+
+        // Default return value (bool false)
+        $return = false;
+
+        // User list type, active or inactive
+        $type = $active ? 1 : 0;
+
+        // Query for getting all of the users
+        $query = 'SELECT * FROM `ds_user` WHERE `status` = ' . $type;
+
+        // If query is a success
+        if($users = $this->query($query)) {
+
+            // Query success, set return to an array
+            $return = [];
+
+            // If the query returned data
+            if(is_array($users)) {
+
+                // Build return array with user name as key
+                foreach($users as $user) {
+
+                    // Append the array
+                    $return[$user['user']] = $user;
+
+                }
+
+            }
+
+        }
+
+        // Return any users (or false on query fail)
+        return $return;
 
     }
 
@@ -656,14 +734,14 @@ class dsInstance
     public function registerPermission($permission, $description) {
 
         // Query for adding the permission
-        $query = 'INSERT INTO `ds_perm_meta` ' .
-                 '(`ds_perm`, `ds_perm_desc`) VALUES (?,?)';
+        $query = 'INSERT INTO `ds_permissions` ' .
+                 '(`permission`, `description`) VALUES (?, ?)';
 
         // Return true on success
         if($this->query($query, [$permission, $description])) {
 
             // Log the event
-            $this->logEvent("Permission $permission Added", 5);
+            $this->logEvent("Permission $permission Added", PERMISSION_ADDED);
 
             return true;
 
@@ -687,13 +765,13 @@ class dsInstance
     public function unregisterPermission($permission) {
 
         // Query for deleting the permission
-        $query = 'DELETE FROM `ds_perm_meta` WHERE `ds_perm` = ?';
+        $query = 'DELETE FROM `ds_permissions` WHERE `permission` = ?';
 
         // Return true on success
         if($this->query($query, $permission)) {
 
             // Log the event
-            $this->logEvent("Permission $permission Deleted", 7);
+            $this->logEvent("Permission $permission Deleted", PERMISSION_DELETED);
 
             return true;
 
@@ -718,9 +796,9 @@ class dsInstance
     public function registerGroup($group, $description) {
 
         // Query for adding groups
-        $query = 'INSERT INTO `ds_perm_groups` ' .
-                 '(`ds_perm_group`,`ds_perm_group_desc`) ' .
-                 'VALUES (?,?)';
+        $query = 'INSERT INTO `ds_group_meta` ' .
+                 '(`group`, `description`) ' .
+                 'VALUES (?, ?)';
 
         // Group data
         $data = [
@@ -732,7 +810,7 @@ class dsInstance
         if($this->query($query, $data)) {
 
             // Log the event
-            $this->logEvent("Group $group Added", 8);
+            $this->logEvent("Group $group Added", GROUP_ADDED);
 
             return true;
 
@@ -756,20 +834,20 @@ class dsInstance
     public function unregisterGroup($group) {
 
         // Query for removing a group
-        $query = 'DELETE FROM `ds_perm_groups` WHERE `ds_perm_group` = ?';
+        $meta = 'DELETE FROM `ds_group_meta` WHERE `group` = ?';
 
         // Update user's with orphaned groups
-        $user_update = "UPDATE `ds_user` SET `ds_user_group` = '' " .
-                       "WHERE `ds_user_group` = ?";
+        $user_update = "UPDATE `ds_user` SET `group` = '' " .
+                       "WHERE `group` = ?";
 
         // Return true on success
         if(
-            $this->query($query, $group) &&
+            $this->query($meta, $group) &&
             $this->query($user_update, $group)
         ) {
 
             // Log the event
-            $this->logEvent("Group $group Deleted", 10);
+            $this->logEvent("Group $group Deleted", GROUP_DELETED);
 
             return true;
 
@@ -796,12 +874,13 @@ class dsInstance
         $permissions = [];
 
         // Query for getting the permission for the given user based on their group
-        $query = 'SELECT `m`.*, `p`.`ds_group`, ' .
-                 '(SELECT `ds_user_administrator` FROM `ds_user` ' .
-                 'WHERE `ds_user` = ?) AS `ds_user_administrator` ' .
-                 'FROM `ds_perm_meta` `m` LEFT JOIN `ds_perm` `p` ON `p`.`ds_group` = ' .
-                 '(SELECT `ds_user_group` FROM `ds_user` WHERE `ds_user` = ?) ' .
-                 'AND `m`.`ds_perm` = `p`.`ds_perm`';
+        $query = 'SELECT `m`.*, `p`.`group`, ' .
+                 '(SELECT `administrator` FROM `ds_user` ' .
+                 'WHERE `user` = ?) AS `administrator` ' .
+                 'FROM `ds_permissions` `m` ' .
+                 'LEFT JOIN `ds_group_data` `p` ON `p`.`group` = ' .
+                 '(SELECT `group` FROM `ds_user` WHERE `user` = ?) ' .
+                 'AND `m`.`permission` = `p`.`permission`';
 
         // Return FALSE on database error
         if(!$perms = $this->query($query, [$user, $user]))
@@ -811,13 +890,10 @@ class dsInstance
         foreach($perms as $k => $v) {
 
             // If the user has the permission or is an administrator
-            if(!is_null($v['ds_group']) || $v['ds_user_administrator']) {
+            if(!is_null($v['group']) || $v['administrator']) {
 
                 // Set new k,v pair to TRUE
-                $perms[$k]['ds_perm_has'] = true;
-
-                // Update the return array
-                $permissions[$v['ds_perm']] = $perms[$k];
+                $perms[$k]['has'] = true;
 
             }
 
@@ -825,16 +901,16 @@ class dsInstance
             else {
 
                 // Set the new k,v pair to FALSE
-                $perms[$k]['ds_perm_has'] = false;
-
-                // Update the return array
-                $permissions[$v['ds_perm']] = $perms[$k];
+                $perms[$k]['has'] = false;
 
             }
 
+            // Update the return array
+            $permissions[$v['permission']] = $perms[$k];
+
             // Get rid of ds_user and ds_user_administrator columns
-            unset($permissions[$v['ds_perm']]['ds_group']);
-            unset($permissions[$v['ds_perm']]['ds_user_administrator']);
+            unset($permissions[$v['permission']]['group']);
+            unset($permissions[$v['permission']]['administrator']);
 
         }
 
@@ -845,20 +921,29 @@ class dsInstance
 
     /**
      * Checks the given permission for the current user
+     * Also checks for a session
      *
-     * @param $perm
+     * @param $permission
      * @return bool
      */
-    public function checkPermission($perm) {
+    public function checkPermission($permission) {
+
+        // Return false if no session is set
+        if(!$this->checkSession()) {
+
+            return false;
+
+        }
 
         // Administrators bypass all permissions
-        if($this->is_admin) {
+        elseif($this->is_admin) {
 
             return true;
 
         }
 
-        elseif(!$this->perms) {
+        // If no permissions exist
+        elseif(!$this->permissions) {
 
             return false;
 
@@ -866,7 +951,7 @@ class dsInstance
 
         // If the given permission is FALSE, return true.
         // Used with module configurations to indicate no permissions
-        elseif(!$perm) {
+        elseif(!$permission) {
 
             return true;
 
@@ -874,8 +959,8 @@ class dsInstance
 
         // If the permission exists, and the user has it
         elseif(
-            array_key_exists($perm, $this->perms) &&
-            $this->perms[$perm]['ds_perm_has']
+            array_key_exists($permission, $this->permissions) &&
+            $this->permissions[$permission]['has']
         ) {
 
             return true;
@@ -895,13 +980,13 @@ class dsInstance
      * Validates if the current user has the given permissions
      * Redirects to login on failure
      *
-     * @param $perm
+     * @param $permission
      */
-    public function validatePermission($perm) {
+    public function validatePermission($permission) {
 
         // Redirect the user if permission check fails
-        if(!$this->checkPermission($perm)) {
-            header('Location: ' . $this->cfg['install_domain'] . '/login');
+        if(!$this->checkPermission($permission)) {
+            header('Location: ' . $this->domain . '/login');
         }
 
     }
@@ -914,7 +999,7 @@ class dsInstance
     public function getPermissions() {
 
         // Query to get all possible permissions
-        $query = 'SELECT * FROM `ds_perm_meta`';
+        $query = 'SELECT * FROM `ds_permissions`';
 
         // If the query is successful, return the data
         if($permissions = $this->query($query)) {
@@ -925,7 +1010,7 @@ class dsInstance
             // Replace the numerical keys with the permission name
             foreach($permissions as $permission) {
 
-                $return[$permission['ds_perm']] = $permission;
+                $return[$permission['permission']] = $permission;
 
             }
 
@@ -955,12 +1040,12 @@ class dsInstance
         $groups = [];
 
         // Group meta query
-        $meta = 'SELECT * FROM `ds_perm_groups`';
+        $meta = 'SELECT * FROM `ds_group_meta`';
 
         // Group data query
-        $data = 'SELECT * FROM `ds_perm` LEFT JOIN ' .
-                '`ds_perm_meta` ON `ds_perm`.`ds_perm` = ' .
-                '`ds_perm_meta`.`ds_perm`';
+        $data = 'SELECT * FROM `ds_group_data` LEFT JOIN ' .
+                '`ds_permissions` ON `ds_group_data`.`permission` = ' .
+                '`ds_permissions`.`permission`';
 
         // Return the array of groups on success
         if(
@@ -971,8 +1056,8 @@ class dsInstance
             // Create the return array
             foreach($meta as $group) {
 
-                $groups[$group['ds_perm_group']] = $group;
-                $groups[$group['ds_perm_group']]['ds_perm_group_perms'] = [];
+                $groups[$group['group']] = $group;
+                $groups[$group['group']]['permissions'] = [];
 
                 // Add permissions (if any)
                 if(is_array($data)) {
@@ -981,11 +1066,11 @@ class dsInstance
                     foreach($data as $permission) {
 
                         // If the current group equals the current permission data
-                        if($group['ds_perm_group'] === $permission['ds_group']) {
+                        if($group['group'] === $permission['group']) {
 
                             // Add the current permission to the group
-                            $groups[$group['ds_perm_group']]['ds_perm_group_perms']
-                                [$permission['ds_perm']] = $permission['ds_perm_desc'];
+                            $groups[$group['group']]['permissions']
+                                [$permission['permission']] = $permission['description'];
 
                         }
 
@@ -1020,10 +1105,10 @@ class dsInstance
 
         // Query for updating loin metadata
         $query = 'UPDATE `ds_user` SET ' .
-                 '`ds_user_last_login_attempt` = NOW(),' .
-                 '`ds_user_login_attempts` = `ds_user_login_attempts` + 1, ' .
-                 '`ds_user_last_login_ip` = ? ' .
-                 'WHERE `ds_user`=?';
+                 '`last_login_attempt` = NOW(),' .
+                 '`login_attempts` = `login_attempts` + 1, ' .
+                 '`last_login_ip` = ? ' .
+                 'WHERE `user`=?';
 
         // Run the query
         $this->query($query, [$_SERVER['REMOTE_ADDR'], $user]);
@@ -1044,8 +1129,8 @@ class dsInstance
     public function resetLoginSuccess($user) {
 
         // Query for resetting login attempts
-        $query = 'UPDATE `ds_user` SET `ds_user_login_attempts` = 0, ' .
-                 '`ds_user_last_login_success` = NOW() WHERE `ds_user` = ?';
+        $query = 'UPDATE `ds_user` SET `login_attempts` = 0, ' .
+                 '`last_login_success` = NOW() WHERE `user` = ?';
 
         // Run the query
         $this->query($query, $user);
@@ -1101,7 +1186,7 @@ class dsInstance
             $this->generateSession($user);
 
             // Log the login event
-            $this->logEvent('User Login', 1, $user);
+            $this->logEvent('User Login', USER_LOGIN, $user);
 
             // Redirect the user to the proper location
             $location = !is_null($this->cfg['mod_default'])
@@ -1144,10 +1229,10 @@ class dsInstance
         }
 
         // If current module exists, set title module
-        elseif($this->mod_cur) {
+        elseif($this->module) {
             $this->html_title =
                 $this->cfg['system_title_prefix'] . ' :: ' .
-                $this->mod_cur['name'];
+                $this->module['name'];
         }
 
         // Default case, set title default
@@ -1165,28 +1250,28 @@ class dsInstance
         // Get the main page start template
         $start = $this->loadTemplate('/templates/page_start.html');
 
-        // Set the navigation bar header
+        // Set the page title
         $start = str_replace(
             '%HTML_TITLE%',
             $this->html_title,
             $start
         );
 
-        // Set the navigation bar header
+        // Set the HTML base
         $start = str_replace(
             '%HTML_BASE%',
             $this->html_base,
             $start
         );
 
-        // Set the navigation bar header
+        // Include any CSS
         $start = str_replace(
             '%HTML_CSS%',
             $this->html_css,
             $start
         );
 
-        // Set the navigation bar header
+        // Include any JS
         $start = str_replace(
             '%HTML_JS%',
             $this->html_js,
@@ -1220,14 +1305,14 @@ class dsInstance
 
         // Set the navigation bar header
         $nav = str_replace(
-            '%SYSTEM_HEADER%',
+            '{{header}}',
             $this->cfg['system_header'],
             $nav
         );
 
         // Set navigation bar login location
         $nav = str_replace(
-            '%LOGIN_LOC%',
+            '{{location}}',
             $this->cfg['install_domain'] . '/login',
             $nav
         );
@@ -1236,7 +1321,7 @@ class dsInstance
         $content = '';
 
         // For every valid module, add an entry on the navigation bar
-        foreach($this->mod_all as $mod => $mod_cfg) {
+        foreach($this->modules as $mod => $mod_cfg) {
 
             // If there is an icon in the config, include it
             $icon = isset($mod_cfg['icon']) ? $mod_cfg['icon'] : '';
@@ -1258,7 +1343,7 @@ class dsInstance
 
                     // Page entry HTML
                     $content .= "<li><a id='$mod-$page' href='$href' target='_self'>";
-                    $content .= "<i class='fa fa-chevron-right'></i>{$page_cfg['name']}</a></li>";
+                    $content .= "<i class='fa fa-angle-double-right'></i>{$page_cfg['name']}</a></li>";
 
                 }
 
@@ -1285,7 +1370,7 @@ class dsInstance
         }
 
         // Set the navigation bar content
-        $nav = str_replace('%NAV_CONTENT%', $content, $nav);
+        $nav = str_replace('{{content}}', $content, $nav);
 
         // Set the navigation bar
         $this->html_nav = $nav;
@@ -1300,22 +1385,22 @@ class dsInstance
         // The string containing the header HTML
         $header = '';
 
-        if($this->mod_cur) {
+        if($this->module) {
 
             // If the module page has an icon, include it
             if(
                 isset($this->url[1]) &&
-                isset($this->mod_cur['content'][$this->url[1]]['icon'])
+                isset($this->module['content'][$this->url[1]]['icon'])
             ) {
                 $icon =
-                    "<i class='fa {$this->mod_cur['content'][$this->url[1]]['icon']}'></i>";
+                    "<i class='fa {$this->module['content'][$this->url[1]]['icon']}'></i>";
             }
 
             // No page icon, but a module icon exists
-            elseif(isset($this->mod_cur['icon'])) {
+            elseif(isset($this->module['icon'])) {
 
                 $icon =
-                    "<i class='fa {$this->mod_cur['icon']}'></i>";
+                    "<i class='fa {$this->module['icon']}'></i>";
 
             }
 
@@ -1330,21 +1415,21 @@ class dsInstance
             $header .= $icon;
 
             // Set the header primary module name
-            $header .= $this->mod_cur['name'];
+            $header .= $this->module['name'];
 
             // If no page is set, include the first page name
             if(!isset($this->url[1])) {
                 $header .= ' &#8212; ' .
-                    $this->mod_cur['content'][key($this->mod_cur['content'])]['name'];
+                    $this->module['content'][key($this->module['content'])]['name'];
             }
 
             // If the page is set, include the page name
             elseif(
-                array_key_exists($this->url[1], $this->mod_cur['content']) &&
-                is_array($this->mod_cur['content'][$this->url[1]])
+                array_key_exists($this->url[1], $this->module['content']) &&
+                is_array($this->module['content'][$this->url[1]])
             ) {
                 $header .= ' &#8212; ' .
-                    $this->mod_cur['content'][$this->url[1]]['name'];
+                    $this->module['content'][$this->url[1]]['name'];
             }
 
         }
@@ -1368,7 +1453,7 @@ class dsInstance
         $tabs = '';
 
         // If the location is a valid module
-        if(array_key_exists($this->url[0], $this->mod_all)) {
+        if(array_key_exists($this->url[0], $this->modules)) {
 
             // Shorthand location
             $loc = $this->url;
@@ -1376,15 +1461,15 @@ class dsInstance
             // If a page is given and the page has tabs
             if(
                 isset($this->url[1]) &&
-                isset($this->mod_all[$loc[0]]['content'][$loc[1]]) &&
-                is_array($this->mod_all[$loc[0]]['content'][$loc[1]]['content'])
+                isset($this->modules[$loc[0]]['content'][$loc[1]]) &&
+                is_array($this->modules[$loc[0]]['content'][$loc[1]]['content'])
             ) {
 
                 // Begin tabs
                 $tabs .= "<ul class='nav nav-tabs ds-tabs'>";
 
                 // Loop through all tabs and include HTML elements
-                foreach($this->mod_all[$loc[0]]['content'][$loc[1]]['content'] as $tab => $tab_cfg) {
+                foreach($this->modules[$loc[0]]['content'][$loc[1]]['content'] as $tab => $tab_cfg) {
 
                     $href = $this->cfg['install_domain'] . "/{$loc[0]}/{$loc[1]}/$tab";
 
@@ -1435,7 +1520,7 @@ class dsInstance
 
         // If no session is found, redirect and return false
         else {
-            header('Location: ' . $this->cfg['install_domain'] . '/login');
+            header('Location: ' . $this->domain . '/login');
             return false;
         }
 
@@ -1456,20 +1541,20 @@ class dsInstance
 
         // If database error is present
         elseif($this->db_error) {
-            header('Location: ' . $this->cfg['install_domain'] . '/error');
+            header('Location: ' . $this->domain . '/error');
             return false;
         }
 
         // If no session is found, goto login and return FALSE
         elseif(!$this->checkSession()) {
-            header('Location: ' . $this->cfg['install_domain'] . '/login');
+            header('Location: ' . $this->domain . '/login');
             return false;
         }
 
         // If the given location (module) isn't found, goto login and
         // return FALSE
-        elseif(!array_key_exists($this->url[0], $this->mod_all)) {
-            header('Location: ' . $this->cfg['install_domain'] . '/login');
+        elseif(!array_key_exists($this->url[0], $this->modules)) {
+            header('Location: ' . $this->domain . '/login');
             return false;
         }
 
@@ -1478,12 +1563,12 @@ class dsInstance
             !isset($this->url[1]) ||
             empty($this->url) ||
             !array_key_exists($this->url[1],
-            $this->mod_all[$this->url[0]]['content'])
+            $this->modules[$this->url[0]]['content'])
         ) {
-            reset($this->mod_all[$this->url[0]]['content']);
-            $page = key($this->mod_all[$this->url[0]]['content']);
+            reset($this->modules[$this->url[0]]['content']);
+            $page = key($this->modules[$this->url[0]]['content']);
             $loc = '/' . $this->url[0] . '/' . $page;
-            header('Location: ' . $this->cfg['install_domain'] . $loc);
+            header('Location: ' . $this->domain . $loc);
             return false;
         }
 
@@ -1503,7 +1588,7 @@ class dsInstance
     public function getView() {
 
         // The current module for getting the view
-        $mod = $this->mod_all;
+        $mod = $this->modules;
 
         // Current location array (shortened)
         $loc = $this->url;

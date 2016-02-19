@@ -240,8 +240,20 @@ $(function() {
 
     });
 
+    // Navigation bar selector
+    var nav = $('#ds-nav-main');
+
+    // Main body selector
+    var body_main = $('#ds-body-main');
+
+    // Body content selector
+    var body = $('#ds-body-content');
+
+    // Tab bar selector
+    var tabs = $('#ds-body-tabs');
+
     // On navigation tab click
-    $('.ds-nav li a').on('click', function() {
+    nav.find('li a').on('click', function() {
 
         // Get the parent
         var parent = $(this).parent().parent().parent().not(':has(div)').find('a');
@@ -276,56 +288,39 @@ $(function() {
     });
 
     // Body resizing (if body exists)
-    if($('.ds-body > div:nth-child(3)').length) {
-
-        // Module Body Object
-        var body = $('.ds-body > div:nth-child(3)');
+    if(body.length) {
 
         // Height to subtract from content area
         var sH = body.position().top;
 
         // Current body height
-        var wH = $('.ds-body').height();
-
-        // If there are no tabs
-        if(!$('.ds-tabs').length) {
-
-            // Hide the tab container
-            $('.ds-body > div:nth-child(2)').hide();
-
-            // Get new position
-            sH = body.position().top;
-
-            // Apply padding to the module content
-            body.css('padding', '1em');
-
-        }
+        var wH = body_main.height();
 
         // Set module content height
         body.css('height', wH - sH + 'px');
 
         // On window resize, reset module content height
-        $(window).resize(function() {
+        $(window).resize(function () {
 
             // Set new height
-            body.css('height', $('.ds-body').height() - sH + 'px');
+            body.css('height', body_main.height() - sH + 'px');
 
         });
 
-        // URI Array. See dsInstance::clean_url
+        // URL Array. See dsInstance::url
         var path = window.location.pathname.substr(1).split('/');
 
         // The current module
         var module = $('#' + path[0]);
 
         // The current page (if any)
-        var page   = $('#' + path[0] + '-' + path[1]);
+        var page = $('#' + path[0] + '-' + path[1]);
 
         // The current tab (if any)
-        var tab    = $('#' + path[0] + '-' + path[1] + '-' + path[2]);
+        var tab = $('#' + path[0] + '-' + path[1] + '-' + path[2]);
 
         // If a module is present
-        if(module.length) {
+        if (module.length) {
 
             // Set the module to active
             module.parent().find('a:first').addClass('ds-nav-active');
@@ -338,7 +333,7 @@ $(function() {
             module.parent().find('ul').addClass('in');
 
             // If a page is present
-            if(page.length && page !== '') {
+            if (page.length && page !== '') {
 
                 // Set the page navigation tab to active
                 page.addClass('ds-nav-active');
@@ -349,13 +344,13 @@ $(function() {
             else {
 
                 // Try and set the 1st available page to active
-                module.parent().find('.ds-nav ul li:first a:first')
+                nav.find('ul li:first a:first')
                     .addClass('ds-nav-active');
 
             }
 
             // If tabs are present
-            if(tab.length && tab !== '') {
+            if (tab.length && tab !== '') {
 
                 // Set the current tab to active
                 tab.addClass('active');
@@ -366,8 +361,7 @@ $(function() {
             else {
 
                 // Try and set the 1st available tab to active
-                $('.ds-body > div:nth-child(2) li:first')
-                    .addClass('active');
+                tabs.find('li:first').addClass('active');
 
             }
 

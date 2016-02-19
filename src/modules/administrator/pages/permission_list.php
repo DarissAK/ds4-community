@@ -21,10 +21,7 @@
 // +-------------------------------------------------------------------------+
 
 // If the user has the proper permissions and session
-if(
-    $ds->checkSession() &&
-    $ds->checkPermission('ds_admin_permission')
-) {
+if($ds->checkPermission('ds_admin_permission')) {
 
     // Get the array of possible permissions
     $permissions = $ds->getPermissions();
@@ -44,12 +41,12 @@ if(
         $template = $ds->loadTemplate($file);
 
         // Get the permission and the description
-        $permission  = $permissions[$ds->url[4]]['ds_perm'];
-        $description = $permissions[$ds->url[4]]['ds_perm_desc'];
+        $permission  = $permissions[$ds->url[4]]['permission'];
+        $description = $permissions[$ds->url[4]]['description'];
 
         // Update the template
-        $template = str_replace('%DS_PERM%', $permission, $template);
-        $template = str_replace('%DS_PERM_DESC%', $description, $template);
+        $template = str_replace('{{permission}}', $permission, $template);
+        $template = str_replace('{{description}}', $description, $template);
 
     }
 
@@ -68,24 +65,24 @@ if(
         // Create the table body for each permission
         foreach($permissions as $permission) {
 
-            $tbody .= "<tr><td>{$permission['ds_perm']}</td>";
-            $tbody .= "<td>{$permission['ds_perm_desc']}</td></tr>";
+            $tbody .= "<tr><td>{$permission['permission']}</td>";
+            $tbody .= "<td>{$permission['description']}</td></tr>";
 
         }
 
         // Update the template
-        $template = str_replace('%TBODY%', $tbody, $template);
+        $template = str_replace('{{tbody}}', $tbody, $template);
 
     }
 
     // Render the template
-    die($template);
+    echo $template;
 
 }
 
 // Invalid page permissions
 else {
 
-    die('Permission Denied');
+    echo 'Permission Denied';
 
 }

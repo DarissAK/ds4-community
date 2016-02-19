@@ -1,9 +1,12 @@
 <div class="ds-permission-list">
-    <div class="col-sm-12">
+    <div class="col-sm-12" id="header-area">
         <h3>Available Permissions</h3>
         <a>Add Permission</a>
     </div>
-    <div class="col-sm-12">
+    <div class="col-sm-12" id="alert-area">
+        <span id="alert-entry"></span>
+    </div>
+    <div class="col-sm-12" id="search-area">
         <div class="col-sm-4">
             <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-search"></i></span>
@@ -21,9 +24,7 @@
             <th>Description</th>
         </tr>
         </thead>
-        <tbody>
-        %TBODY%
-        </tbody>
+        <tbody>{{tbody}}</tbody>
     </table>
     <div class="modal fade">
         <div class="modal-dialog">
@@ -33,13 +34,13 @@
                     <h4 class="modal-title">Add New Permission</h4>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group ds-perm-grp">
-                        <label for="ds-perm">Permission</label>
-                        <input type="text" class="form-control" id="ds-perm">
+                    <div class="form-group permission-grp">
+                        <label for="permission">Permission</label>
+                        <input type="text" class="form-control" id="permission">
                     </div>
-                    <div class="form-group ds-perm-desc-grp">
-                        <label for="ds-perm-desc">Description</label>
-                        <input type="text" class="form-control" id="ds-perm-desc">
+                    <div class="form-group description-grp">
+                        <label for="description">Description</label>
+                        <input type="text" class="form-control" id="description">
                     </div>
                 </div>
                 <div class="modal-footer">
