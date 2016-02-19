@@ -20,6 +20,7 @@ There are some things that happen automatically when a new instance is created
 (when the file is included, or on page load).
 
 Here is a list (in order) of what happens when it initializes:
+
 - Check to see if a PHP session is running, and create one if not.
 - Set the instance's global configuration to the data found in ``/config/config.php``
 - Set ``$ds->domain`` and ``$ds->dir``.
