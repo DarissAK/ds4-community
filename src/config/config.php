@@ -147,10 +147,10 @@ $cfg['session_id'] = 'myOrg';
 
 // Contact for account related settings, usually the email address for your
 // organizations HR or IT manager/application administrator
-$cfg['account_mailto'] = 'commgdog@gmail.com';
+$cfg['account_mailto'] = 'hr@example.com';
 
 // Report errors and feedback to this email address
-$cfg['errors_mailto'] = 'commgdog@gmail.com';
+$cfg['errors_mailto'] = 'developer@example.com';
 
 // +-------------------------------------------------------------------------+
 // |  Module Settings                                                        |
