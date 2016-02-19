@@ -25,13 +25,13 @@ Here is a list (in order) of what happens when it initializes:
 - Set ``$ds->domain`` and ``$ds->dir``
 - Initialize the URL (see ``$ds->urlInit()`` below)
 - If a Dynamic Suite session is set, set the page title, and generate the page start
- including resources such as Javascript and CSS
+  including resources such as Javascript and CSS
 - Generate the page end (closing HTML tags)
 - Create a new database connection (if this fails, exit the script and display fatal error).
 - If a session is set, set ``$ds->session``, ``$ds->username``, ``$ds->permissions``,
- ``$ds->account``, ``$ds->is_admin``, load all module configurations and validate them,
- set new title, Set new page start, generate the navigation bar, generate header ribbon,
- and generate the tabs ribbon (if any).
+  ``$ds->account``, ``$ds->is_admin``, load all module configurations and validate them,
+  set new title, Set new page start, generate the navigation bar, generate header ribbon,
+  and generate the tabs ribbon (if any).
 
 
 Class Variables
