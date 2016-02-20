@@ -332,14 +332,6 @@ $(function() {
             // Open the module accordion menu (if any)
             module.parent().find('ul').addClass('in');
 
-            // If a page is present
-            if (page.length && page !== '') {
-
-                // Set the page navigation tab to active
-                page.addClass('ds-nav-active');
-
-            }
-
             // If no page is found
             else {
 
