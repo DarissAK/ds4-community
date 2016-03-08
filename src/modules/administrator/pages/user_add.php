@@ -1,6 +1,6 @@
 <?php
 // +-------------------------------------------------------------------------+
-// |  Users module - Add user page                                           |
+// |  Administrator module - Add user page                                   |
 // +-------------------------------------------------------------------------+
 // |  Copyright 2016 Simplusoft LLC                                          |
 // |  All Rights Reserved.                                                   |
@@ -20,40 +20,28 @@
 // |  02110-1301, USA.                                                       |
 // +-------------------------------------------------------------------------+
 
-// If the user has the proper permissions and session
-if($ds->checkPermission('ds_admin_user')) {
+// If permission or session is not valid
+$ds->validatePermission('ds_admin_user');
 
-    // Get permission groups
-    $groups = $ds->getPermissionGroups();
+// Get permission groups
+$groups = $ds->getPermissionGroups();
 
-    // Option string
-    $options = '<option></option>';
+// Option string
+$options = '<option></option>';
 
-    // Build the option string for each permission group
-    foreach($groups as $group => $data) {
-
-        // Append the group
-        $options .= "<option value='$group'>$group</option>";
-
-    }
-
-    // Template file to load
-    $file = '/modules/administrator/templates/user_add.html';
-
-    // Load the template
-    $template = $ds->loadTemplate($file);
-
-    // Update the template
-    $template = str_replace('{{group}}', $options, $template);
-
-    // Render the template
-    echo $template;
-
+// Build the option string for each permission group
+foreach($groups as $group => $data) {
+    $options .= "<option value='$group'>{$data['name']}</option>";
 }
 
-// Invalid permissions given
-else {
+// Template file to load
+$file = '/modules/administrator/templates/user_add.html';
 
-    echo 'Permission denied';
+// Load the template
+$template = $ds->loadTemplate($file);
 
-}
+// Update the template
+$template = str_replace('{{group}}', $options, $template);
+
+// Render the template
+echo $template;

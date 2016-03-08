@@ -1,25 +1,27 @@
 <div class="ds-group-edit">
-    <h3>Edit Group</h3>
-    <input value="{{group}}" type="hidden" id="group-old" name="group-old">
     <div class="form-group group-grp">
         <label for="group">Group Name</label>
-        <input value="{{group}}" type="text" class="form-control" id="group" name="group">
+        <input data-group-id="{{id}}" data-group-old="{{group}}"
+               value="{{group}}" type="text" class="form-control" id="group">
     </div>
-        <div class="form-group description-grp">
-            <label for="description">Description</label>
-            <input value="{{description}}" type="text" class="form-control" id="description" name="description">
-        </div>
+    <div class="form-group description-grp">
+        <label for="description">Description</label>
+        <input value="{{description}}" type="text" class="form-control" id="description">
+    </div>
+    <h4>Permissions</h4>
+    <hr>
     <form>
-    {{body}}
+        {{body}}
     </form>
-    <button class="btn btn-primary">Update Group</button>
+
+    <button class="btn btn-primary" id="update-group">Update Group</button>
     <button class="btn btn-danger" data-toggle="modal" data-target="#delete-group">Delete Group</button>
 
     <div class="modal fade" id="delete-group">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                    <button class="close" data-dismiss="modal"><span>&times;</span></button>
                     <h4 class="modal-title">Delete Group</h4>
                 </div>
                 <div class="modal-body">
@@ -31,8 +33,8 @@
                     <p><i>This cannot be undone!</i></p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-danger">Delete Group</button>
+                    <button class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button class="btn btn-danger">Delete Group</button>
                 </div>
             </div>
         </div>

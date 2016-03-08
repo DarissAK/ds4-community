@@ -1,0 +1,36 @@
+{
+  "task-scheduler" : {
+    "name"    : "Task Scheduler",
+    "version" : "1.0",
+    "author"  : "Simplusoft LLC",
+    "about"   : "A cron task manager",
+    "perm"    : "ds_task_scheduler",
+    "active"  : true,
+    "icon"    : "fa-calendar",
+    "css" : {
+      "0" : "/modules/task-scheduler/client/task-scheduler.css"
+    },
+    "js" : {
+      "0" : "/modules/task-scheduler/client/task-scheduler.js"
+    },
+    "include" : {
+      "0" : "/modules/task-scheduler/server/st.class.php"
+    },
+    "content" : {
+      "scheduler" : {
+        "name"    : "Scheduled Tasks",
+        "perm"    : "ds_task_scheduler",
+        "active"  : true,
+        "icon"    : "fa-calendar",
+        "content" : {
+          "tasks" : {
+            "name"    : "Scheduled Tasks",
+            "perm"    : "ds_task_scheduler",
+            "active"  : true,
+            "content" : "/modules/task-scheduler/pages/tasks.php"
+          }
+        }
+      }
+    }
+  }
+}

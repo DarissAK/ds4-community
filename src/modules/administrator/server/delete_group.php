@@ -21,37 +21,28 @@
 // +-------------------------------------------------------------------------+
 
 // Include and create a new Dynamic Suite Instance
-require_once($_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php');
-
-// On valid request
-if(
-    $ds->checkPermission('ds_admin_permission') &&
-    isset($_POST['group'])
-) {
-
-    // API Responses
-    define('OK', 'Group deleted successfully');
-
-    // On delete success
-    if($ds->unregisterGroup($_POST['group'])) {
-
-        // Send OK response
-        die($ds->APIResponse('OK', 0, OK));
-
-    }
-
-    // On query failure
-    else {
-
-        die($ds->APIResponse());
-
-    }
-
-}
+require_once $_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php';
 
 // On invalid request
-else {
-
+if(
+    !$ds->checkPermission('ds_admin_permission') ||
+    !isset($_POST['group_id']) ||
+    !isset($_POST['group'])
+)
     die($ds->APIResponse());
 
-}
+// API Responses
+define('OK', 'Group deleted successfully');
+
+// Query for removing a group
+$query = 'DELETE FROM `ds_group_meta` WHERE `group_id` = ?';
+
+// On query failure
+if(!$ds->query($query, $_POST['group_id']))
+    die($ds->APIResponse());
+
+// Log the event
+$ds->logEvent("Group {$_POST['group']} Deleted", GROUP_DELETED);
+
+// OK Response
+die($ds->APIResponse('OK', 0, OK));

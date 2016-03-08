@@ -25,7 +25,8 @@
 // +-------------------------------------------------------------------------+
 
 // Include the dsInstance class (creates as $ds)
-require_once($_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php');
+require_once $_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php';
 
 // Validate the view
 if($ds->validateView()) {
@@ -35,16 +36,14 @@ if($ds->validateView()) {
 
     // If the current location is login, include the login page
     if($ds->url[0] === 'login') {
-        require_once($_SERVER['DOCUMENT_ROOT'] . '/pages/login.php');
-
-        // Render Page End
+        require_once $ds->dir . '/pages/login.php';
         echo $ds->html_page_end;
     }
 
     // If the current location is error, include the error page
     elseif($ds->url[0] === 'error') {
-        require_once($_SERVER['DOCUMENT_ROOT'] . '/pages/error.php');
-        echo '</body></html>';
+        require_once $ds->dir . '/pages/error.php';
+        echo $ds->html_page_end;
     }
 
     // Render navbar and header
@@ -67,22 +66,20 @@ if($ds->validateView()) {
         echo "<div id='ds-body-content'>";
 
         // If the current view content exists, include it
-        if(file_exists($_SERVER['DOCUMENT_ROOT'] . $ds->getView())) {
+        if(file_exists($ds->dir . $ds->getView())) {
 
             // Look for included header files
             if(
-                isset($ds->modules[$ds->url[0]]['include']) &&
-                is_array($ds->modules[$ds->url[0]]['include'])
+                isset($ds->module['include']) &&
+                is_array($ds->module['include'])
             ) {
 
                 // Loop through all available header files
-                foreach($ds->modules[$ds->url[0]]['include'] as $file) {
+                foreach($ds->module['include'] as $file) {
 
-                    // If the header file exists
-                    if(file_exists($_SERVER['DOCUMENT_ROOT'] . $file)) {
-
-                        // Include it
-                        require_once($_SERVER['DOCUMENT_ROOT'] . $file);
+                    // If the header file exists, include it
+                    if(file_exists($ds->dir . $file)) {
+                        require_once $ds->dir . $file;
 
                     }
 
@@ -91,7 +88,7 @@ if($ds->validateView()) {
             }
 
             // Load the current view
-            require_once($_SERVER['DOCUMENT_ROOT'] . $ds->getView());
+            require_once $ds->dir . $ds->getView();
 
         }
 

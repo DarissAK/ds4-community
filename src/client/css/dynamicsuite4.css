@@ -116,7 +116,7 @@ html, body {
         #ds-nav-main nav div div:nth-child(2) ul {
           color: #ddd;
           /* The primary navigation bar buttons (categories) */
-          /* On hover of navigation bar items */
+          /* On hover and focus of navigation bar items */
           /* Module groups (Sub Menu) */ }
           #ds-nav-main nav div div:nth-child(2) ul a {
             color: #ddd;
@@ -136,7 +136,7 @@ html, body {
               line-height: 2.4em; }
             #ds-nav-main nav div div:nth-child(2) ul li i:nth-child(odd) {
               padding-right: 0.4em; }
-          #ds-nav-main nav div div:nth-child(2) ul a:hover {
+          #ds-nav-main nav div div:nth-child(2) ul a:hover, #ds-nav-main nav div div:nth-child(2) ul a:focus {
             background: #6685a3 !important;
             color: #fff; }
           #ds-nav-main nav div div:nth-child(2) ul ul {

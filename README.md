@@ -23,13 +23,13 @@ The Dynamic Suite includes the following third party libraries:
 * Apache2 with rewrite enabled
 * Access to apache configuration (Virtual Hosts)
 * PHP 5.6+
-* PHP PDO compatable database (mysql/mariadb tested)
+* PHP PDO compatible database (mysql/mariadb tested)
 
 This framework was designed on a basic Debian LAMP stack, YMMV with other setups, although others should theoretically work.
 #### Setup
 * Set your apache rewrite rules and vhost (found in /apache)
 * Create a database/user and execute create_tables.sql (found in /sql) to create your tables and default user
-* Edit the configuration file to your requirements (found in /src/config)
+* Edit the configuration file to your requirements (found in /src/config and /server/fn_init.php)
 * Start application development!
 
 ###### Default Account (change on first login):

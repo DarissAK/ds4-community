@@ -128,21 +128,16 @@ class sdc {
         else {
 
             // For single argument strings
-            $args = is_string($args) ? [$args] : $args;
+            $args = !is_array($args) ? [$args] : $args;
 
-            // If arguments are present
-            if(is_array($args)) {
+            // Argument count
+            $argc = count($args);
 
-                // Argument count
-                $argc = count($args);
+            // For every argument
+            for($i = 0; $i < $argc; $i++) {
 
-                // For every argument
-                for($i = 0; $i < $argc; $i++) {
-
-                    // Bind the argument to the parameter
-                    $this->db_stmt->bindParam($i + 1, $args[$i]);
-
-                }
+                // Bind the argument to the parameter
+                $this->db_stmt->bindParam($i + 1, $args[$i]);
 
             }
 

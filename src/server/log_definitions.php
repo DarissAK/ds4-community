@@ -33,3 +33,6 @@ define('PERMISSION_DELETED',       7);
 define('GROUP_ADDED',              8);
 define('GROUP_UPDATED',            9);
 define('GROUP_DELETED',           10);
+define('TASK_ADDED',              11);
+define('TASK_UPDATED',            12);
+define('TASK_DELETED',            13);

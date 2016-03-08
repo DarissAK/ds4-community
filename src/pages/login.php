@@ -24,24 +24,12 @@
 // Log out any users that are still logged in
 $_SESSION = [];
 
-?>
-<div class="ds-y-center ds-login">
-    <div class="col-sm-4 col-sm-offset-4"><?php echo $cfg['system_login_header'] ?></div>
-    <form target="_self">
-        <div class="col-sm-4 col-sm-offset-4">
-            <div></div>
-            <div class="input-group">
-                <span class="input-group-addon"><i class="fa fa-user"></i></span>
-                <input id="username" type="text" class="form-control" placeholder="Username">
-            </div>
-            <br />
-            <div class="input-group">
-                <span class="input-group-addon"><i class="fa fa-lock"></i></span>
-                <input id="password" type="password" class="form-control" placeholder="Password">
-            </div>
-            <br />
-            <input type="submit" class="btn btn-default" value="Login" />
-        </div>
-    </form>
-    <div class="col-sm-4 col-sm-offset-4"><?php echo $cfg['system_footer'] ?></div>
-</div>
+// Load the template
+$template = file_get_contents($ds->dir . '/templates/login.html');
+
+// Update the template
+$template = str_replace('{{header}}', $ds->cfg['system_login_header'], $template);
+$template = str_replace('{{footer}}', $ds->cfg['system_footer'], $template);
+
+// Render the template
+echo $template;

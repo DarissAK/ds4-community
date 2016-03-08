@@ -21,82 +21,74 @@
 // +-------------------------------------------------------------------------+
 
 // Include and create a new Dynamic Suite Instance
-require_once($_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php');
+require_once $_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php';
 
-// On valid request
+// Invalid request
 if(
-    $ds->checkPermission('ds_admin_user') &&
-    isset($_POST['user']) &&
-    isset($_POST['password_1']) &&
-    isset($_POST['password_2']) &&
-    isset($_POST['status']) &&
-    isset($_POST['group'])
-) {
-
-    // API responses
-    define('USER_FAIL',     'Username already in use');
-    define('PASSWORD_FAIL', 'Passwords do not match');
-    define('OK',            'User added successfully');
-
-    // User already exists
-    if($ds->getUserAcct($_POST['user'])) {
-
-        die($ds->APIResponse('USER_FAIL', 3, USER_FAIL));
-
-    }
-
-    // Passwords don't match
-    elseif($_POST['password_1'] !== $_POST['password_2']) {
-
-        die($ds->APIResponse('PASSWORD_FAIL', 3, PASSWORD_FAIL));
-
-    }
-
-    // No issues found, continue
-    else {
-
-        // Hash the password
-        $password = password_hash($_POST['password_1'], PASSWORD_BCRYPT);
-
-        // Add user query
-        $query = 'INSERT INTO `ds_user`' .
-                 '(`user`, `password`, `status`, `group`, `added_by`) ' .
-                 'VALUES (?,?,?,?,?)';
-
-        // Add user data
-        $data = [
-            $_POST['user'],
-            $password,
-            $_POST['status'],
-            $_POST['group'],
-            $ds->username
-        ];
-
-        // If the query is a success
-        if($ds->query($query, $data)) {
-
-            // Log the event
-            $ds->logEvent('User Added', USER_ADDED, $_POST['user']);
-
-            // OK response
-            die($ds->APIResponse('OK', 0, OK));
-
-        }
-
-        // On query failure
-        else {
-
-            die($ds->APIResponse());
-
-        }
-
-    }
-
-}
-
-// Invalid request response
-else {
-
+    !$ds->checkPermission('ds_admin_user') ||
+    !isset($_POST['username']) ||
+    !isset($_POST['password_1']) ||
+    !isset($_POST['password_2']) ||
+    !isset($_POST['status']) ||
+    !isset($_POST['group'])
+)
     die($ds->APIResponse());
 
-}
+// API responses
+define('USER_L_FAIL',     'Username too short');
+define('USER_FAIL',       'Username already in use');
+define('PASSWORD_L_FAIL', 'Password too short');
+define('PASSWORD_FAIL',   'Passwords do not match');
+define('OK',              'User added successfully');
+
+// Username too short
+if(strlen($_POST['username']) < 2)
+    die($ds->APIResponse('USER_L_FAIL', 3, USER_L_FAIL));
+
+// Query for testing if the user exists
+$test = 'SELECT * FROM `ds_users` WHERE `username` = ?';
+
+// Username already exists
+if(is_array($ds->query($test, $_POST['username'])))
+    die($ds->APIResponse('USER_FAIL', 3, USER_FAIL));
+
+// Password too short
+if(strlen($_POST['password_1']) < 4)
+    die($ds->APIResponse('PASSWORD_L_FAIL', 3, PASSWORD_L_FAIL));
+
+// Passwords do not match
+if($_POST['password_1'] !== $_POST['password_2'])
+    die($ds->APIResponse('PASSWORD_FAIL', 3, PASSWORD_FAIL));
+
+// Hash the password
+$password = password_hash($_POST['password_1'], PASSWORD_BCRYPT);
+
+// Set the group
+$group = empty($_POST['group']) ? null : $_POST['group'];
+
+// Add user data
+$data = [
+    $_POST['username'],
+    $password,
+    $_POST['status'],
+    $group,
+    $ds->account['username']
+];
+
+// Add user query
+$query = 'INSERT INTO `ds_users` ' .
+         '(`username`, `password`, `status`, `group`, `added_by`) ' .
+         'VALUES (?,?,?,?,?)';
+
+// If the query fails
+if(!$ds->query($query, $data))
+    die($ds->APIResponse());
+
+// New user's ID
+$user_id = $ds->db_conn->lastInsertId();
+
+// Log the event
+$ds->logEvent('User Added', USER_ADDED, $data[0]);
+
+// OK response (including new user's ID)
+die($ds->APIResponse('OK', 0, OK, $user_id));

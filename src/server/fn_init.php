@@ -20,14 +20,23 @@
 // |  02110-1301, USA.                                                       |
 // +-------------------------------------------------------------------------+
 
+// Settings for CLI scripts
+// Make sure the document root is set to your servers document root
+$_SERVER['DOCUMENT_ROOT'] =
+    isset($_SERVER['DOCUMENT_ROOT']) ? $_SERVER['DOCUMENT_ROOT'] : '/path/to/ds4';
+$_SERVER['REQUEST_URI'] =
+    isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/';
+$_SERVER['REMOTE_ADDR'] =
+    isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1';
+
 // Include the configuration
-require_once($_SERVER['DOCUMENT_ROOT'] . '/config/config.php');
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
 
 // Include the optional database wrapper
-require_once($_SERVER['DOCUMENT_ROOT'] . '/server/sdc.class.php');
+require_once $_SERVER['DOCUMENT_ROOT'] . '/server/sdc.class.php';
 
 // Include log definitions
-require_once($_SERVER['DOCUMENT_ROOT'] . '/server/log_definitions.php');
+require_once $_SERVER['DOCUMENT_ROOT'] . '/server/log_definitions.php';
 
 class dsInstance
 {
@@ -84,8 +93,8 @@ class dsInstance
     // this software is installed
     public $dir;
 
-    // Current user
-    public $username;
+    // Current user ID
+    public $user_id;
 
     // Current session ID
     public $session;
@@ -176,15 +185,15 @@ class dsInstance
             $this->session =
                 $_SESSION[$this->cfg['session_id'] . '_session_id'];
 
-            // Get the current username
-            $this->username =
-                $_SESSION[$this->cfg['session_id'] . '_username'];
+            // Get the current user id
+            $this->user_id =
+                $_SESSION[$this->cfg['session_id'] . '_user_id'];
 
             // Get the permissions for the current user
-            $this->permissions = $this->getUserPerm($this->username);
+            $this->permissions = $this->getUserPerm($this->user_id);
 
             // Get the current user's account
-            $this->account = $this->getUserAcct($this->username);
+            $this->account = $this->getUserAcct($this->user_id);
 
             // Check to see if the user is an administrator
             $this->is_admin = $this->account['administrator']
@@ -216,6 +225,7 @@ class dsInstance
 
     /**
      * Hard file error logging
+     *
      * @param $error
      */
     public function dsError($error) {
@@ -276,22 +286,17 @@ class dsInstance
         // If the statement prepared successfully
         else {
 
-            // For single argument strings
-            $args = is_string($args) ? [$args] : $args;
+            // For single arguments
+            $args = !is_array($args) ? [$args] : $args;
 
-            // If arguments are present
-            if(is_array($args)) {
+            // Argument count
+            $argc = count($args);
 
-                // Argument count
-                $argc = count($args);
+            // For every argument
+            for($i = 0; $i < $argc; $i++) {
 
-                // For every argument
-                for($i = 0; $i < $argc; $i++) {
-
-                    // Bind the argument to the parameter
-                    $this->db_stmt->bindParam($i + 1, $args[$i]);
-                }
-
+                // Bind the argument to the parameter
+                $this->db_stmt->bindParam($i + 1, $args[$i]);
             }
 
             // Execute the prepared statement
@@ -355,14 +360,19 @@ class dsInstance
     public function logEvent($event, $type = 0, $affected = 'SYSTEM') {
 
         // Log query
-        $query = 'INSERT INTO `ds_log` ' .
+        $query = 'INSERT INTO `ds_logs` ' .
                  '(`type`, `creator`, `affected`,`event`, `ip`, `session`) ' .
                  'VALUES (?,?,?,?,?,?)';
+
+        // Event creator
+        $creator = is_null($this->account)
+            ? 'SYSTEM'
+            : $this->account['username'];
 
         // Log data
         $data = [
             $type,
-            $this->username,
+            $creator,
             $affected,
             $event,
             $_SERVER['REMOTE_ADDR'],
@@ -547,7 +557,7 @@ class dsInstance
 
                                     // If the tab isn't active
                                     elseif(!$tab_cfg['active']) {
-                                        unset($page_cfg['content'][$tab]);
+                                        unset($cfg['content'][$page]['content'][$tab]);
                                     }
 
                                     // If the user doesn't have permission to view the tab
@@ -594,29 +604,199 @@ class dsInstance
 
         }
 
-        // Search for any included CSS files
-        if(isset($this->module['css']) && is_array($this->module['css'])) {
+        // If a module is set, and the module given is not the error or login page
+        if(
+            isset($this->url[0]) &&
+            $this->url[0] !== 'error' &&
+            $this->url[0] !== 'login'
+        ) {
 
-            // Loop through any included files found
-            foreach($this->module['css'] as $css) {
+            // Module level CSS
+            if(isset($this->module['css']) && is_array($this->module['css'])) {
 
-                // If the file exists, include it
-                if(file_exists($this->dir . $css))
-                    $this->html_css .= "<link href='$css' rel='stylesheet' />";
+                // Loop through any included files found
+                foreach($this->module['css'] as $css) {
+
+                    // If the file exists, include it
+                    if(file_exists($this->dir . $css))
+                        $this->html_css .= "<link href='$css' rel='stylesheet' />";
+
+                }
 
             }
 
-        }
+            // Search for any included javascript files
+            if(isset($this->module['js']) && is_array($this->module['js'])) {
 
-        // Search for any included javascript files
-        if(isset($this->module['js']) && is_array($this->module['js'])) {
+                // Loop through any included files found
+                foreach($this->module['js'] as $js) {
 
-            // Loop through any included files found
-            foreach($this->module['js'] as $js) {
+                    // If the file exists, include it
+                    if(file_exists($this->dir . $js))
+                        $this->html_js .= "<script src='$js'></script>";
 
-                // If the file exists, include it
-                if(file_exists($this->dir . $js))
-                    $this->html_js .= "<script src='$js'></script>";
+                }
+
+            }
+
+            // Page level CSS/JS (page given)
+            if(
+                isset($this->url[1]) &&
+                isset($this->module['content'][$this->url[1]])
+            ) {
+
+                // Set content location
+                $content = $this->module['content'][$this->url[1]];
+
+                // If the module content css is found in the URL, and an array
+                if(isset($content['css']) && is_array($content['css'])) {
+
+                    // Loop through the included css list
+                    foreach($content['css'] as $css) {
+
+                        // If the file exists, include it
+                        if(file_exists($this->dir . $css))
+                            $this->html_css .= "<link href='$css' rel='stylesheet' />";
+
+                    }
+
+                }
+
+                // If the module content js is found in the URL, and an array
+                if(isset($content['js']) && is_array($content['js'])) {
+
+                    // Loop through the included js list
+                    foreach($content['js'] as $js) {
+
+                        // If the file exists, include it
+                        if(file_exists($this->dir . $js))
+                            $this->html_js .= "<script src='$js'></script>";
+
+                    }
+
+                }
+
+            }
+
+            // Page level CSS/JS (no page given)
+            elseif(
+                isset($this->module['content']) &&
+                is_array($this->module['content']) &&
+                isset($this->module['content'][key($this->module['content'])])
+            ) {
+
+                // Set content location
+                $content = $this->module['content'][key($this->module['content'])];
+
+                // If the module content css is found in the JSON, and an array
+                if(isset($content['css']) && is_array($content['css'])) {
+
+                    // Loop through the included css list
+                    foreach($content['css'] as $css) {
+
+                        // If the file exists, include it
+                        if(file_exists($this->dir . $css))
+                            $this->html_css .= "<link href='$css' rel='stylesheet' />";
+
+                    }
+
+                }
+
+                // If the module content js is found in the URL, and an array
+                if(isset($content['js']) && is_array($content['js'])) {
+
+                    // Loop through the included js list
+                    foreach($content['js'] as $js) {
+
+                        // If the file exists, include it
+                        if(file_exists($this->dir . $js))
+                            $this->html_js .= "<script src='$js'></script>";
+
+                    }
+
+                }
+
+            }
+
+            // Tab level CSS/JS (tab given)
+            if(
+                isset($this->url[2]) &&
+                isset($this->module['content'][$this->url[1]]['content'][$this->url[2]])
+            ) {
+
+                // Set content location
+                $content = $this->module['content'][$this->url[1]]['content'][$this->url[2]];
+
+                // If the module content css is found in the URL, and an array
+                if(isset($content['css']) && is_array($content['css'])) {
+
+                    // Loop through the included css list
+                    foreach($content['css'] as $css) {
+
+                        // If the file exists, include it
+                        if(file_exists($this->dir . $css))
+                            $this->html_css .= "<link href='$css' rel='stylesheet' />";
+
+                    }
+
+                }
+
+                // If the module content js is found in the URL, and an array
+                if(isset($content['js']) && is_array($content['js'])) {
+
+                    // Loop through the included css list
+                    foreach($content['js'] as $js) {
+
+                        // If the file exists, include it
+                        if(file_exists($this->dir . $js))
+                            $this->html_js .= "<script src='$js'></script>";
+
+                    }
+
+                }
+
+            }
+
+            // Tab level CSS/JS (no tab given)
+            elseif(
+                isset($this->url[1]) &&
+                isset($this->module['content'][$this->url[1]]) &&
+                is_array($this->module['content'][$this->url[1]]['content']) &&
+                isset($this->module['content'][$this->url[1]]['content']
+                    [key($this->module['content'][$this->url[1]]['content'])])
+            ) {
+
+                // Set content location
+                $content = $this->module['content'][$this->url[1]]['content']
+                    [key($this->module['content'][$this->url[1]]['content'])];
+
+                // If the module content css is found in the JSON, and an array
+                if(isset($content['css']) && is_array($content['css'])) {
+
+                    // Loop through the included css list
+                    foreach($content['css'] as $css) {
+
+                        // If the file exists, include it
+                        if(file_exists($this->dir . $css))
+                            $this->html_css .= "<link href='$css' rel='stylesheet' />";
+
+                    }
+
+                }
+
+                // If the module content js is found in the JSON, and an array
+                if(isset($content['js']) && is_array($content['js'])) {
+
+                    // Loop through the included css list
+                    foreach($content['js'] as $js) {
+
+                        // If the file exists, include it
+                        if(file_exists($this->dir . $js))
+                            $this->html_js .= "<script src='$js'></script>";
+
+                    }
+
+                }
 
             }
 
@@ -625,55 +805,47 @@ class dsInstance
     }
 
     /**
-     * Load the contents (template) for a given file (dir)
+     * Load the contents (template) for a given file (directory)
+     *
+     * If no root is given, the project root will be used
      *
      * @param $file
+     * @param bool $root
      * @return string
      */
-    public function loadTemplate($file) {
+    public function loadTemplate($file, $root = false) {
+
+        // If no root is given
+        if(!$root)
+            return file_get_contents($this->dir . $file);
 
         // Load and return the template
-        return file_get_contents($this->dir . $file);
+        return file_get_contents($root . $file);
 
     }
 
     /**
-     * Get the account for a given user
+     * Get the account for a given user ID
      *
-     * @param $user
+     * @param $user_id
      *
      * @return array|bool
      */
-    public function getUserAcct($user) {
+    public function getUserAcct($user_id) {
 
         // Query to get the user's account
-        $query = 'SELECT * FROM `ds_user` WHERE `user` = ?';
+        $query = 'SELECT * FROM `ds_users` WHERE `user_id` = ?';
 
-        // Run the query to get the user's account (success)
-        if($account = $this->query($query, $user)) {
-
-            // Query success, and user found, return the account
-            if(is_array($account) && count($account) === 1) {
-
-                return $account[0];
-
-            }
-
-            // Query success, but user account not found, return false
-            else {
-
-                return false;
-
-            }
-
-        }
-
-        // Query failed, return false
-        else {
-
+        // On query failure
+        if(!$account = $this->query($query, $user_id))
             return false;
 
-        }
+        // Account found
+        if(is_array($account) && count($account) === 1)
+            return $account[0];
+
+        // No account found
+        return false;
 
     }
 
@@ -689,211 +861,56 @@ class dsInstance
      */
     public function getUsers($active = true) {
 
-        // Default return value (bool false)
-        $return = false;
-
         // User list type, active or inactive
         $type = $active ? 1 : 0;
 
-        // Query for getting all of the users
-        $query = 'SELECT * FROM `ds_user` WHERE `status` = ' . $type;
+        // Query for getting all of the users and group name
+        $query = 'SELECT `users`.*, `groups`.`name` AS `group_name` ' .
+                 'FROM `ds_users` AS `users` ' .
+                 'LEFT JOIN `ds_group_meta` AS `groups` ' .
+                 'ON `groups`.`group_id` = `users`.`group` ' .
+                 'WHERE `users`.`status` = ?';
 
-        // If query is a success
-        if($users = $this->query($query)) {
-
-            // Query success, set return to an array
-            $return = [];
-
-            // If the query returned data
-            if(is_array($users)) {
-
-                // Build return array with user name as key
-                foreach($users as $user) {
-
-                    // Append the array
-                    $return[$user['user']] = $user;
-
-                }
-
-            }
-
-        }
-
-        // Return any users (or false on query fail)
-        return $return;
-
-    }
-
-    /**
-     * Register a permission to the framework
-     *
-     * @param $permission
-     * @param $description
-     * @return bool
-     */
-    public function registerPermission($permission, $description) {
-
-        // Query for adding the permission
-        $query = 'INSERT INTO `ds_permissions` ' .
-                 '(`permission`, `description`) VALUES (?, ?)';
-
-        // Return true on success
-        if($this->query($query, [$permission, $description])) {
-
-            // Log the event
-            $this->logEvent("Permission $permission Added", PERMISSION_ADDED);
-
-            return true;
-
-        }
-
-        // Return false on fail
-        else {
-
+        // On query failure
+        if(!$users = $this->query($query, [$type]))
             return false;
 
-        }
+        return is_array($users) ? $users : [];
 
     }
 
     /**
-     * Un-register a permission from the framework
+     * Get the permissions for a given user id
      *
-     * @param $permission
-     * @return bool
-     */
-    public function unregisterPermission($permission) {
-
-        // Query for deleting the permission
-        $query = 'DELETE FROM `ds_permissions` WHERE `permission` = ?';
-
-        // Return true on success
-        if($this->query($query, $permission)) {
-
-            // Log the event
-            $this->logEvent("Permission $permission Deleted", PERMISSION_DELETED);
-
-            return true;
-
-        }
-
-        // Return false on fail
-        else {
-
-            return false;
-
-        }
-
-    }
-
-    /**
-     * Register a permission group
-     *
-     * @param $group
-     * @param $description
-     * @return bool
-     */
-    public function registerGroup($group, $description) {
-
-        // Query for adding groups
-        $query = 'INSERT INTO `ds_group_meta` ' .
-                 '(`group`, `description`) ' .
-                 'VALUES (?, ?)';
-
-        // Group data
-        $data = [
-            $group,
-            $description
-        ];
-
-        // Return true on success
-        if($this->query($query, $data)) {
-
-            // Log the event
-            $this->logEvent("Group $group Added", GROUP_ADDED);
-
-            return true;
-
-        }
-
-        // Return false on fail
-        else {
-
-            return false;
-
-        }
-
-    }
-
-    /**
-     * Un-register a permission group
-     *
-     * @param $group
-     * @return bool
-     */
-    public function unregisterGroup($group) {
-
-        // Query for removing a group
-        $meta = 'DELETE FROM `ds_group_meta` WHERE `group` = ?';
-
-        // Update user's with orphaned groups
-        $user_update = "UPDATE `ds_user` SET `group` = '' " .
-                       "WHERE `group` = ?";
-
-        // Return true on success
-        if(
-            $this->query($meta, $group) &&
-            $this->query($user_update, $group)
-        ) {
-
-            // Log the event
-            $this->logEvent("Group $group Deleted", GROUP_DELETED);
-
-            return true;
-
-        }
-
-        // Return false on fail
-        else {
-
-            return false;
-
-        }
-
-    }
-
-    /**
-     * Get the permissions for a given user
-     *
-     * @param $user
+     * @param $id
      * @return array
      */
-    public function getUserPerm($user) {
+    public function getUserPerm($id) {
 
         // Permission array
-        $permissions = [];
+        $return = [];
 
         // Query for getting the permission for the given user based on their group
-        $query = 'SELECT `m`.*, `p`.`group`, ' .
-                 '(SELECT `administrator` FROM `ds_user` ' .
-                 'WHERE `user` = ?) AS `administrator` ' .
+        $query = 'SELECT `m`.*, `p`.`group_id`, ' .
+                 '(SELECT `administrator` FROM `ds_users` ' .
+                 'WHERE `user_id` = ?) AS `administrator` ' .
                  'FROM `ds_permissions` `m` ' .
-                 'LEFT JOIN `ds_group_data` `p` ON `p`.`group` = ' .
-                 '(SELECT `group` FROM `ds_user` WHERE `user` = ?) ' .
-                 'AND `m`.`permission` = `p`.`permission`';
+                 'LEFT JOIN `ds_group_data` `p` ON `p`.`group_id` = ' .
+                 '(SELECT `group` FROM `ds_users` WHERE `user_id` = ?) ' .
+                 'AND `m`.`permission_id` = `p`.`permission_id`';
 
-        // Return FALSE on database error
-        if(!$perms = $this->query($query, [$user, $user]))
+        // On query error
+        if(!$permissions = $this->query($query, [$id, $id]))
             return false;
 
         // Loop through the returned permissions
-        foreach($perms as $k => $v) {
+        foreach($permissions as $k => $v) {
 
             // If the user has the permission or is an administrator
-            if(!is_null($v['group']) || $v['administrator']) {
+            if(!is_null($v['group_id']) || $v['administrator']) {
 
                 // Set new k,v pair to TRUE
-                $perms[$k]['has'] = true;
+                $permissions[$k]['has'] = true;
 
             }
 
@@ -901,21 +918,21 @@ class dsInstance
             else {
 
                 // Set the new k,v pair to FALSE
-                $perms[$k]['has'] = false;
+                $permissions[$k]['has'] = false;
 
             }
 
             // Update the return array
-            $permissions[$v['permission']] = $perms[$k];
+            $return[$v['permission_id']] = $permissions[$k];
 
             // Get rid of ds_user and ds_user_administrator columns
-            unset($permissions[$v['permission']]['group']);
-            unset($permissions[$v['permission']]['administrator']);
+            unset($return[$v['permission_id']]['group_id']);
+            unset($return[$v['permission_id']]['administrator']);
 
         }
 
         // Return permissions for the user
-        return $permissions;
+        return $return;
 
     }
 
@@ -929,64 +946,48 @@ class dsInstance
     public function checkPermission($permission) {
 
         // Return false if no session is set
-        if(!$this->checkSession()) {
-
+        if(!$this->checkSession())
             return false;
-
-        }
 
         // Administrators bypass all permissions
-        elseif($this->is_admin) {
-
+        if($this->is_admin)
             return true;
 
-        }
-
         // If no permissions exist
-        elseif(!$this->permissions) {
-
+        if(!$this->permissions)
             return false;
-
-        }
 
         // If the given permission is FALSE, return true.
         // Used with module configurations to indicate no permissions
-        elseif(!$permission) {
-
+        if(!$permission)
             return true;
-
-        }
 
         // If the permission exists, and the user has it
-        elseif(
+        if(
             array_key_exists($permission, $this->permissions) &&
             $this->permissions[$permission]['has']
-        ) {
-
+        )
             return true;
 
-        }
-
-        // Permission not found, return false
-        else {
-
-            return false;
-
-        }
+        // No conditions matched
+        return false;
 
     }
 
     /**
-     * Validates if the current user has the given permissions
-     * Redirects to login on failure
+     * Kills script execution if the permission check fails
      *
      * @param $permission
+     * @param string $response
      */
-    public function validatePermission($permission) {
+    public function validatePermission(
+        $permission,
+        $response = 'Permission Denied'
+    ) {
 
-        // Redirect the user if permission check fails
+        // Die if the check fails
         if(!$this->checkPermission($permission)) {
-            header('Location: ' . $this->domain . '/login');
+            die($response);
         }
 
     }
@@ -998,33 +999,25 @@ class dsInstance
      */
     public function getPermissions() {
 
+        // Return array
+        $return = [];
+
         // Query to get all possible permissions
         $query = 'SELECT * FROM `ds_permissions`';
 
-        // If the query is successful, return the data
-        if($permissions = $this->query($query)) {
-
-            // The return array
-            $return = [];
-
-            // Replace the numerical keys with the permission name
-            foreach($permissions as $permission) {
-
-                $return[$permission['permission']] = $permission;
-
-            }
-
-            // Return the permissions
-            return $return;
-
-        }
-
-        // Return false on query failure
-        else {
-
+        // On query failure
+        if(!$permissions = $this->query($query))
             return false;
 
+        // Create return array with permission id as key
+        if(is_array($permissions)) {
+            foreach($permissions as $permission) {
+                $return[$permission['permission_id']] = $permission;
+            }
         }
+
+        // Return the permissions
+        return $return;
 
     }
 
@@ -1044,8 +1037,8 @@ class dsInstance
 
         // Group data query
         $data = 'SELECT * FROM `ds_group_data` LEFT JOIN ' .
-                '`ds_permissions` ON `ds_group_data`.`permission` = ' .
-                '`ds_permissions`.`permission`';
+                '`ds_permissions` ON `ds_group_data`.`permission_id` = ' .
+                '`ds_permissions`.`permission_id`';
 
         // Return the array of groups on success
         if(
@@ -1056,8 +1049,8 @@ class dsInstance
             // Create the return array
             foreach($meta as $group) {
 
-                $groups[$group['group']] = $group;
-                $groups[$group['group']]['permissions'] = [];
+                $groups[$group['group_id']] = $group;
+                $groups[$group['group_id']]['permissions'] = [];
 
                 // Add permissions (if any)
                 if(is_array($data)) {
@@ -1066,11 +1059,11 @@ class dsInstance
                     foreach($data as $permission) {
 
                         // If the current group equals the current permission data
-                        if($group['group'] === $permission['group']) {
+                        if($group['group_id'] === $permission['group_id']) {
 
                             // Add the current permission to the group
-                            $groups[$group['group']]['permissions']
-                                [$permission['permission']] = $permission['description'];
+                            $groups[$group['group_id']]['permissions']
+                                [$permission['name']] = $permission['description'];
 
                         }
 
@@ -1085,36 +1078,33 @@ class dsInstance
 
         }
 
-        // Return false on query fail
-        else {
-
-            return false;
-
-        }
+        // Case not matched
+        return false;
 
     }
 
     /**
      * Update login metadata on login attempt
      *
-     * @param $user
+     * @param $id
      *
      * @return bool
      */
-    public function updateLoginMetadata($user) {
+    public function updateLoginMetadata($id) {
 
         // Query for updating loin metadata
-        $query = 'UPDATE `ds_user` SET ' .
+        $query = 'UPDATE `ds_users` SET ' .
                  '`last_login_attempt` = NOW(),' .
                  '`login_attempts` = `login_attempts` + 1, ' .
                  '`last_login_ip` = ? ' .
-                 'WHERE `user`=?';
+                 'WHERE `user_id`=?';
 
-        // Run the query
-        $this->query($query, [$_SERVER['REMOTE_ADDR'], $user]);
+        // On query failure
+        if(!$this->query($query, [$_SERVER['REMOTE_ADDR'], $id]))
+            return false;
 
-        // Return true on success, false on fail
-        return $this->db_error ? false : true;
+        // Return success
+        return true;
 
     }
 
@@ -1122,88 +1112,82 @@ class dsInstance
      * Reset the login attempts for the given user and sets last successful
      * login time
      *
-     * @param $user
+     * @param $id
      *
      * @return bool
      */
-    public function resetLoginSuccess($user) {
+    public function resetLoginSuccess($id) {
 
         // Query for resetting login attempts
-        $query = 'UPDATE `ds_user` SET `login_attempts` = 0, ' .
-                 '`last_login_success` = NOW() WHERE `user` = ?';
+        $query = 'UPDATE `ds_users` SET `login_attempts` = 0, ' .
+                 '`last_login_success` = NOW() WHERE `user_id` = ?';
 
-        // Run the query
-        $this->query($query, $user);
+        // On query failure
+        if(!$this->query($query, $id))
+            return false;
 
-        // Return true on success, false on fail
-        return $this->db_error ? false : true;
+        // Return success
+        return true;
 
     }
 
     /**
-     * Generate a Dynamic Suite Session for the user
+     * Generate a Dynamic Suite Session for the given user id
      *
-     * @param $user
-     *
+     * @param $id
      * @return bool
      */
-    public function generateSession($user) {
+    public function generateSession($id) {
 
         // Generate the session
-        $_SESSION[$this->cfg['session_id'] . '_session_id'] = $user . time();
+        $_SESSION[$this->cfg['session_id'] . '_session_id'] =
+            $id . '$' . time();
 
         // Get the current session ID
         $this->session =
             $_SESSION[$this->cfg['session_id'] . '_session_id'];
 
-        // Generate the session user
-        $_SESSION[$this->cfg['session_id'] . '_username'] = $user;
+        // Generate the session user id
+        $_SESSION[$this->cfg['session_id'] . '_user_id'] =
+            $id;
 
-        // Get the current username
-        $this->username =
-            $_SESSION[$this->cfg['session_id'] . '_username'];
+        // Get the current user id
+        $this->user_id =
+            $_SESSION[$this->cfg['session_id'] . '_user_id'];
 
     }
 
     /**
      * Attempt to log in a user. On success, assign a session and location
      *
-     * @param $user
+     * @param $username
+     * @param $id
      * @param $pass
      * @param $test_pass
-     *
-     * @return array | bool
+     * @return array|bool
      */
-    public function attemptLogin($user, $pass, $test_pass) {
+    public function attemptLogin($username, $id, $pass, $test_pass) {
 
-        // If the password is verified
-        if(password_verify($test_pass, $pass)) {
-
-            // Reset the user's login attempts
-            $this->resetLoginSuccess($user);
-
-            // Generate the session
-            $this->generateSession($user);
-
-            // Log the login event
-            $this->logEvent('User Login', USER_LOGIN, $user);
-
-            // Redirect the user to the proper location
-            $location = !is_null($this->cfg['mod_default'])
-                ? $this->cfg['mod_default']
-                : 'login';
-
-            // Return login success
-            return $this->APIResponse('OK', 0, 'Login Successful', $location);
-
-        }
-
-        // If the password is not verified
-        else {
-
+        // If the password doesn't verify
+        if(!password_verify($test_pass, $pass))
             return false;
 
-        }
+        // Reset the user's login attempts
+        $this->resetLoginSuccess($id);
+
+        // Generate the session
+        $this->generateSession($id);
+
+        // Log the login event
+        $this->logEvent('User Login', USER_LOGIN, $username);
+
+        // Redirect the user to the proper location
+        $location = !is_null($this->cfg['mod_default'])
+            ? $this->cfg['mod_default']
+            : 'login';
+
+        // Return login success
+        return $this->APIResponse('OK', 1, USER_LOGIN, $location);
 
     }
 
@@ -1214,30 +1198,33 @@ class dsInstance
 
         // If title override is present
         if($this->cfg['system_title']) {
-            $this->html_title = $this->cfg['system_title'];
+            $this->html_title =
+                htmlentities($this->cfg['system_title']);
         }
 
         // If no location is given, set title default
         elseif(!isset($this->url[0])) {
-            $this->html_title = $this->cfg['system_title_default'];
+            $this->html_title =
+                htmlentities($this->cfg['system_title_default']);
         }
 
         // If location is login, set title login
         elseif($this->url[0] === 'login') {
             $this->html_title =
-                $this->cfg['system_title_prefix'] . ' :: Login';
+                htmlentities($this->cfg['system_title_prefix']) . ' :: Login';
         }
 
         // If current module exists, set title module
         elseif($this->module) {
             $this->html_title =
-                $this->cfg['system_title_prefix'] . ' :: ' .
-                $this->module['name'];
+                htmlentities($this->cfg['system_title_prefix']) . ' :: ' .
+                htmlentities($this->module['name']);
         }
 
         // Default case, set title default
         else {
-            $this->html_title = $this->cfg['system_title_default'];
+            $this->html_title =
+                htmlentities($this->cfg['system_title_default']);
         }
 
     }
@@ -1251,32 +1238,16 @@ class dsInstance
         $start = $this->loadTemplate('/templates/page_start.html');
 
         // Set the page title
-        $start = str_replace(
-            '%HTML_TITLE%',
-            $this->html_title,
-            $start
-        );
+        $start = str_replace('{{title}}', $this->html_title, $start);
 
         // Set the HTML base
-        $start = str_replace(
-            '%HTML_BASE%',
-            $this->html_base,
-            $start
-        );
+        $start = str_replace('{{base}}', $this->html_base, $start);
 
         // Include any CSS
-        $start = str_replace(
-            '%HTML_CSS%',
-            $this->html_css,
-            $start
-        );
+        $start = str_replace('{{css}}', $this->html_css, $start);
 
         // Include any JS
-        $start = str_replace(
-            '%HTML_JS%',
-            $this->html_js,
-            $start
-        );
+        $start = str_replace('{{js}}', $this->html_js, $start);
 
         // Set the page start
         $this->html_page_start = $start;
@@ -1306,7 +1277,7 @@ class dsInstance
         // Set the navigation bar header
         $nav = str_replace(
             '{{header}}',
-            $this->cfg['system_header'],
+            htmlentities($this->cfg['system_header']),
             $nav
         );
 
@@ -1330,10 +1301,10 @@ class dsInstance
             if(count($mod_cfg['content']) > 1) {
 
                 // Drop down HTML (bootstrap)
-                $content .= "<li><a data-toggle='collapse' data-target='#$mod'>";
+                $content .= "<li><a data-toggle='collapse' data-target='#ds-nav-$mod'>";
                 $content .= "<i class='fa $icon'></i> {$mod_cfg['name']}";
                 $content .= "<i class='fa fa-chevron-right'></i></a>";
-                $content .= "<ul class='nav collapse' id='$mod' role='menu'>";
+                $content .= "<ul class='nav collapse' id='ds-nav-$mod' role='menu'>";
 
                 // For every page, add an entry
                 foreach($mod_cfg['content'] as $page => $page_cfg) {
@@ -1342,7 +1313,7 @@ class dsInstance
                     $href = $this->cfg['install_domain'] . "/$mod/$page";
 
                     // Page entry HTML
-                    $content .= "<li><a id='$mod-$page' href='$href' target='_self'>";
+                    $content .= "<li><a id='ds-nav-$mod-$page' href='$href' target='_self'>";
                     $content .= "<i class='fa fa-angle-double-right'></i>{$page_cfg['name']}</a></li>";
 
                 }
@@ -1362,7 +1333,7 @@ class dsInstance
                 $href = $this->cfg['install_domain'] . "/$mod/$page";
 
                 // Page entry HTML
-                $content .= "<li><a id='$mod' href='$href' target='_self'>";
+                $content .= "<li><a id='ds-nav-$mod' href='$href' target='_self'>";
                 $content .= "<i class='fa $icon'></i> {$mod_cfg['name']}</a></li>";
 
             }
@@ -1473,7 +1444,7 @@ class dsInstance
 
                     $href = $this->cfg['install_domain'] . "/{$loc[0]}/{$loc[1]}/$tab";
 
-                    $tabs .= "<li role='presentation' id='{$loc[0]}-{$loc[1]}-$tab'>" .
+                    $tabs .= "<li role='presentation' id='ds-nav-{$loc[0]}-{$loc[1]}-$tab'>" .
                              "<a href='$href' target='_self'>{$tab_cfg['name']}</a></li>";
 
                 }
@@ -1500,7 +1471,7 @@ class dsInstance
         // If a valid Dynamic Suite user session is set
         return
             isset($_SESSION[$this->cfg['session_id'] . '_session_id']) &&
-            isset($_SESSION[$this->cfg['session_id'] . '_username'])
+            isset($_SESSION[$this->cfg['session_id'] . '_user_id'])
                 ? true
                 : false;
 
@@ -1513,16 +1484,14 @@ class dsInstance
      */
     public function validateSession() {
 
-        // If a session is found, return TRUE
-        if($this->checkSession())  {
-            return true;
-        }
-
-        // If no session is found, redirect and return false
-        else {
+        // If a session is not found
+        if(!$this->checkSession()) {
             header('Location: ' . $this->domain . '/login');
             return false;
         }
+
+        // Session found
+        return true;
 
     }
 
@@ -1630,7 +1599,7 @@ class dsInstance
         // Return blank if timestamp is blank, or a formatted
         // date if not
         return $date === '0000-00-00' || empty($date)
-            ? ''
+            ? 'Never'
             : date($this->cfg['date_format'], strtotime($date));
 
     }
@@ -1645,8 +1614,8 @@ class dsInstance
 
         // Return blank if timestamp is blank, or a formatted
         // timestamp if not
-        return empty($time)
-            ? ''
+        return $time === '0000-00-00 00:00:00' || empty($time)
+            ? 'Never'
             : date($this->cfg['timestamp_format'], strtotime($time));
 
     }
@@ -1662,7 +1631,7 @@ class dsInstance
         // Return blank if time is blank, or a formatted
         // time if not
         return  $time === '00:00:00' || empty($time)
-            ? ''
+            ? 'Never'
             : date($this->cfg['time_format'], strtotime($time));
 
     }

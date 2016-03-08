@@ -21,7 +21,7 @@
 // +-------------------------------------------------------------------------+
 
 // Include and create a new Dynamic Suite Instance
-require_once($_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php');
+require_once $_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php';
 
 // Login API Responses
 define('MANUAL_LOCKOUT_FAIL', $cfg['lock_out_message']);
@@ -29,52 +29,60 @@ define('ACCT_FAIL',           'Invalid username or password');
 define('ACTIVE_FAIL',         'Account Inactive');
 define('LOCKOUT_FAIL',        'Too many login attempts');
 
-// If no username or password is given
+// Invalid request
 if(!isset($_POST['username']) || !isset($_POST['password']))
     die($ds->APIResponse());
 
 // Response if the given username or password isn't valid
 $bad_acct = $ds->APIResponse('ACCT_FAIL', 3, ACCT_FAIL);
 
-// Get the account for the user that is attempting to log in
-$acct = $ds->getUserAcct($_POST['username']);
+// If the username or password fields are empty
+if(empty($_POST['username']) || empty($_POST['password']))
+    die($bad_acct);
 
-// If an error occurred finding the user (SQL Error)
-if ($ds->db_error)
+// Query for getting the user account
+$query = 'SELECT * FROM `ds_users` WHERE `username` = ?';
+
+// On query failure
+if(!$account = $ds->query($query, $_POST['username']))
     die($ds->APIResponse());
 
 // If no account was found for the given username
-if(!$acct)
+if(!is_array($account) || count($account) > 1)
     die($bad_acct);
+
+// Set the current account
+$account = $account[0];
 
 // Block login attempt if a manual lockout is in effect
 // Administrators bypass lockout
 // See Dynamic Suite Configuration documentation for more information
-if($cfg['manual_lockout'] && !$acct['administrator'])
+if($cfg['manual_lockout'] && !$account['administrator'])
     die($ds->APIResponse('MANUAL_LOCKOUT_FAIL', 3, MANUAL_LOCKOUT_FAIL));
 
 // Update login metadata and increment login attempts
-$ds->updateLoginMetadata($_POST['username']);
+$ds->updateLoginMetadata($account['user_id']);
 
 // If the user's account is inactive, block login
-if(!$acct['status'])
+if(!$account['status'])
     die($ds->APIResponse('ACTIVE_FAIL', 3, ACTIVE_FAIL));
 
 // Get the timestamp value of the last login attempt
-$last_attempt = strtotime($acct['last_login_attempt']);
+$last_attempt = strtotime($account['last_login_attempt']);
 
 // If the user has greater than or equal to the allowed login attempts
 // and hasn't waited out the login period
 if(
-    $acct['login_attempts'] >= $cfg['login_attempts'] &&
+    $account['login_attempts'] >= $cfg['login_attempts'] &&
     time() - $last_attempt <= $cfg['login_timeout']
 )
     die($ds->APIResponse('LOCKOUT_FAIL', 3, LOCKOUT_FAIL));
 
 // Run the login attempt
 $login = $ds->attemptLogin(
-    $_POST['username'],
-    $acct['password'],
+    $account['username'],
+    $account['user_id'],
+    $account['password'],
     $_POST['password']
 );
 

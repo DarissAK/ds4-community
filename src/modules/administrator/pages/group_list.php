@@ -20,87 +20,96 @@
 // |  02110-1301, USA.                                                       |
 // +-------------------------------------------------------------------------+
 
-// If the user has the proper permissions and session
-if($ds->checkPermission('ds_admin_permission')) {
+// Invalid permissions or session
+$ds->validatePermission('ds_admin_permission');
 
-    // Load the groups
-    $groups = $ds->getPermissionGroups();
+// Load the groups
+$groups = $ds->getPermissionGroups();
 
-    // Display edit group page
-    if(
-        isset($ds->url[3]) &&
-        $ds->url[3] === 'edit' &&
-        isset($ds->url[4]) &&
-        array_key_exists($ds->url[4], $groups)
-    ) {
+// Display edit group page
+if(
+    isset($ds->url[3]) &&
+    $ds->url[3] === 'edit' &&
+    isset($ds->url[4]) &&
+    array_key_exists($ds->url[4], $groups)
+) {
 
-        // Template file
-        $file = '/modules/administrator/templates/group_edit.html';
+    // Template file
+    $file = '/modules/administrator/templates/group_edit.html';
 
-        // Load the template
-        $template = $ds->loadTemplate($file);
+    // Load the template
+    $template = $ds->loadTemplate($file);
 
-        // Permissions body string
-        $perm_body = '';
+    // Permissions body string
+    $body = '';
 
-        // Get all possible permissions
-        $permissions = $ds->getPermissions();
+    // Get all possible permissions
+    $permissions = $ds->getPermissions();
 
-        // Loop through all of the permissions and build the body
-        foreach($permissions as $permission => $data) {
-            $perm_body .= '<div class="form-group">';
-            $perm_body .= "<label for='$permission'>{$data['description']}</label>";
-            $perm_body .= "<select id='$permission' name='$permission' class='form-control'>";
-            if(array_key_exists($permission, $groups[$ds->url[4]]['permissions'])) {
-                $perm_body .= '<option value="1">Yes</option><option value="0">No</option>';
-            }
-            else {
-                $perm_body .= '<option value="0">No</option><option value="1">Yes</option>';
-            }
-            $perm_body .= '</select></div>';
-        }
+    // Loop through all of the permissions and build the body
+    foreach($permissions as $permission => $data) {
 
-        // Update the template
-        $template =
-            str_replace('{{group}}', $ds->url[4], $template);
-        $template =
-            str_replace('{{description}}', $groups[$ds->url[4]]['description'], $template);
-        $template =
-            str_replace('{{body}}', $perm_body, $template);
+        // Set the checked state
+        $checked = array_key_exists($data['name'],
+            $groups[$ds->url[4]]['permissions'])
+            ? 'checked '
+            : '';
+
+        // Update the body
+        $body .= '<div class="checkbox permission-check">';
+        $body .= '<label>';
+        $body .= "<input type='checkbox' name='perm_$permission' $checked/>";
+        $body .= '<div>' . htmlentities($data['description']) . '</div>';
+        $body .= '</label>';
+        $body .= '</div>';
 
     }
 
-    // Display group list
-    else {
+    // Set the current group
+    $group = $groups[$ds->url[4]];
 
-        // Template file
-        $file = '/modules/administrator/templates/group_list.html';
-
-        // Load the template
-        $template = $ds->loadTemplate($file);
-
-        // Table body string
-        $tbody = '';
-
-        // Create the table body
-        foreach($groups as $group) {
-            $tbody .= "<tr><td>{$group['group']}</td>";
-            $tbody .= "<td>{$group['description']}</td></tr>";
-        }
-
-        // Update the template
-        $template = str_replace('{{tbody}}', $tbody, $template);
-
-    }
-
-    // Render the template
-    echo $template;
+    // Update the template
+    $template =
+        str_replace('{{id}}', $group['group_id'], $template);
+    $template =
+        str_replace('{{group}}', htmlentities($group['name']), $template);
+    $template =
+        str_replace('{{description}}', htmlentities($group['description']), $template);
+    $template =
+        str_replace('{{body}}', $body, $template);
 
 }
 
-// Invalid page permissions
+// Display group list
 else {
 
-    echo 'Permission denied';
+    // Template file
+    $file = '/modules/administrator/templates/group_list.html';
+
+    // Load the template
+    $template = $ds->loadTemplate($file);
+
+    // Table body string
+    $tbody = '';
+
+    // Create the table body
+    foreach($groups as $group_data) {
+
+        // Row Data
+        $id          = htmlentities($group_data['group_id']);
+        $group       = htmlentities($group_data['name']);
+        $description = htmlentities($group_data['description']);
+
+        // Create the row
+        $tbody .= "<tr><td data-group-id='$id'>$group</td>";
+        $tbody .= "<td>$description</td></tr>";
+
+    }
+
+    // Update the template
+    $template = str_replace('{{tbody}}', $tbody, $template);
 
 }
+
+// Render the template
+echo $template;

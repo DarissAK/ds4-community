@@ -35,7 +35,7 @@ ini_set('html_errors', 1);
 
 // Hard error log file.
 // Make sure the file is writeable
-$cfg['log_dir'] = '/path/to/ds/log.log';
+$cfg['log_dir'] = '/path/to/error.log';
 
 // PDO Exception Timeout
 // The time in seconds it takes before a database connection attempt is
@@ -56,7 +56,7 @@ $cfg['manual_lockout'] = FALSE;
 // +-------------------------------------------------------------------------+
 
 // System version and copyright (at login)
-$cfg['system_footer'] = 'Dynamic Suite 4 Community Edition ' .
+$cfg['system_footer'] = 'Dynamic Suite 4.1 Community Edition ' .
                         '&#8212; &#169; 2016 Simplusoft LLC';
 
 // System header text (app name)
@@ -77,7 +77,7 @@ $cfg['system_title_default'] = 'Dynamic Suite';
 $cfg['system_title_prefix'] = 'DS4';
 
 // System version
-$cfg['system_version'] = '4.0';
+$cfg['system_version'] = '4.1';
 
 // +-------------------------------------------------------------------------+
 // |  Database Settings                                                      |
@@ -100,7 +100,7 @@ $cfg['db_name'] = 'database';
 $cfg['db_user'] = 'username';
 
 // Database password
-$cfg['db_pass'] = 'Password';
+$cfg['db_pass'] = 'password';
 
 // Database DSN
 $cfg['db_dsn'] = $cfg['db_type'] . ":host=" . $cfg['db_host'] . ";dbname=" .
@@ -132,7 +132,7 @@ $cfg['timestamp_format'] = 'm/d/Y \a\t g:i:s A';
 
 // The domain where the application is installed. Must include the protocol.
 // Do not include tailing slashes
-$cfg['install_domain'] = 'http://example.com';
+$cfg['install_domain'] = 'https://www.example.com';
 
 // A unique session instance identifier
 // Unless you have a specific reason, this should be your organization name
@@ -164,6 +164,7 @@ $cfg['mod_default'] = 'about/credits';
 $cfg['ds_modules'] = [
     'about',
     'test',
+    'task-scheduler',
     'administrator'
 ];
 

@@ -21,68 +21,61 @@
 // +-------------------------------------------------------------------------+
 
 // If the user has the proper permissions and session
-if($ds->checkPermission('ds_admin_permission')) {
+$ds->validatePermission('ds_admin_permission');
 
-    // Get the array of possible permissions
-    $permissions = $ds->getPermissions();
+// Get the array of possible permissions
+$permissions = $ds->getPermissions();
 
-    // Display edit permission page
-    if(
-        isset($ds->url[3]) &&
-        $ds->url[3] === 'edit' &&
-        isset($ds->url[4]) &&
-        array_key_exists($ds->url[4], $permissions)
-    ) {
+// Display edit permission page
+if(
+    isset($ds->url[3]) &&
+    $ds->url[3] === 'edit' &&
+    isset($ds->url[4]) &&
+    array_key_exists($ds->url[4], $permissions)
+) {
 
-        // Template file location
-        $file = '/modules/administrator/templates/permission_edit.html';
+    // Template file location
+    $file = '/modules/administrator/templates/permission_edit.html';
 
-        // Load the template
-        $template = $ds->loadTemplate($file);
+    // Load the template
+    $template = $ds->loadTemplate($file);
 
-        // Get the permission and the description
-        $permission  = $permissions[$ds->url[4]]['permission'];
-        $description = $permissions[$ds->url[4]]['description'];
+    // Get the permission and the description
+    $permission  = htmlentities($permissions[$ds->url[4]]['name']);
+    $description = htmlentities($permissions[$ds->url[4]]['description']);
 
-        // Update the template
-        $template = str_replace('{{permission}}', $permission, $template);
-        $template = str_replace('{{description}}', $description, $template);
-
-    }
-
-    // Display permission list
-    else {
-
-        // Template file location
-        $file = '/modules/administrator/templates/permission_list.html';
-
-        // Load the template
-        $template = $ds->loadTemplate($file);
-
-        // String to hold the table body value
-        $tbody = '';
-
-        // Create the table body for each permission
-        foreach($permissions as $permission) {
-
-            $tbody .= "<tr><td>{$permission['permission']}</td>";
-            $tbody .= "<td>{$permission['description']}</td></tr>";
-
-        }
-
-        // Update the template
-        $template = str_replace('{{tbody}}', $tbody, $template);
-
-    }
-
-    // Render the template
-    echo $template;
+    // Update the template
+    $template = str_replace('{{permission}}', $permission, $template);
+    $template = str_replace('{{description}}', $description, $template);
+    $template = str_replace('{{id}}', $ds->url[4], $template);
 
 }
 
-// Invalid page permissions
+// Display permission list
 else {
 
-    echo 'Permission Denied';
+    // Template file location
+    $file = '/modules/administrator/templates/permission_list.html';
+
+    // Load the template
+    $template = $ds->loadTemplate($file);
+
+    // String to hold the table body value
+    $tbody = '';
+
+    // Create the table body for each permission
+    foreach($permissions as $permission) {
+
+        $tbody .= "<tr><td data-permission-id='{$permission['permission_id']}'>";
+        $tbody .= htmlentities($permission['name']) . "</td><td>";
+        $tbody .= htmlentities($permission['description']) . "</td></tr>";
+
+    }
+
+    // Update the template
+    $template = str_replace('{{tbody}}', $tbody, $template);
 
 }
+
+// Render the template
+echo $template;

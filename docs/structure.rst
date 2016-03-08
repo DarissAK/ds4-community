@@ -68,6 +68,6 @@ When loading to specific modules, permissions and sessions are checked. These ar
 the login function of the user. If no session or invalid permissions are found, they will be
 redirected to the ``login`` page.
 
-See **module development** for more information on page loading.
+See **modules** for more information on page loading.
 
 

@@ -13,7 +13,7 @@
         "perm"    : false,
         "active"  : true,
         "icon"    : "fa-file-text-o",
-        "content" : "/modules/test/sandbox.php"
+        "content" : "/modules/test/pages/sandbox.php"
       }
     }
   }

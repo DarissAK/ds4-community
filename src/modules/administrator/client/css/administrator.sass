@@ -58,7 +58,7 @@
       padding: 0.25em 0 0.25em 0
 
 .ds-user-edit, .ds-permission-edit, .ds-group-edit
-  margin-bottom: 7em
+  margin: 1em 0 7em 0
 
   .btn
     margin-bottom: 1em
@@ -66,8 +66,11 @@
   .btn-danger
     float: right
 
-  h3
-    margin-top: 0.35em
+  h4
+    margin: 2em 0 0 0 !important
+
+  hr
+    margin-top: 0.5em
 
   table
 
@@ -77,9 +80,20 @@
         font-weight: bold
 
 .ds-user-add
+  padding-top: 1em
 
-  h3
-    margin-top: 0.35em
-
-  .btn
+  button
     margin-bottom: 1em
+
+#password-collapse
+  cursor: pointer
+
+.permission-check
+  font-size: 1.2em
+  padding-bottom: 0.9em
+
+  div
+    padding-left: 0.6em
+    user-select: none
+    -moz-user-select: none
+    -webkit-user-select: none

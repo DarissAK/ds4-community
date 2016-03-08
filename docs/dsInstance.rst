@@ -40,9 +40,9 @@ Class Variables
 These class members can be accessed and used by module developers. Some of them are only
 really needed on page loads for the framework, but all are accessible.
 
-$ds->username
-~~~~~~~~~~~~~
-(String) The username of the currently logged in user
+$ds->cfg
+~~~~~~~~
+(Array) The current configuration loaded from /config/config.php
 
 $ds->db_conn
 ~~~~~~~~~~~~
@@ -116,9 +116,9 @@ $ds->dir
 ~~~~~~~~
 (String) The directory on the server where the framework is hosted
 
-$ds->username
-~~~~~~~~~~~~~
-(String) The username of the currently logged in user
+$ds->user_id
+~~~~~~~~~~~~
+(Int) The user ID of the currently logged in user
 
 $ds->session
 ~~~~~~~~~~~~
@@ -240,36 +240,6 @@ If ``$active`` is set to true (default), then only active users will be retrieve
 If ``$active`` is set to false, then only inactive users will be retrieved
 
 Returns FALSE on database error
-
-$ds->registerPermission($permission, $description)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-(Boolean) Create a new permission for the framework
-
-It takes two arguments, ``$permission`` and ``$description``.
-
-``$permission`` can only contain characters and underscores.
-
-Returns TRUE on success, and FALSE on database failure.
-
-$ds->unregisterPermission($permission)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-(Boolean) Deletes the given ``$permission`` from the framework and returns TRUE
-on success, FALSE on failure.
-
-$ds->registerGroup($group, $description)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-(Boolean) Create a new permission group for the framework
-
-It takes two arguments, ``$group`` and ``$description``.
-
-``$group`` can only contain characters and underscores.
-
-Returns TRUE on success, and FALSE on database failure.
-
-$ds->unregisterGroup($group)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-(Boolean) Deletes the given permission ``$group`` from the framework and returns TRUE
-on success, FALSE on failure.
 
 $ds->getUserPerm($user)
 ~~~~~~~~~~~~~~~~~~~~~~~

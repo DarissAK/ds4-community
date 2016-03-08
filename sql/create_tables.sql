@@ -1,4 +1,3 @@
-
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
@@ -14,8 +13,12 @@
 DROP TABLE IF EXISTS `ds_group_data`;
 
 CREATE TABLE `ds_group_data` (
-  `group` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '',
-  `permission` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT ''
+  `group_id` int(10) unsigned NOT NULL,
+  `permission_id` int(10) unsigned NOT NULL,
+  UNIQUE KEY `group_data` (`group_id`,`permission_id`),
+  KEY `permission_id` (`permission_id`),
+  CONSTRAINT `group_id` FOREIGN KEY (`group_id`) REFERENCES `ds_group_meta` (`group_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `permission_id` FOREIGN KEY (`permission_id`) REFERENCES `ds_permissions` (`permission_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
@@ -26,43 +29,39 @@ CREATE TABLE `ds_group_data` (
 DROP TABLE IF EXISTS `ds_group_meta`;
 
 CREATE TABLE `ds_group_meta` (
-  `group` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '',
+  `group_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(32) NOT NULL DEFAULT '',
   `description` varchar(255) NOT NULL DEFAULT '',
-  PRIMARY KEY (`group`)
+  PRIMARY KEY (`group_id`),
+  UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 LOCK TABLES `ds_group_meta` WRITE;
 /*!40000 ALTER TABLE `ds_group_meta` DISABLE KEYS */;
 
-INSERT INTO `ds_group_meta` (`group`, `description`)
+INSERT INTO `ds_group_meta` (`group_id`, `name`, `description`)
 VALUES
-  (X'44656661756C74','Default Group');
+  (1,'Default','Default group');
 
 /*!40000 ALTER TABLE `ds_group_meta` ENABLE KEYS */;
 UNLOCK TABLES;
 
-DELIMITER ;;
-/*!50003 SET SESSION SQL_MODE="" */;;
-  /*!50003 CREATE */ /*!50017 DEFINER=`root`@`%` */ /*!50003 TRIGGER `update_user` AFTER DELETE ON `ds_group_meta` FOR EACH ROW DELETE FROM `ds_group_data` WHERE `ds_group_data`.`group` = OLD.`group` */;;
-DELIMITER ;
-/*!50003 SET SESSION SQL_MODE=@OLD_SQL_MODE */;
 
-
-# Dump of table ds_log
+# Dump of table ds_logs
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `ds_log`;
+DROP TABLE IF EXISTS `ds_logs`;
 
-CREATE TABLE `ds_log` (
-  `id` int(10) unsigned zerofill NOT NULL AUTO_INCREMENT,
+CREATE TABLE `ds_logs` (
+  `log_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `type` int(10) unsigned NOT NULL,
-  `creator` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT 'SYSTEM',
-  `affected` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT 'SYSTEM',
+  `creator` varchar(32) DEFAULT NULL,
+  `affected` varchar(32) DEFAULT NULL,
   `event` varchar(255) NOT NULL DEFAULT '',
-  `ip` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '',
-  `session` varchar(42) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '',
-  PRIMARY KEY (`id`)
+  `ip` varchar(45) DEFAULT NULL,
+  `session` varchar(42) DEFAULT NULL,
+  PRIMARY KEY (`log_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
@@ -73,61 +72,62 @@ CREATE TABLE `ds_log` (
 DROP TABLE IF EXISTS `ds_permissions`;
 
 CREATE TABLE `ds_permissions` (
-  `permission` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '',
+  `permission_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(32) DEFAULT NULL,
   `description` varchar(255) NOT NULL DEFAULT '',
-  PRIMARY KEY (`permission`)
+  PRIMARY KEY (`permission_id`),
+  UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 LOCK TABLES `ds_permissions` WRITE;
 /*!40000 ALTER TABLE `ds_permissions` DISABLE KEYS */;
 
-INSERT INTO `ds_permissions` (`permission`, `description`)
+INSERT INTO `ds_permissions` (`permission_id`, `name`, `description`)
 VALUES
-  (X'64735F61646D696E','Access to the administrator module'),
-  (X'64735F61646D696E5F6C6F6773','Access to system logs'),
-  (X'64735F61646D696E5F7065726D697373696F6E','Access to the permissions interface'),
-  (X'64735F61646D696E5F75736572','Access to user administration'),
-  (X'64735F746573745F73616E64626F78','Access to the test script sandbox');
+  (1,'ds_admin','Access to the administrator module'),
+  (2,'ds_admin_logs','Access to system logs'),
+  (3,'ds_admin_permission','Access to the permissions interface'),
+  (4,'ds_admin_user','Access to user administration'),
+  (5,'ds_test_sandbox','Access to the test script sandbox'),
+  (6,'ds_task_scheduler','Access to the task scheduler');
 
 /*!40000 ALTER TABLE `ds_permissions` ENABLE KEYS */;
 UNLOCK TABLES;
 
-DELIMITER ;;
-/*!50003 SET SESSION SQL_MODE="" */;;
-  /*!50003 CREATE */ /*!50017 DEFINER=`root`@`%` */ /*!50003 TRIGGER `perm_delete` AFTER DELETE ON `ds_permissions` FOR EACH ROW DELETE FROM `ds_group_data` WHERE OLD.`permission` = `permission` */;;
-DELIMITER ;
-/*!50003 SET SESSION SQL_MODE=@OLD_SQL_MODE */;
 
-
-# Dump of table ds_user
+# Dump of table ds_users
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `ds_user`;
+DROP TABLE IF EXISTS `ds_users`;
 
-CREATE TABLE `ds_user` (
-  `user` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '',
-  `password` char(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '',
-  `group` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '',
+CREATE TABLE `ds_users` (
+  `user_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `username` varchar(32) DEFAULT NULL,
+  `password` char(60) DEFAULT NULL,
+  `group` int(10) unsigned DEFAULT '0',
   `status` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `administrator` tinyint(1) NOT NULL DEFAULT '0',
   `inactive_time` timestamp NULL DEFAULT NULL,
   `added` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `added_by` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT 'SYSTEM',
+  `added_by` varchar(32) DEFAULT NULL,
   `login_attempts` tinyint(2) NOT NULL DEFAULT '0',
   `last_login_attempt` timestamp NULL DEFAULT NULL,
   `last_login_success` timestamp NULL DEFAULT NULL,
-  `last_login_ip` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
-  `administrator` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`user`)
+  `last_login_ip` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`user_id`),
+  UNIQUE KEY `username` (`username`),
+  KEY `group` (`group`),
+  CONSTRAINT `ds_users_ibfk_1` FOREIGN KEY (`group`) REFERENCES `ds_group_meta` (`group_id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Primary user data table';
 
-LOCK TABLES `ds_user` WRITE;
-/*!40000 ALTER TABLE `ds_user` DISABLE KEYS */;
+LOCK TABLES `ds_users` WRITE;
+/*!40000 ALTER TABLE `ds_users` DISABLE KEYS */;
 
-INSERT INTO `ds_user` (`user`, `password`, `group`, `status`, `inactive_time`, `added`, `added_by`, `login_attempts`, `last_login_attempt`, `last_login_success`, `last_login_ip`, `administrator`)
+INSERT INTO `ds_users` (`user_id`, `username`, `password`, `group`, `status`, `administrator`, `inactive_time`, `added`, `added_by`, `login_attempts`, `last_login_attempt`, `last_login_success`, `last_login_ip`)
 VALUES
-  (X'726F6F74',X'24327924313024677A4E6535594C6E37347172616B6C56543073314465705142524A6A4D557454703674336D53446767647A635A5A6F714A42347965',X'44656661756C74',1,NULL,'0000-00-00 00:00:00',X'53595354454D',0,NULL,NULL,NULL,1);
+  (1,'root','$2y$10$6aHZ9PKvl5PdUXSEI2gUNey6hJJAJm5ZO/j/T5iTZiWxBMpAWcoVa',1,1,1,'0000-00-00 00:00:00','0000-00-00 00:00:00','SYSTEM',0,'0000-00-00 00:00:00','0000-00-00 00:00:00','null');
 
-/*!40000 ALTER TABLE `ds_user` ENABLE KEYS */;
+/*!40000 ALTER TABLE `ds_users` ENABLE KEYS */;
 UNLOCK TABLES;
 
 

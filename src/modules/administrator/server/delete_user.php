@@ -21,43 +21,28 @@
 // +-------------------------------------------------------------------------+
 
 // Include and create a new Dynamic Suite Instance
-require_once($_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php');
-
-// On valid request
-if(
-    $ds->checkPermission('ds_admin_user') &&
-    isset($_POST['user'])
-) {
-
-    // API Responses
-    define('OK', 'User deleted successfully');
-
-    // Query for deleting users
-    $query = 'DELETE FROM `ds_user` WHERE `user` = ?';
-
-    // If no database error is found on execution
-    if($ds->query($query, $_POST['user'])) {
-
-        // Log the event
-        $ds->logEvent('User Deleted', USER_DELETED, $_POST['user']);
-
-        // Send the response
-        die($ds->APIResponse('OK', 0, OK));
-
-    }
-
-    // If database errors are present
-    else {
-
-        die($ds->APIResponse());
-
-    }
-
-}
+require_once $_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php';
 
 // On invalid request
-else {
-
+if(
+    !$ds->checkPermission('ds_admin_user') ||
+    !isset($_POST['user_id']) ||
+    !isset($_POST['username'])
+)
     die($ds->APIResponse());
 
-}
+// API Responses
+define('OK', 'User deleted successfully');
+
+// Query for deleting users
+$query = 'DELETE FROM `ds_users` WHERE `user_id` = ?';
+
+// On query failure
+if(!$ds->query($query, $_POST['user_id']))
+    die($ds->APIResponse());
+
+// Log the event
+$ds->logEvent('User Deleted', USER_DELETED, $_POST['username']);
+
+// Send the response
+die($ds->APIResponse('OK', 0, OK));

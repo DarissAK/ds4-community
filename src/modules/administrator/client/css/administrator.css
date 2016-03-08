@@ -36,19 +36,33 @@
     padding: 0.25em 0 0.25em 0; }
 
 .ds-user-edit, .ds-permission-edit, .ds-group-edit {
-  margin-bottom: 7em; }
+  margin: 1em 0 7em 0; }
   .ds-user-edit .btn, .ds-permission-edit .btn, .ds-group-edit .btn {
     margin-bottom: 1em; }
   .ds-user-edit .btn-danger, .ds-permission-edit .btn-danger, .ds-group-edit .btn-danger {
     float: right; }
-  .ds-user-edit h3, .ds-permission-edit h3, .ds-group-edit h3 {
-    margin-top: 0.35em; }
+  .ds-user-edit h4, .ds-permission-edit h4, .ds-group-edit h4 {
+    margin: 2em 0 0 0 !important; }
+  .ds-user-edit hr, .ds-permission-edit hr, .ds-group-edit hr {
+    margin-top: 0.5em; }
   .ds-user-edit table tr td:nth-child(1), .ds-permission-edit table tr td:nth-child(1), .ds-group-edit table tr td:nth-child(1) {
     font-weight: bold; }
 
-.ds-user-add h3 {
-  margin-top: 0.35em; }
-.ds-user-add .btn {
-  margin-bottom: 1em; }
+.ds-user-add {
+  padding-top: 1em; }
+  .ds-user-add button {
+    margin-bottom: 1em; }
+
+#password-collapse {
+  cursor: pointer; }
+
+.permission-check {
+  font-size: 1.2em;
+  padding-bottom: 0.9em; }
+  .permission-check div {
+    padding-left: 0.6em;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none; }
 
 /*# sourceMappingURL=administrator.css.map */

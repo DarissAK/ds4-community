@@ -20,18 +20,16 @@
 // +-------------------------------------------------------------------------+
 
 // Add an alert bubble after a given element
-// Arguments:
-// message  - Alert message
-// severity - Alert Severity (0-3)
-// after    - Put the alert after the given selector
-// id       - Set the ID of the alert
-// group    - Optional bootstrap input group for feedback
+// String message - Alert message
+// Int severity   - Alert Severity (0-3)
+// String after   - Put the alert after the given selector
+// String id      - Set the ID of the alert
+// String group   - Optional bootstrap input group for feedback
 function ds_alert(message, severity, after, id, group) {
 
-    // OPTIONAL: group for feedback
-    if(typeof group !== 'undefined') {
-        ds_error(group);
-    }
+    // Optional elements
+    if(typeof group !== 'undefined') ds_error(group);
+    if(typeof id === 'undefined') id = 'generic-alert';
 
     // Remove alert messages of the same ID
     $('#' + id).remove();
@@ -39,32 +37,13 @@ function ds_alert(message, severity, after, id, group) {
     // The alert type
     var type;
 
-    // Case switch for severity
-    switch(severity) {
-
-        // Success
-        case 0:
-            type = 'alert-success';
-            break;
-
-        // Warning
-        case 2:
-            type = 'alert-warning';
-            break;
-
-        // Danger
-        case 3:
-            type = 'alert-danger';
-            break;
-
-        // Info (Default)
-        default:
-            type = 'alert-info';
-            break;
-    }
+    if(severity === 0) type = 'alert-success';
+    else if(severity === 2) type = 'alert-warning';
+    else if(severity === 3) type = 'alert-danger';
+    else type = 'alert-info';
 
     // Generate the alert tag
-    var alert = '<div id="' + id + '" class="alert ' + type +
+    var alert = '<div id="' + id + '" class="alert ds-alert ' + type +
                 '" role="alert">' + message + '</div>';
 
     // Place the alert after the given element
@@ -73,33 +52,37 @@ function ds_alert(message, severity, after, id, group) {
 }
 
 // Bootstrap feedback error
-// Arguments:
-// selector - The selector to add feedback too
+// String selector - The selector to add feedback too
 function ds_error(selector) {
     $(selector).addClass('has-error has-feedback');
 }
 
 // Clear bootstrap feedback errors
-function ds_clear_errors() {
-    var errors = $('.has-error, .has-feedback');
-    errors.removeClass('has-error has-feedback');
+// Will optionally clear alerts if any argument is given
+function ds_clear_errors(alerts) {
+    if(typeof alerts !== 'undefined') $('.ds-alert').remove();
+    $('.has-error, .has-feedback').removeClass('has-error has-feedback');
 }
 
 // Filter tables by an input string (bind event)
-// Arguments:
-// sTable - Table Selector
-// sInput - Input Selector
-// sCount - Optional visible row indicator selector
-function ds_table_search(sTable, sInput, sCount) {
+// String table - Table Selector
+// String input - Input Selector
+// String count - Optional visible row indicator selector
+function ds_table_search(table, input, count) {
+
+    // If a count container is given, update it (initial)
+    if(typeof count !== 'undefined') {
+        count.html(table.find('tbody tr:visible').length);
+    }
 
     // Bind the event
-    sInput.on('input', function() {
+    input.on('input', function() {
 
         // Get the search value from the input
-        var input = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+        var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
 
         // Get all of the table rows
-        var rows = sTable.find('tbody tr');
+        var rows = table.find('tbody tr');
 
         // Show rows, then filter out non-matching ones
         rows.show().filter(function() {
@@ -108,39 +91,59 @@ function ds_table_search(sTable, sInput, sCount) {
             var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
 
             // Return the index of the input on the row
-            return !~text.indexOf(input);
+            return !~text.indexOf(val);
 
         }).hide();
 
         // If a count container is given, update it
-        if(typeof sCount !== 'undefined') {
-            sCount.html(sTable.find('tbody tr:visible').length);
+        if(typeof count !== 'undefined') {
+            count.html(table.find('tbody tr:visible').length);
         }
 
         // If the table is striped, re-stripe it
-        if(sTable.hasClass('table-striped')) {
-            sTable.find('tbody tr:visible:even').css('background', '#f9f9f9', 'important');
-            sTable.find('tbody tr:visible:odd').css('background', 'inherit', 'important');
+        if(table.hasClass('table-striped')) {
+            table.find('tbody tr:visible:even').css('background', '#f9f9f9', 'important');
+            table.find('tbody tr:visible:odd').css('background', 'inherit', 'important');
         }
 
     });
 
 }
 
+// Set button state and loading values
+// Boolean enabled - If the button is enabled or disabled
+// String html - The text to show on the button
+$.fn.lbtn = function(enabled, html) {
+
+    // Enable the button
+    if(enabled === true) {
+        this.attr('disabled', false);
+        this.html(html);
+    }
+
+    // Disable the button
+    else {
+        var icon = '<i class="fa fa-spin fa-spinner"></i>';
+        this.attr('disabled', true);
+        this.html(icon + ' ' + html);
+    }
+
+};
+
 // Dynamic Suite Global Javascript
 $(function() {
 
     // Login Function
-    $('.ds-login').on('click', 'input:submit', function() {
+    $('.ds-login').find('input:submit').on('click', function() {
+
+        // Clear any errors
+        ds_clear_errors(true);
 
         // The login button
         var button = $(this);
 
         // Disable the login button
-        button.attr('disabled', true);
-
-        // Clear any errors
-        ds_clear_errors();
+        button.attr('disabled', true).val('Logging in...');
 
         // Data for AJAX request
         var data = {
@@ -148,95 +151,38 @@ $(function() {
             password: $('#password').val()
         };
 
-        // Input for group
-        var grp  = $('.input-group');
+        // AJAX request for login
+        $.post('server/fn_login.php', data, function(returned) {
 
-        // Put the response message after this
-        var msg_loc = 'form div div:first';
+            // Parsed Response
+            var response = $.parseJSON(returned);
 
-        // ID of the alert response
-        var msg_id  = 'login-msg';
+            // On success, go to the default page
+            if(response.status === 'OK') {
+                window.location.href = response.data;
+            }
 
-        // If username or password is blank
-        if(data.username === '' || data.password === '') {
-            ds_alert(
-                'Invalid username or password',
-                3,
-                msg_loc,
-                msg_id,
-                grp
-            );
+            // On credential fail
+            else {
 
-            // Re-enable the login button
-            button.attr('disabled', false);
+                // Alert Message
+                ds_alert(
+                    response.message,
+                    response.severity,
+                    'form div div:first'
+                );
 
-        }
-
-        // If there is a username and password
-        else {
-
-            // AJAX request for login
-            $.post('server/fn_login.php', data, function(returned) {
-
-                try {
-
-                    // Parsed Response
-                    var response = $.parseJSON(returned);
-
-                    // On success, go to the default page
-                    if(response.status === 'OK') {
-                        window.location.href = response.data;
-                    }
-
-                    // On credential fail
-                    else if(response.status === 'ACCT_FAIL') {
-
-                        // Alert Message
-                        ds_alert(
-                            response.message,
-                            response.severity,
-                            msg_loc,
-                            msg_id,
-                            grp
-                        );
-
-                    }
-
-                    // Any other response
-                    else {
-
-                        // Alert Message
-                        ds_alert(
-                            response.message,
-                            response.severity,
-                            msg_loc,
-                            msg_id
-                        );
-                    }
-
-                }
-
-                catch(e) {
-
-                    // Alert Message
-                    ds_alert(
-                        'An internal error occurred, ' +
-                        'please contact your system administrator',
-                        3,
-                        msg_loc,
-                        msg_id
-                    );
-
+                // Set input group error
+                if(response.status === 'ACCT_FAIL') {
+                    ds_error('.input-group')
                 }
 
                 // Re-enable the login button
-                button.attr('disabled', false);
+                button.attr('disabled', false).val('Login');
 
-            });
+            }
 
-        }
-
-        return false;
+        });
 
     });
 
@@ -311,16 +257,16 @@ $(function() {
         var path = window.location.pathname.substr(1).split('/');
 
         // The current module
-        var module = $('#' + path[0]);
+        var module = $('#ds-nav-' + path[0]);
 
         // The current page (if any)
-        var page = $('#' + path[0] + '-' + path[1]);
+        var page = $('#ds-nav-' + path[0] + '-' + path[1]);
 
         // The current tab (if any)
-        var tab = $('#' + path[0] + '-' + path[1] + '-' + path[2]);
+        var tab = $('#ds-nav-' + path[0] + '-' + path[1] + '-' + path[2]);
 
         // If a module is present
-        if (module.length) {
+        if(module.length) {
 
             // Set the module to active
             module.parent().find('a:first').addClass('ds-nav-active');
@@ -332,17 +278,24 @@ $(function() {
             // Open the module accordion menu (if any)
             module.parent().find('ul').addClass('in');
 
-            // If no page is found
-            else {
+            // If a page is present
+            if(page.length && page !== '') {
 
-                // Try and set the 1st available page to active
-                nav.find('ul li:first a:first')
-                    .addClass('ds-nav-active');
+                // Set the page navigation tab to active
+                page.addClass('ds-nav-active');
+
+            }
+
+            // If the tab container isn't found
+            if(!tabs.length) {
+
+                // Add padding to tab-less modules
+                body.css('padding-top', '1em');
 
             }
 
             // If tabs are present
-            if (tab.length && tab !== '') {
+            if(tab.length && tab !== '') {
 
                 // Set the current tab to active
                 tab.addClass('active');

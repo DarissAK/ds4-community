@@ -21,176 +21,109 @@
 // +-------------------------------------------------------------------------+
 
 // Include and create a new Dynamic Suite Instance
-require_once($_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php');
+require_once $_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php';
 
 // On valid request
 if(
-    $ds->checkPermission('ds_admin_permission') &&
-    isset($_POST['group']) &&
-    isset($_POST['group_old']) &&
-    isset($_POST['description']) &&
-    isset($_POST['permissions'])
-) {
-
-    // API Responses
-    define('OK',        'Group Updated');
-    define('PERM_FAIL', 'Group already exists');
-
-    // If the group name isn't changing
-    if($_POST['group'] === $_POST['group_old']) {
-
-        // Update meta query
-        $meta = 'UPDATE `ds_group_meta` SET ' .
-                '`description` = ? WHERE `group` = ?';
-
-        // Query meta data
-        $meta_data = [
-            $_POST['description'],
-            $_POST['group']
-        ];
-
-        // Delete old perms query
-        $delete = 'DELETE FROM `ds_group_data` WHERE `group` = ?';
-
-        // Query perm data
-        $perm_data = [];
-
-        // Insert new perms query
-        $update = 'INSERT INTO `ds_group_data` (`group`, `permission`) VALUES ';
-
-        // Increment
-        $i = 0;
-
-        foreach($_POST['permissions'] as $data) {
-
-            // Skip zero values
-            if(!$data['value']) continue;
-
-            // Append string and add values
-            $update .= '(?,?),';
-            array_push($perm_data, $_POST['group']);
-            array_push($perm_data, $data['name']);
-
-            // Increment
-            $i++;
-
-        }
-
-        // Remove trailing comma
-        $update = rtrim($update, ',');
-
-        // Run queries
-        $ds->query($meta, $meta_data);
-        $ds->query($delete, $_POST['group']);
-        if($i) $ds->query($update, $perm_data);
-
-        // On query success
-        if(!$ds->db_error) {
-
-            // Log the event
-            $ds->logEvent('Group ' . $_POST['group'] . ' Updated', GROUP_UPDATED);
-
-            // Successful response
-            die($ds->APIResponse('OK', 0, OK));
-
-        }
-
-        // On query failure
-        else {
-
-            die($ds->APIResponse());
-
-        }
-
-    }
-
-    // If the group name is changing
-    else {
-
-        // If the group already exists
-        if(array_key_exists($_POST['group'], $ds->getPermissionGroups())) {
-
-            // Failed response
-            die($ds->APIResponse('PERM_FAIL', 3, PERM_FAIL));
-
-        }
-
-        // Group doesn't exist, update it
-        else {
-
-            // Update meta query
-            $meta = 'UPDATE `ds_group_meta` SET `group` = ?, ' .
-                    '`description` = ? WHERE `group` = ?';
-
-            // Query meta data
-            $meta_data = [
-                $_POST['group'],
-                $_POST['description'],
-                $_POST['group_old']
-            ];
-
-            // Delete old perms query
-            $delete = 'DELETE FROM `ds_group_data` WHERE `group` = ?';
-
-            // Query perm data
-            $perm_data = [];
-
-            // Insert new perms query
-            $update = 'INSERT INTO `ds_group_data` (`group`, `permission`) VALUES ';
-
-            // Increment
-            $i = 0;
-
-            foreach($_POST['permissions'] as $data) {
-
-                // Skip zero values
-                if(!$data['value']) continue;
-
-                // Append string and add values
-                $update .= '(?,?),';
-                array_push($perm_data, $_POST['group']);
-                array_push($perm_data, $data['name']);
-
-                // Increment
-                $i++;
-
-            }
-
-            // Remove trailing comma
-            $update = rtrim($update, ',');
-
-            // Run queries
-            $ds->query($meta, $meta_data);
-            $ds->query($delete, $_POST['group_old']);
-            if($i) $ds->query($update, $perm_data);
-
-            // On query success
-            if(!$ds->db_error) {
-
-                // Log the event
-                $ds->logEvent('Group ' . $_POST['group'] . ' Updated', GROUP_UPDATED);
-
-                // Successful response
-                die($ds->APIResponse('OK', 0, OK));
-
-            }
-
-            // On query failure
-            else {
-
-                die($ds->APIResponse());
-
-            }
-
-        }
-
-    }
-
-}
-
-// On invalid request
-else {
-
+    !$ds->checkPermission('ds_admin_permission') ||
+    !isset($_POST['group']) ||
+    !isset($_POST['group_id']) ||
+    !isset($_POST['group_old']) ||
+    !isset($_POST['description'])
+)
     die($ds->APIResponse());
 
+// API Responses
+define('GROUP_FAIL',   'Group already exists');
+define('GROUP_L_FAIL', 'Group name too short');
+define('DESC_L_FAIL',  'Description too short');
+define('OK',           'Group Updated');
+
+// Global Settings
+define('MIN_GROUP_LENGTH', 2);
+define('MIN_DESC_LENGTH',  4);
+
+// If the group name is changing
+if(strcasecmp($_POST['group'], $_POST['group_old'])) {
+
+    // Test query
+    $test = 'SELECT * FROM `ds_group_meta` WHERE `name` = ?';
+
+    // Group name already in use
+    if(is_array($ds->query($test, $_POST['group'])))
+        die($ds->APIResponse('GROUP_FAIL', 3, GROUP_FAIL));
+
+    // Group name is too short
+    if(strlen($_POST['group']) < MIN_GROUP_LENGTH)
+        die($ds->APIResponse('GROUP_L_FAIL', 3, GROUP_L_FAIL));
+
 }
+
+// Description is too short
+if(strlen($_POST['description']) < MIN_DESC_LENGTH)
+    die($ds->APIResponse('DESC_L_FAIL', 3, DESC_L_FAIL));
+
+// Query for updating metadata
+$query = 'UPDATE `ds_group_meta` SET `name` = ?, ' .
+         '`description` = ? WHERE `group_id` = ?';
+
+// New metadata
+$data = [
+    $_POST['group'],
+    $_POST['description'],
+    $_POST['group_id']
+];
+
+// Update the metadata
+if(!$ds->query($query, $data))
+    die($ds->APIResponse());
+
+// Clear old permissions
+$query = 'DELETE FROM `ds_group_data` WHERE `group_id` = ?';
+if(!$ds->query($query, $_POST['group_id']))
+    die($ds->APIResponse());
+
+// If there are permissions to add
+if(
+    isset($_POST['permissions']) &&
+    is_array($_POST['permissions']) &&
+    !empty($_POST['permissions'])
+) {
+
+    // Begin query for adding data
+    $query = 'INSERT INTO `ds_group_data` ' .
+             '(`group_id`, `permission_id`) VALUES ';
+
+    // Group data
+    $data = [];
+
+    // Loop through all of the given permissions
+    foreach($_POST['permissions'] as $permission) {
+
+        // Get the permission ID
+        $group_id      = $_POST['group_id'];
+        $permission_id = explode('_', $permission['name'])[1];
+
+        // Update the query
+        $query .= '(?, ?),';
+
+        // Add the data
+        array_push($data, $group_id);
+        array_push($data, $permission_id);
+
+    }
+
+    // Trim off the trailing comma
+    $query = rtrim($query, ',');
+
+    // Update the data
+    if(!$ds->query($query, $data))
+        die($ds->APIResponse());
+
+}
+
+// Log the event
+$ds->logEvent("Group {$_POST['group']} Updated", GROUP_UPDATED);
+
+// OK response
+die($ds->APIResponse('OK', 0, OK));

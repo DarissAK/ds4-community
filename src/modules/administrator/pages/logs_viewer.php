@@ -21,62 +21,53 @@
 // +-------------------------------------------------------------------------+
 
 // If the user has the proper permissions and session
-if($ds->checkPermission('ds_admin_logs')) {
+$ds->validatePermission('ds_admin_logs');
 
-    // Table body
-    $tbody = '';
+// Table body
+$tbody = '';
 
-    // Query for getting all of the active users
-    $query = 'SELECT * FROM `ds_log` ' .
-             'ORDER BY `id` DESC ' .
-             'LIMIT 250';
+// Query for getting all of the active users
+$query = 'SELECT * FROM `ds_logs` ' .
+         'ORDER BY `log_id` DESC ' .
+         'LIMIT 250';
 
-    // Execute the query and continue if success
-    if(is_array($logs = $ds->query($query))) {
+// Execute the query and continue if success
+if(is_array($logs = $ds->query($query))) {
 
-        // Loop through last 250 logs
-        foreach($logs as $log) {
+    // Loop through last 250 logs
+    foreach($logs as $log) {
 
-            // Format the timestamp
-            $log_time =
-                $ds->timestampSQL2Format($log['time']);
+        // Format the timestamp
+        $log_time =
+            $ds->timestampSQL2Format($log['time']);
 
-            // Create the body row
-            $tbody .= '<tr>';
-            $tbody .= "<td>{$log['id']}</td>";
-            $tbody .= "<td>$log_time</td>";
-            $tbody .= "<td>{$log['type']}</td>";
-            $tbody .= "<td>{$log['creator']}</td>";
-            $tbody .= "<td>{$log['affected']}</td>";
-            $tbody .= "<td>{$log['event']}</td>";
-            $tbody .= "<td>{$log['ip']}</td>";
-            $tbody .= "<td>{$log['session']}</td>";
-            $tbody .= '</tr>';
-
-        }
-
-        // Template file to load
-        $file = '/modules/administrator/templates/logs_view.html';
-
-        // Load the template
-        $template = $ds->loadTemplate($file);
-
-        // Add the table body to the template, then display it
-        echo str_replace('{{tbody}}', $tbody, $template);
+        // Create the body row
+        $tbody .= '<tr>';
+        $tbody .= "<td>{$log['log_id']}</td>";
+        $tbody .= "<td>$log_time</td>";
+        $tbody .= "<td>{$log['type']}</td>";
+        $tbody .= "<td>{$log['creator']}</td>";
+        $tbody .= "<td>{$log['affected']}</td>";
+        $tbody .= "<td>{$log['event']}</td>";
+        $tbody .= "<td>{$log['ip']}</td>";
+        $tbody .= '</tr>';
 
     }
 
-    // Error loading logs
-    else {
+    // Template file to load
+    $file = '/modules/administrator/templates/logs_view.html';
 
-        echo 'Error loading logs';
+    // Load the template
+    $template = $ds->loadTemplate($file);
 
-    }
+    // Add the table body to the template, then display it
+    echo str_replace('{{tbody}}', $tbody, $template);
 
 }
 
+// Error loading logs
 else {
 
-    echo 'Permission denied';
+    echo 'Error loading logs';
 
 }

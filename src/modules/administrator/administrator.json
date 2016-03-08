@@ -7,6 +7,9 @@
     "perm"    : "ds_admin",
     "active"  : true,
     "icon"    : "fa-cogs",
+    "css" : {
+      "0" : "/modules/administrator/client/css/administrator.css"
+    },
     "content" : {
       "users" : {
         "name"   : "User Management",
@@ -18,12 +21,19 @@
             "name"    : "Users",
             "perm"    : "ds_admin_user",
             "active"  : true,
+            "js"      : {
+              "0" : "/modules/administrator/client/js/user_list.js",
+              "1" : "/modules/administrator/client/js/user_edit.js"
+            },
             "content" : "/modules/administrator/pages/user_list.php"
           },
           "add" : {
             "name"    : "Add User",
             "perm"    : "ds_admin_user",
             "active"  : true,
+            "js"      : {
+              "0" : "/modules/administrator/client/js/user_add.js"
+            },
             "content" : "/modules/administrator/pages/user_add.php"
           }
         }
@@ -38,12 +48,20 @@
             "name"    : "Groups",
             "perm"    : "ds_admin_permission",
             "active"  : true,
+            "js"      : {
+              "0" : "/modules/administrator/client/js/group_list.js",
+              "1" : "/modules/administrator/client/js/group_edit.js"
+            },
             "content" : "/modules/administrator/pages/group_list.php"
           },
           "list" : {
             "name"    : "Permissions",
             "perm"    : "ds_admin_permission",
             "active"  : true,
+            "js"      : {
+              "0" : "/modules/administrator/client/js/permission_list.js",
+              "1" : "/modules/administrator/client/js/permission_edit.js"
+            },
             "content" : "/modules/administrator/pages/permission_list.php"
           }
         }
@@ -53,14 +71,11 @@
         "perm"   : "ds_admin_logs",
         "active" : true,
         "icon"   : "fa-list",
+        "js"      : {
+          "0" : "/modules/administrator/client/js/logs_viewer.js"
+        },
         "content" : "/modules/administrator/pages/logs_viewer.php"
       }
-    },
-    "css" : {
-      "0" : "/modules/administrator/client/administrator.css"
-    },
-    "js" : {
-      "0" : "/modules/administrator/client/administrator.js"
     }
   }
 }
