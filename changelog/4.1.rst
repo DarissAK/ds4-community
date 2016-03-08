@@ -1,41 +1,41 @@
 Dynamic Suite 4.1 Change Log
 ----------------------------
 
-[Removed] Summernote Support
-[Removed] Jquery UI Support
-[Removed] Bootstrap Datepicker Support
-[Removed] Jquery MASK Support
-[Removed] Spectrum Color Picker Support
-[Removed] Non-minified JQuery
-[Removed] $ds->username. You should now use $ds->user_id
-[Removed] $ds->registerPermission(), $ds->registerGroup() in favor of pure API calls
+- [Removed] Summernote Support
+- [Removed] Jquery UI Support
+- [Removed] Bootstrap Datepicker Support
+- [Removed] Jquery MASK Support
+- [Removed] Spectrum Color Picker Support
+- [Removed] Non-minified JQuery
+- [Removed] $ds->username. You should now use $ds->user_id
+- [Removed] $ds->registerPermission(), $ds->registerGroup() in favor of pure API calls
 
 
-[Add] The ability to include specific CSS and JS files for individual pages and tabs
-[Add] New jQuery function $.fn.lbtn() for setting button states and values
+- [Add] The ability to include specific CSS and JS files for individual pages and tabs
+- [Add] New jQuery function $.fn.lbtn() for setting button states and values
 
 
-[Change] Cleaned and refactored code
-[Change] $ds->loadTemplate can now take an optional $root directory
-[Change] Session checking in test and about modules
-[Change] Removed single chevron from navigation sub menu, added double chevron (smaller)
-[Change] Navigation bar ID's are now prefixed with "ds-nav"
-[Change] $ds time functions will now display "Never" if given empty times or dates
-[Change] All columns now collate to utf8mb4_general_ci (instead of utf8mb4_bin). Username's are no longer case sensitive.
-[Change] SQL tables now contain an ID column and proper FK setup
-[Change] $ds->validatePermission() now returns a boolean as well as kills the script
-[Change] Added htmlentities() to all passed string values
-[Change] Username's can now be changed in the administrator module
-[Change] $ds->logEvent() will now set the creator to SYSTEM if no user account exists
-[Change] ds_alert() id argument may be omitted. If it is, the ID of the alert will be set to 'generic-alert'
-[Change] UI Button tweaks
+- [Change] Cleaned and refactored code
+- [Change] $ds->loadTemplate can now take an optional $root directory
+- [Change] Session checking in test and about modules
+- [Change] Removed single chevron from navigation sub menu, added double chevron (smaller)
+- [Change] Navigation bar ID's are now prefixed with "ds-nav"
+- [Change] $ds time functions will now display "Never" if given empty times or dates
+- [Change] All columns now collate to utf8mb4_general_ci (instead of utf8mb4_bin). Username's are no longer case sensitive.
+- [Change] SQL tables now contain an ID column and proper FK setup
+- [Change] $ds->validatePermission() now returns a boolean as well as kills the script
+- [Change] Added htmlentities() to all passed string values
+- [Change] Username's can now be changed in the administrator module
+- [Change] $ds->logEvent() will now set the creator to SYSTEM if no user account exists
+- [Change] ds_alert() id argument may be omitted. If it is, the ID of the alert will be set to 'generic-alert'
+- [Change] UI Button tweaks
 
 
-[Bug Fix] Navigation bar button issue with current module and top button both activating in Chrome
-[Bug Fix] Navigation bar :focus coloring issue which caused the focused button to turn white
-[Bug Fix] No padding on module bodies where tabs were not present
-[Bug Fix] Setting tabs to inactive will now display properly
-[Bug Fix] Selector on events not binding on dynamic adds
+- [Bug Fix] Navigation bar button issue with current module and top button both activating in Chrome
+- [Bug Fix] Navigation bar :focus coloring issue which caused the focused button to turn white
+- [Bug Fix] No padding on module bodies where tabs were not present
+- [Bug Fix] Setting tabs to inactive will now display properly
+- [Bug Fix] Selector on events not binding on dynamic adds
 
 
-[Performance] The module JSON include directive now searches the current module, rather than the global module list
+- [Performance] The module JSON include directive now searches the current module, rather than the global module list
