@@ -58,7 +58,7 @@ if(
         // Update the body
         $body .= '<div class="checkbox permission-check">';
         $body .= '<label>';
-        $body .= "<input type='checkbox' name='perm_$permission' $checked/>";
+        $body .= "<input type='checkbox' name='perm_$permission' $checked />";
         $body .= '<div>' . htmlentities($data['description']) . '</div>';
         $body .= '</label>';
         $body .= '</div>';
