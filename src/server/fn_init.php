@@ -963,11 +963,11 @@ class dsInstance
             return true;
 
         // If the permission exists, and the user has it
-        if(
-            array_key_exists($permission, $this->permissions) &&
-            $this->permissions[$permission]['has']
-        )
-            return true;
+        foreach($this->permissions as $data) {
+            if($data['name'] === $permission) {
+                if($data['has']) return true;
+            }
+        }
 
         // No conditions matched
         return false;
