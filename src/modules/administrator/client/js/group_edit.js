@@ -34,10 +34,7 @@ $(function() {
             };
 
             // Send the POST request
-            $.post(ajax + 'update_group.php', data, function(returned) {
-
-                // Parse the response
-                var response = $.parseJSON(returned);
+            $.post(ajax + 'update_group.php', data, function(response) {
 
                 // Update the old values
                 if (response.status === 'OK') {
@@ -77,10 +74,7 @@ $(function() {
             };
 
             // Send the POST request
-            $.post(ajax + 'delete_group.php', data, function(returned) {
-
-                // Parse the response
-                var response = $.parseJSON(returned);
+            $.post(ajax + 'delete_group.php', data, function(response) {
 
                 // Toggle the modal
                 $('.modal').modal('toggle');

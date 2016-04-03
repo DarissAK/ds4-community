@@ -32,10 +32,7 @@ $(function() {
             ds_clear_errors(true);
 
             // Send the request
-            $.post(ajax + 'add_user.php', data, function(returned) {
-
-                // Parse the response
-                var response = $.parseJSON(returned);
+            $.post(ajax + 'add_user.php', data, function(response) {
 
                 // User added successfully
                 if(response.status === 'OK') {

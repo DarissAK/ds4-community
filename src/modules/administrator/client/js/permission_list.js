@@ -51,10 +51,7 @@ $(function() {
             };
 
             // Send the POST request
-            $.post(ajax + 'add_permission.php', data, function(returned) {
-
-                // Parse the response
-                var response = $.parseJSON(returned);
+            $.post(ajax + 'add_permission.php', data, function(response) {
 
                 // Add Success
                 if(response.status === 'OK') {

@@ -65,10 +65,7 @@ $(function() {
             };
 
             // Send the POST request
-            $.post(ajax + 'add_group.php', data, function(returned) {
-
-                // Parse the response
-                var response = $.parseJSON(returned);
+            $.post(ajax + 'add_group.php', data, function(response) {
 
                 // Set error location
                 var error = '.modal-body input:eq(1)';

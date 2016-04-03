@@ -406,6 +406,11 @@ class dsInstance
                     'please contact your system administrator',
         $data     = null
     ) {
+
+        // Set content header
+        header("Content-type: application/json");
+
+        // Encode the response
         return json_encode(
             [
                 'status'   => $status,

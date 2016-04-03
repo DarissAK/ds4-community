@@ -37,10 +37,7 @@ $(function() {
         function updateTable() {
 
             // On page load, update the tasks table
-            $.post(ajax + 'get_tasks.php', function(returned) {
-
-                // Parse the response
-                var response = $.parseJSON(returned);
+            $.post(ajax + 'get_tasks.php', function(response) {
 
                 // If the request succeeded
                 if(response.status === 'OK') {
@@ -110,12 +107,7 @@ $(function() {
             };
 
             // Send the post request
-            $.post(ajax + 'add_task.php', data, function(returned) {
-
-                console.log(returned);
-
-                // Parse the response
-                var response = $.parseJSON(returned);
+            $.post(ajax + 'add_task.php', data, function(response) {
 
                 // Set the returned status
                 var status = response.status;
@@ -242,10 +234,7 @@ $(function() {
             };
 
             // Send the post request
-            $.post(ajax + 'update_task.php', data, function(returned) {
-
-                // Parse the response
-                var response = $.parseJSON(returned);
+            $.post(ajax + 'update_task.php', data, function(response) {
 
                 // Set the returned status
                 var status = response.status;
@@ -315,10 +304,7 @@ $(function() {
             };
 
             // Send the post request
-            $.post(ajax + 'delete_task.php', data, function(returned) {
-
-                // Parse the response
-                var response = $.parseJSON(returned);
+            $.post(ajax + 'delete_task.php', data, function(response) {
 
                 // Set the returned status
                 var status = response.status;

@@ -152,10 +152,7 @@ $(function() {
         };
 
         // AJAX request for login
-        $.post('server/fn_login.php', data, function(returned) {
-
-            // Parsed Response
-            var response = $.parseJSON(returned);
+        $.post('server/fn_login.php', data, function(response) {
 
             // On success, go to the default page
             if(response.status === 'OK') {

@@ -64,10 +64,7 @@ $(function() {
             }
 
             // Send the POST request
-            $.post(ajax + 'update_user.php', data, function(returned) {
-
-                // Parse the response
-                var response = $.parseJSON(returned);
+            $.post(ajax + 'update_user.php', data, function(response) {
 
                 // OK Response
                 if(response.status === 'OK') {
@@ -119,10 +116,7 @@ $(function() {
             };
 
             // Send the POST request
-            $.post(ajax + 'delete_user.php', data, function(returned) {
-
-                // Parse the response
-                var response = $.parseJSON(returned);
+            $.post(ajax + 'delete_user.php', data, function(response) {
 
                 // Request successful
                 if(response.status === 'OK') {
