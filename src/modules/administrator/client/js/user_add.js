@@ -10,16 +10,16 @@ $(function() {
     // If the page exists
     if(page.length) {
 
-        // On add user button click
-        page.find('button').on('click', function() {
+        // Add user
+        page.on('click', 'button', function() {
 
             // Button to disable
             var button = $(this);
 
             // Disable the button
-            button.lbtn(false, 'Adding User...');
+            button.lBtn(false, 'Adding...');
 
-            // Request data (user data)
+            // Request data
             var data = {
                 username:   $('#username').val(),
                 password_1: $('#password-1').val(),
@@ -28,11 +28,11 @@ $(function() {
                 group:      $('#group').val()
             };
 
-            // Remove any feedback errors
-            ds_clear_errors(true);
+            // Clear any errors
+            ds_clear_errors();
 
             // Send the request
-            $.post(ajax + 'add_user.php', data, function(response) {
+            $.post(ajax + 'user_add.php', data, function(response) {
 
                 // User added successfully
                 if(response.status === 'OK') {
@@ -50,7 +50,7 @@ $(function() {
                 else {
 
                     // Re-enable the button
-                    button.lbtn(true, 'Add User');
+                    button.lBtn(true, 'Add User');
 
                 }
 

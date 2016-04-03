@@ -57,10 +57,9 @@ function ds_error(selector) {
     $(selector).addClass('has-error has-feedback');
 }
 
-// Clear bootstrap feedback errors
-// Will optionally clear alerts if any argument is given
-function ds_clear_errors(alerts) {
-    if(typeof alerts !== 'undefined') $('.ds-alert').remove();
+// Clear bootstrap feedback errors and ds_alert alerts
+function ds_clear_errors() {
+    $('.ds-alert').remove();
     $('.has-error, .has-feedback').removeClass('has-error has-feedback');
 }
 
@@ -113,7 +112,7 @@ function ds_table_search(table, input, count) {
 // Set button state and loading values
 // Boolean enabled - If the button is enabled or disabled
 // String html - The text to show on the button
-$.fn.lbtn = function(enabled, html) {
+$.fn.lBtn = function(enabled, html) {
 
     // Enable the button
     if(enabled === true) {
@@ -130,6 +129,21 @@ $.fn.lbtn = function(enabled, html) {
 
 };
 
+// Set counter value up or down by one from the current
+$.fn.cUpdate = function(type) {
+
+    // If type if false, increment the counter
+    if(type !== true) {
+        this.html(parseInt(this.html()) + 1);
+    }
+
+    // if type is true, decrement the counter
+    else {
+        this.html(parseInt(this.html()) - 1);
+    }
+
+};
+
 // Dynamic Suite Global Javascript
 $(function() {
 
@@ -137,7 +151,7 @@ $(function() {
     $('.ds-login').find('input:submit').on('click', function() {
 
         // Clear any errors
-        ds_clear_errors(true);
+        ds_clear_errors();
 
         // The login button
         var button = $(this);

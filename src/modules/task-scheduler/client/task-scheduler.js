@@ -58,7 +58,7 @@ $(function() {
         page.find('#add-task-modal').on('click', function() {
 
             // Clear any errors
-            ds_clear_errors(true);
+            ds_clear_errors();
 
             // Update the modal
             description.val('');
@@ -86,13 +86,13 @@ $(function() {
         page.on('click', '#add-task', function() {
 
             // Clear any errors
-            ds_clear_errors(true);
+            ds_clear_errors();
 
             // Set the button
             var button = $(this);
 
             // Disable the button
-            button.lbtn(false, 'Adding Task...');
+            button.lBtn(false, 'Adding Task...');
 
             // Post data to send
             var data = {
@@ -153,7 +153,7 @@ $(function() {
                 }
 
                 // Re-enable the button
-                button.lbtn(true, 'Add Task');
+                button.lBtn(true, 'Add Task');
 
             });
 
@@ -166,7 +166,7 @@ $(function() {
         page.on('click', 'tbody tr', function() {
 
             // Clear any errors
-            ds_clear_errors(true);
+            ds_clear_errors();
 
             // Update the modal
             modal.find('.modal-header h4').html('Edit Task');
@@ -212,13 +212,13 @@ $(function() {
         page.on('click', '#edit-task', function() {
 
             // Clear any errors
-            ds_clear_errors(true);
+            ds_clear_errors();
 
             // Set the button
             var button = $(this);
 
             // Disable the button
-            button.lbtn(false, 'Updating Task...');
+            button.lBtn(false, 'Updating Task...');
 
             // Post data
             var data = {
@@ -280,7 +280,7 @@ $(function() {
                 }
 
                 // Re-enable the button
-                button.lbtn(true, 'Update Task');
+                button.lBtn(true, 'Update Task');
 
             });
 
@@ -290,13 +290,13 @@ $(function() {
         page.on('click', '#delete-task', function() {
 
             // Clear any errors
-            ds_clear_errors(true);
+            ds_clear_errors();
 
             // Set the button
             var button = $(this);
 
             // Disable the button
-            button.lbtn(false, 'Deleting Task...');
+            button.lBtn(false, 'Deleting Task...');
 
             // Post data
             var data = {
@@ -340,7 +340,7 @@ $(function() {
                 }
 
                 // Re-enable the button
-                button.lbtn(true, 'Delete Task');
+                button.lBtn(true, 'Delete Task');
 
             });
 

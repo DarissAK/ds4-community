@@ -14,101 +14,95 @@ $(function() {
         page.find('strong').html(
             ds_table_search(
                 page.find('table'),
-                page.find('input:eq(0)'),
+                page.find('#search-area input'),
                 page.find('strong')
             )
         );
 
-        // Bind click event to add permission button
-        page.find('#header-area button').on('click', function() {
+        // Add permission modal
+        page.on('click', '#header-area button', function() {
+
+            // Clear any errors
+            ds_clear_errors();
 
             // Reset the inputs and errors
-            $('#permission').val('');
+            $('#name').val('');
             $('#description').val('');
-            ds_clear_errors(true);
 
             // Toggle the add modal
             $('.modal').modal();
 
         });
 
-        // On add permission
-        page.find('.modal .btn-primary').on('click', function() {
+        // Add permission
+        page.on('click', '.modal .btn-primary', function() {
 
-            // Reset any errors
-            ds_clear_errors(true);
+            // Clear any errors
+            ds_clear_errors();
 
             // Set the button
             var button = $(this);
 
             // Disable the button
-            button.lbtn(false, 'Adding Permission...');
+            button.lBtn(false, 'Adding...');
 
             // POST request data
             var data = {
-                permission:  $('#permission').val(),
+                name:        $('#name').val(),
                 description: $('#description').val()
             };
 
             // Send the POST request
-            $.post(ajax + 'add_permission.php', data, function(response) {
+            $.post(ajax + 'permission_add.php', data, function(response) {
+
+                // Set error location
+                var error = '.modal-body input:last';
 
                 // Add Success
                 if(response.status === 'OK') {
 
                     // Counter updates
-                    var counter = page.find('#search-area strong');
-                    counter.html(parseInt(counter.html()) + 1);
+                    page.find('#search-area strong').cUpdate();
 
-                    // Append the new permission to the table
+                    // Append the new row
                     page.find('table tbody').append(response.data);
 
                     // Close the modal
                     $('.modal').modal('toggle');
 
-                    // Display alert message
-                    ds_alert(
-                        response.message,
-                        response.severity,
-                        '#alert-entry'
-                    );
+                    // Set error location
+                    error = '#alert-entry';
 
                 }
 
-                // Internal errors
-                else {
-
-                    // If there are permission errors
+                    // Set feedback errors
                     if(
-                        response.status === 'PERM_FAIL' ||
-                        response.status === 'PERM_L_FAIL'
-                    ) ds_error('.permission-grp');
-
-                    // If there are description errors
-                    if(response.status === 'DESC_L_FAIL')
-                        ds_error('.description-grp');
+                        response.status === 'NAME_FAIL' ||
+                        response.status === 'NAME_L_FAIL'
+                    ) ds_error('.name-grp');
+                    if(
+                        response.status === 'DESC_L_FAIL'
+                    ) ds_error('.description-grp');
 
                     // Display alert message
                     ds_alert(
                         response.message,
                         response.severity,
-                        '.modal-body input:eq(1)'
+                        error
                     );
-
-                }
 
                 // Re-enable the button
-                button.lbtn(true, 'Add Permission');
+                button.lBtn(true, 'Add');
 
             });
 
         });
 
-        // Bind click event to permission table for editing permissions
-        page.find('tbody').on('click', 'tr', function() {
+        // Edit permission
+        page.on('click', 'tbody tr', function() {
 
-            // Get the permission from the 1st td in the row
-            var id = $(this).find('td:first').data('permission-id');
+            // Get the permission ID
+            var id = $(this).attr('data-id');
 
             // Redirect the user
             document.location.href =

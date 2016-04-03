@@ -49,7 +49,7 @@ if(
     $ip                 = $user['last_login_ip'];
 
     // Update template data
-    $template = str_replace('{{user_id}}', $user_id, $template);
+    $template = str_replace('{{id}}', $user_id, $template);
     $template = str_replace('{{username}}', $username, $template);
     $template = str_replace('{{added}}', $added, $template);
     $template = str_replace('{{added_by}}', $added_by, $template);
@@ -116,47 +116,39 @@ elseif (
     $ds->url[3] === 'inactive'
 ) {
 
-    // Execute the query and continue if success (array)
-    if(is_array($users = $ds->getUsers(false))) {
+    // Get inactive users
+    $users = $ds->getUsers(false);
 
-        // Loop through all inactive users
-        foreach ($users as $user) {
+    // Loop through all inactive users
+    foreach ($users as $user) {
 
-            // Format inactive timestamp
-            $inactive_date =
-                $ds->timestampSQL2Format($user['inactive_time']);
+        // Format inactive timestamp
+        $inactive_date =
+            $ds->timestampSQL2Format($user['inactive_time']);
 
-            // Append rows to table body
-            $tbody .= '<tr>';
-            $tbody .= "<td data-user-id='{$user['user_id']}'>";
-            $tbody .= htmlentities($user['username']) . "</td>";
-            $tbody .= "<td>$inactive_date</td>";
-            $tbody .= '</tr>';
-
-        }
-
-        // Template file to load
-        $file = '/modules/administrator/templates/user_list_inactive.html';
-
-        // Load the template
-        $template = $ds->loadTemplate($file);
-
-        // Location of the inactive users list
-        $view_href = "{$ds->domain}/administrator/users/list";
-
-        // Add the inactive user href to the template
-        $template = str_replace('{{view_href}}', $view_href, $template);
-
-        // Add the table body to the template, then render it
-        echo str_replace('{{tbody}}', $tbody, $template);
+        // Append rows to table body
+        $tbody .= '<tr>';
+        $tbody .= "<td data-user-id='{$user['user_id']}'>";
+        $tbody .= htmlentities($user['username']) . "</td>";
+        $tbody .= "<td>$inactive_date</td>";
+        $tbody .= '</tr>';
 
     }
 
-    else {
+    // Template file to load
+    $file = '/modules/administrator/templates/user_list_inactive.html';
 
-        echo 'Error loading users';
+    // Load the template
+    $template = $ds->loadTemplate($file);
 
-    }
+    // Location of the inactive users list
+    $view_href = "{$ds->domain}/administrator/users/list";
+
+    // Add the inactive user href to the template
+    $template = str_replace('{{view_href}}', $view_href, $template);
+
+    // Add the table body to the template, then render it
+    echo str_replace('{{tbody}}', $tbody, $template);
 
 }
 
@@ -167,16 +159,15 @@ else {
     $users = $ds->getUsers();
 
     // Loop through all active users
-    foreach ($users as $user) {
+    foreach($users as $user) {
 
         // Format last login timestamp
         $last_login =
             $ds->timestampSQL2Format($user['last_login_success']);
 
         // Append rows to table body
-        $tbody .= '<tr>';
-        $tbody .= "<td data-user-id='{$user['user_id']}'>";
-        $tbody .= htmlentities($user['username']) . "</td>";
+        $tbody .= "<tr data-id='{$user['user_id']}'>";
+        $tbody .= "<td>" . htmlentities($user['username']) . "</td>";
         $tbody .= "<td>" . htmlentities($user['group_name']) . "</td>";
         $tbody .= "<td>$last_login</td>";
         $tbody .= '</tr>';

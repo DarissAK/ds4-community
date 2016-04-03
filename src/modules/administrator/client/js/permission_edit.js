@@ -10,35 +10,32 @@ $(function() {
     // If the page exists
     if(page.length) {
 
-        // Permission selector
-        var permission = $('#permission');
-
-        // On click of the update permission button
-        page.find('#update-permission').on('click', function() {
+        // Update permission
+        page.on('click', '#update', function() {
 
             // Clear any errors
-            ds_clear_errors(true);
+            ds_clear_errors();
 
             // Set the button
             var button = $(this);
 
             // Disable the button
-            button.lbtn(false, 'Updating Permission...');
+            button.lBtn(false, 'Saving...');
 
             // POST request data
             var data = {
-                permission:     permission.val(),
-                description:    $('#description').val(),
-                permission_old: permission.data('permission-old'),
-                permission_id:  permission.data('permission-id')
+                id:          page.attr('data-id'),
+                name:        $('#name').val(),
+                old:         page.attr('data-old'),
+                description: $('#description').val()
             };
 
             // Send the POST request
-            $.post(ajax + 'update_permission.php', data, function(response) {
+            $.post(ajax + 'permission_update.php', data, function(response) {
 
                 // Update the old values
                 if(response.status === 'OK') {
-                    permission.data('permission-old', response.data);
+                    page.attr('data-old', response.data);
                     $('.modal-body strong').html(response.data);
                 }
 
@@ -49,43 +46,53 @@ $(function() {
                     '.ds-permission-edit > .btn-danger'
                 );
 
-                // Permission feedback
+                // Set feedback
                 if(
-                    response.status === 'PERM_FAIL' ||
-                    response.status === 'PERM_L_FAIL'
-                ) ds_error('.permission-grp');
-
-                // Description feedback
-                if(response.status === 'DESC_L_FAIL')
-                    ds_error('.description-grp');
+                    response.status === 'NAME_FAIL' ||
+                    response.status === 'NAME_L_FAIL'
+                ) ds_error('.name-grp');
+                if(
+                    response.status === 'DESC_L_FAIL'
+                ) ds_error('.description-grp');
 
                 // Re-enable the button
-                button.lbtn(true, 'Update Permission');
+                button.lBtn(true, 'Save Changes');
 
             });
 
         });
 
-        // On click of the delete permission button
-        page.find('.modal-footer .btn-danger').on('click', function() {
+        // Delete permission modal
+        page.on('click', '#delete', function() {
+
+            // Clear any errors
+            ds_clear_errors();
+
+            // Open the modal
+            $('.modal').modal();
+
+        });
+
+        // Delete permission
+        page.on('click', '.modal-footer .btn-danger', function() {
 
             // Set the button
             var button = $(this);
 
             // Disable the button
-            button.lbtn(false, 'Deleting Permission...');
+            button.lBtn(false, 'Deleting...');
 
             // POST request data
             var data = {
-                permission_id:  permission.data('permission-id'),
-                permission_old: permission.data('permission-old')
+                id:   page.attr('data-id'),
+                name: page.attr('data-old')
             };
 
             // Send the POST request
-            $.post(ajax + 'delete_permission.php', data, function(response) {
+            $.post(ajax + 'permission_delete.php', data, function(response) {
 
-                // Toggle the modal
-                $('.modal').modal('toggle');
+                // Close the modal
+                $('.modal').modal('hide');
 
                 // If the permission was deleted successfully
                 if(response.status === 'OK') {
@@ -100,8 +107,8 @@ $(function() {
 
                 } else {
 
-                    // Re-enable the button
-                    button.lbtn(false, 'Delete Permission')
+                    // Set the button state
+                    button.lBtn(false, 'Delete')
 
                 }
 

@@ -20,30 +20,31 @@
 // |  02110-1301, USA.                                                       |
 // +-------------------------------------------------------------------------+
 
-// Include and create a new Dynamic Suite Instance
+// Include dependencies
 require_once $_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php';
 
-// On invalid request
-if(
-    !$ds->checkPermission('ds_admin_permission') ||
-    !isset($_POST['group']) ||
-    !isset($_POST['description'])
-)
-    die($ds->APIResponse());
+// Check for valid request
+$ds->checkRequest(
+    'ds_admin_permission',
+    ['name', 'description']
+);
+
+// Formatted name
+$name = htmlentities($_POST['name']);
 
 // API Responses
-define('GROUP_FAIL',   'Group already exists');
-define('GROUP_L_FAIL', 'Group name too short');
-define('DESC_L_FAIL',  'Description too short');
-define('OK',           'Group added');
+define('NAME_FAIL',   'Group already exists');
+define('NAME_L_FAIL', 'Group name too short');
+define('DESC_L_FAIL', 'Description too short');
+define('OK',          "Group $name Added");
 
 // Global Settings
-define('MIN_GROUP_LENGTH', 2);
+define('MIN_NAME_LENGTH', 2);
 define('MIN_DESC_LENGTH',  4);
 
 // Group name is too short
-if(strlen($_POST['group']) < MIN_GROUP_LENGTH)
-    die($ds->APIResponse('GROUP_L_FAIL', 3, GROUP_L_FAIL));
+if(strlen($_POST['name']) < MIN_NAME_LENGTH)
+    die($ds->APIResponse('GROUP_L_FAIL', 3, NAME_L_FAIL));
 
 // Description is too short
 if(strlen($_POST['description']) < MIN_DESC_LENGTH)
@@ -51,8 +52,8 @@ if(strlen($_POST['description']) < MIN_DESC_LENGTH)
 
 // If the group already exists
 foreach($ds->getPermissionGroups() as $group) {
-    if(!strcasecmp($group['name'], $_POST['group']))
-        die($ds->APIResponse('GROUP_FAIL', 3, GROUP_FAIL));
+    if(!strcasecmp($group['name'], $_POST['name']))
+        die($ds->APIResponse('GROUP_FAIL', 3, NAME_FAIL));
 }
 
 // Query for adding groups
@@ -61,7 +62,7 @@ $query = 'INSERT INTO `ds_group_meta` ' .
 
 // Group data
 $data = [
-    $_POST['group'],
+    $_POST['name'],
     $_POST['description']
 ];
 
@@ -73,12 +74,12 @@ if(!$ds->query($query, $data))
 $id = $ds->db_conn->lastInsertId();
 
 // Log the event
-$ds->logEvent("Group {$data[0]} Added", GROUP_ADDED);
+$ds->logEvent(OK, GROUP_ADDED);
 
 // Row to append to the group table
-$tr  = '<tr>';
-$tr .= "<td data-group-id='$id'>" . htmlentities($data[0]) . "</td>";
-$tr .= '<td>' . htmlentities($data[1]) . '</td>';
+$tr  = "<tr data-id='$id'>";
+$tr .= "<td>$name</td>";
+$tr .= '<td>' . htmlentities($_POST['description']) . '</td>';
 $tr .= '</tr>';
 
 // Group add success

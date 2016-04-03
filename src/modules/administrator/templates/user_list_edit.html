@@ -1,4 +1,5 @@
-<div class="ds-user-edit">
+<div class="ds-user-edit" data-id="{{id}}" data-old="{{username}}">
+
     <table class="table table-bordered">
         <tr>
             <td>Added On</td>
@@ -17,12 +18,12 @@
             <td>{{last_login_ip}}</td>
         </tr>
     </table>
+
     <h4>Account Settings</h4>
     <hr>
     <div class="form-group username-grp">
         <label for="username">Username</label>
-        <input type="text" class="form-control" id="username"
-               data-user-id="{{user_id}}" value="{{username}}" data-username-old="{{username}}">
+        <input type="text" class="form-control" id="username" value="{{username}}">
     </div>
     <div class="form-group">
         <label for="status">Status</label>
@@ -38,9 +39,9 @@
     </div>
     {{administrator}}
 
-    <h4 id="password-collapse"><i class="fa fa-plus"></i> Change Password</h4>
-    <hr>
-    <div class="collapse" id="password-area">
+    <div id="reset-password"><a>Reset Password</a></div>
+
+    <div class="hide" id="password-area">
         <div class="form-group password-grp">
             <label for="password-1">Password</label>
             <input type="password" class="form-control" id="password-1">
@@ -51,14 +52,15 @@
         </div>
     </div>
 
-    <button class="btn btn-primary" id="update-user">Update User</button>
-    <button class="btn btn-danger" data-toggle="modal" data-target=".modal">Delete User</button>
+
+    <button class="btn btn-primary" id="update">Save Changes</button>
+    <button class="btn btn-danger" id="delete">Delete User</button>
 
     <div class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                    <button class="close" data-dismiss="modal"><span>&times;</span></button>
                     <h4 class="modal-title">Delete User?</h4>
                 </div>
                 <div class="modal-body">
@@ -67,8 +69,8 @@
                     <p><i>This cannot be undone!</i></p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-danger">Delete User</button>
+                    <button class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button class="btn btn-danger">Delete User</button>
                 </div>
             </div>
         </div>

@@ -1,6 +1,6 @@
 <?php
 // +-------------------------------------------------------------------------+
-// |  Script for updating permissions                                        |
+// |  Script for adding permissions                                          |
 // +-------------------------------------------------------------------------+
 // |  Copyright 2016 Simplusoft LLC                                          |
 // |  All Rights Reserved.                                                   |
@@ -20,64 +20,64 @@
 // |  02110-1301, USA.                                                       |
 // +-------------------------------------------------------------------------+
 
-// Include and create a new Dynamic Suite Instance
+// Include dependencies
 require_once $_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php';
 
-// On invalid request
-if(
-    !$ds->checkPermission('ds_admin_permission') ||
-    !isset($_POST['permission']) ||
-    !isset($_POST['description']) ||
-    !isset($_POST['permission_old']) ||
-    !isset($_POST['permission_id'])
-)
-    die($ds->APIResponse());
+// Check for valid request
+$ds->checkRequest('ds_admin_permission', ['name', 'description']);
+
+// Format name
+$name = htmlentities($_POST['name']);
 
 // API Responses
-define('PERM_FAIL',   'Permission already exists');
-define('PERM_L_FAIL', 'Permission name too short');
+define('NAME_FAIL',   'Permission already exists');
+define('NAME_L_FAIL', 'Permission name too short');
 define('DESC_L_FAIL', 'Description too short');
-define('OK',          'Permission Updated');
+define('OK',          "Permission $name Added");
 
 // Global Settings
-define('MIN_PERM_LENGTH', 2);
+define('MIN_NAME_LENGTH', 2);
 define('MIN_DESC_LENGTH', 4);
 
-// Data to update
+// Data to add
 $data = [
-    $_POST['permission'],
-    $_POST['description'],
-    $_POST['permission_id']
+    $_POST['name'],
+    $_POST['description']
 ];
 
-// If the permission name is changing
-if(strcasecmp($data[0], $_POST['permission_old'])) {
-
-    // Query for seeing if the permission already exists
-    $test = 'SELECT * FROM `ds_permissions` WHERE `name` = ?';
-
-    // If the username is already in use
-    if(is_array($ds->query($test, $data[0])))
-        die($ds->APIResponse('PERM_FAIL', 3, PERM_FAIL));
-
+// If the permission already exists
+foreach($ds->getPermissions() as $permission) {
+    if(!strcasecmp($permission['name'], $_POST['name']))
+        die($ds->APIResponse('NAME_FAIL', 3, NAME_FAIL));
 }
 
-// If the permission name is too short
-if(strlen($data[0]) < MIN_PERM_LENGTH)
-    die($ds->APIResponse('PERM_L_FAIL', 3, PERM_L_FAIL));
+// If the name is too short
+if(strlen($_POST['name']) < MIN_NAME_LENGTH)
+    die($ds->APIResponse('NAME_L_FAIL', 3, NAME_L_FAIL));
 
 // If the description is too short
-if(strlen($data[1]) < MIN_DESC_LENGTH)
+if(strlen($_POST['description']) < MIN_DESC_LENGTH)
     die($ds->APIResponse('DESC_L_FAIL', 3, DESC_L_FAIL));
 
-// Query for updating the permission
-$query = 'UPDATE `ds_permissions` SET `name` = ?, ' .
-         '`description` = ? WHERE `permission_id` = ?';
+// Query for adding the permission
+$query = 'INSERT INTO `ds_permissions` ' .
+         '(`name`, `description`) VALUES (?, ?)';
 
 // On query failure
 if(!$ds->query($query, $data))
     die($ds->APIResponse());
 
-$ds->logEvent("Permission {$data[0]} Updated", PERMISSION_UPDATED);
+// New permission ID
+$id = $ds->db_conn->lastInsertId();
 
-die($ds->APIResponse('OK', 0, OK, $data[0]));
+// New table row
+$tr  = "<tr data-id='$id'>";
+$tr .= "<td>$name</td>";
+$tr .= '<td>' . htmlentities($_POST['description']) . '</td>';
+$tr .= '</tr>';
+
+// Log the event
+$ds->logEvent(OK, PERMISSION_ADDED);
+
+// OK Response
+die($ds->APIResponse('OK', 0, OK, $tr));

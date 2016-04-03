@@ -5,10 +5,13 @@
 .ds-users-list #header-area, .ds-permission-list #header-area, .ds-group-list #header-area {
   padding: 0.1em 0 1em 0; }
   .ds-users-list #header-area h3, .ds-permission-list #header-area h3, .ds-group-list #header-area h3 {
-    margin-top: 0.25em; }
+    margin-top: 0.25em;
+    float: left; }
   .ds-users-list #header-area a, .ds-permission-list #header-area a, .ds-group-list #header-area a {
     text-decoration: none;
-    cursor: pointer; }
+    cursor: pointer;
+    float: right;
+    margin-top: 1em; }
 .ds-users-list #search-area, .ds-permission-list #search-area, .ds-group-list #search-area {
   padding: 0.1em 0 0.25em 0; }
   .ds-users-list #search-area div:nth-child(1), .ds-permission-list #search-area div:nth-child(1), .ds-group-list #search-area div:nth-child(1) {
@@ -41,12 +44,16 @@
     margin-bottom: 1em; }
   .ds-user-edit .btn-danger, .ds-permission-edit .btn-danger, .ds-group-edit .btn-danger {
     float: right; }
-  .ds-user-edit h4, .ds-permission-edit h4, .ds-group-edit h4 {
+  .ds-user-edit > h4, .ds-permission-edit > h4, .ds-group-edit > h4 {
     margin: 2em 0 0 0 !important; }
   .ds-user-edit hr, .ds-permission-edit hr, .ds-group-edit hr {
     margin-top: 0.5em; }
   .ds-user-edit table tr td:nth-child(1), .ds-permission-edit table tr td:nth-child(1), .ds-group-edit table tr td:nth-child(1) {
     font-weight: bold; }
+  .ds-user-edit #reset-password, .ds-permission-edit #reset-password, .ds-group-edit #reset-password {
+    margin-top: 1em;
+    margin-bottom: 1em;
+    cursor: pointer; }
 
 .ds-user-add {
   padding-top: 1em; }

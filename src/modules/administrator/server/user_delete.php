@@ -20,16 +20,11 @@
 // |  02110-1301, USA.                                                       |
 // +-------------------------------------------------------------------------+
 
-// Include and create a new Dynamic Suite Instance
+// Include dependencies
 require_once $_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php';
 
-// On invalid request
-if(
-    !$ds->checkPermission('ds_admin_user') ||
-    !isset($_POST['user_id']) ||
-    !isset($_POST['username'])
-)
-    die($ds->APIResponse());
+// Check for valid request
+$ds->checkRequest('ds_admin_user', ['id', 'username']);
 
 // API Responses
 define('OK', 'User deleted successfully');
@@ -38,7 +33,7 @@ define('OK', 'User deleted successfully');
 $query = 'DELETE FROM `ds_users` WHERE `user_id` = ?';
 
 // On query failure
-if(!$ds->query($query, $_POST['user_id']))
+if(!$ds->query($query, $_POST['id']))
     die($ds->APIResponse());
 
 // Log the event

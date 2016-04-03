@@ -125,7 +125,7 @@ LOCK TABLES `ds_users` WRITE;
 
 INSERT INTO `ds_users` (`user_id`, `username`, `password`, `group`, `status`, `administrator`, `inactive_time`, `added`, `added_by`, `login_attempts`, `last_login_attempt`, `last_login_success`, `last_login_ip`)
 VALUES
-  (1,'root','$2y$10$6aHZ9PKvl5PdUXSEI2gUNey6hJJAJm5ZO/j/T5iTZiWxBMpAWcoVa',1,1,1,'0000-00-00 00:00:00','0000-00-00 00:00:00','SYSTEM',0,'0000-00-00 00:00:00','0000-00-00 00:00:00','null');
+  (1,'root','$2y$10$6aHZ9PKvl5PdUXSEI2gUNey6hJJAJm5ZO/j/T5iTZiWxBMpAWcoVa',1,1,1,'0000-00-00 00:00:00',CURRENT_TIMESTAMP(),'SYSTEM',0,'0000-00-00 00:00:00','0000-00-00 00:00:00','null');
 
 /*!40000 ALTER TABLE `ds_users` ENABLE KEYS */;
 UNLOCK TABLES;

@@ -40,14 +40,17 @@ if(
     // Load the template
     $template = $ds->loadTemplate($file);
 
+    // Current ID
+    $id = $ds->url[4];
+
     // Get the permission and the description
-    $permission  = htmlentities($permissions[$ds->url[4]]['name']);
-    $description = htmlentities($permissions[$ds->url[4]]['description']);
+    $permission  = htmlentities($permissions[$id]['name']);
+    $description = htmlentities($permissions[$id]['description']);
 
     // Update the template
-    $template = str_replace('{{permission}}', $permission, $template);
+    $template = str_replace('{{name}}', $permission, $template);
     $template = str_replace('{{description}}', $description, $template);
-    $template = str_replace('{{id}}', $ds->url[4], $template);
+    $template = str_replace('{{id}}', $id, $template);
 
 }
 
@@ -66,9 +69,16 @@ else {
     // Create the table body for each permission
     foreach($permissions as $permission) {
 
-        $tbody .= "<tr><td data-permission-id='{$permission['permission_id']}'>";
-        $tbody .= htmlentities($permission['name']) . "</td><td>";
-        $tbody .= htmlentities($permission['description']) . "</td></tr>";
+        // Clean values
+        $id          = $permission['permission_id'];
+        $name        = htmlentities($permission['name']);
+        $description = htmlentities($permission['description']);
+
+        // Update table body
+        $tbody .= "<tr data-id='$id'>";
+        $tbody .= "<td>$name</td>";
+        $tbody .= "<td>$description</td>";
+        $tbody .= "</tr>";
 
     }
 

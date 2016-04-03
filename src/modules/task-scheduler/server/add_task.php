@@ -20,23 +20,23 @@
 // |  02110-1301, USA.                                                       |
 // +-------------------------------------------------------------------------+
 
-// Include and create a new Dynamic Suite Instance
+// Include dependencies
 require_once $_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php';
 
-// If the user has the proper permissions and session
-// And the proper POST data is present
-if(
-    !$ds->checkPermission('ds_task_scheduler') ||
-    !isset($_POST['description']) ||
-    !isset($_POST['command']) ||
-    !isset($_POST['argument']) ||
-    !isset($_POST['minute']) ||
-    !isset($_POST['hour']) ||
-    !isset($_POST['day_of_month']) ||
-    !isset($_POST['month']) ||
-    !isset($_POST['day_of_week'])
-)
-    die($ds->APIResponse());
+// Check for valid request
+$ds->checkRequest(
+    'ds_task_scheduler',
+    [
+        'description',
+        'command',
+        'argument',
+        'minute',
+        'hour',
+        'day_of_month',
+        'month',
+        'day_of_week'
+    ]
+);
 
 // API Responses
 define('DESC_FAIL',  'Description too short');

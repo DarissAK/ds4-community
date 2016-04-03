@@ -47,10 +47,10 @@ if(
     $permissions = $ds->getPermissions();
 
     // Loop through all of the permissions and build the body
-    foreach($permissions as $permission => $data) {
+    foreach($permissions as $id => $permission) {
 
         // Set the checked state
-        $checked = array_key_exists($data['name'],
+        $checked = array_key_exists($permission['name'],
             $groups[$ds->url[4]]['permissions'])
             ? 'checked '
             : '';
@@ -58,8 +58,8 @@ if(
         // Update the body
         $body .= '<div class="checkbox permission-check">';
         $body .= '<label>';
-        $body .= "<input type='checkbox' name='perm_$permission' $checked />";
-        $body .= '<div>' . htmlentities($data['description']) . '</div>';
+        $body .= "<input type='checkbox' name='perm_$id' $checked />";
+        $body .= '<div>' . htmlentities($permission['description']) . '</div>';
         $body .= '</label>';
         $body .= '</div>';
 
@@ -72,7 +72,7 @@ if(
     $template =
         str_replace('{{id}}', $group['group_id'], $template);
     $template =
-        str_replace('{{group}}', htmlentities($group['name']), $template);
+        str_replace('{{name}}', htmlentities($group['name']), $template);
     $template =
         str_replace('{{description}}', htmlentities($group['description']), $template);
     $template =
@@ -96,12 +96,12 @@ else {
     foreach($groups as $group_data) {
 
         // Row Data
-        $id          = htmlentities($group_data['group_id']);
-        $group       = htmlentities($group_data['name']);
+        $id          = $group_data['group_id'];
+        $name        = htmlentities($group_data['name']);
         $description = htmlentities($group_data['description']);
 
         // Create the row
-        $tbody .= "<tr><td data-group-id='$id'>$group</td>";
+        $tbody .= "<tr data-id='$id'><td>$name</td>";
         $tbody .= "<td>$description</td></tr>";
 
     }

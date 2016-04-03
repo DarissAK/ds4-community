@@ -10,39 +10,55 @@ $(function() {
     // If the page exists
     if(page.length) {
 
-        // Group selector
-        var group = $('#group');
+        // Delete modal
+        page.on('click', '#delete', function() {
 
-        // On click of the update group button
-        page.find('#update-group').on('click', function () {
+            // Clear any errors
+            ds_clear_errors();
 
-            ds_clear_errors(true);
+            // Open the modal
+            $('.modal').modal();
+
+        });
+
+        // Update group
+        page.on('click', '#update', function() {
+
+            // Clear any errors
+            ds_clear_errors();
 
             // Set the button
             var button = $(this);
 
             // Disable the button
-            button.lbtn(false, 'Updating Group...');
+            button.lBtn(false, 'Saving...');
 
             // POST request data
             var data = {
-                group:       group.val(),
-                group_id:    group.data('group-id'),
-                group_old:   group.data('group-old'),
+                id:          page.attr('data-id'),
+                name:        $('#name').val(),
+                old:         page.attr('data-old'),
                 description: $('#description').val(),
                 permissions: $('form').serializeArray()
             };
 
             // Send the POST request
-            $.post(ajax + 'update_group.php', data, function(response) {
+            $.post(ajax + 'group_update.php', data, function(response) {
 
                 // Update the old values
                 if (response.status === 'OK') {
-
-                    group.data('group-old', group.val());
-                    $('.modal-body strong').html(group.val());
-
+                    page.attr('data-old', response.data);
+                    $('.modal-body strong').html(response.data);
                 }
+
+                // Set feedback
+                if(
+                    response.status === 'NAME_FAIL' || 
+                    response.status === 'NAME_L_FAIL'
+                ) ds_error('.name-grp');
+                if(
+                    response.status === 'DESC_L_FAIL'
+                ) ds_error('.description-grp');
 
                 // Display alert message
                 ds_alert(
@@ -52,29 +68,29 @@ $(function() {
                 );
 
                 // Re-enable the button
-                button.lbtn(true, 'Update Group');
+                button.lBtn(true, 'Save Changes');
 
             });
 
         });
 
-        // On click of the delete group button
-        page.find('.modal-footer .btn-danger').on('click', function() {
+        // Delete group
+        page.on('click', '.modal .btn-danger', function() {
 
             // Set the button
             var button = $(this);
 
             // Disable the button
-            button.lbtn(false, 'Deleting Group...');
+            button.lBtn(false, 'Deleting...');
 
             // POST request data
             var data = {
-                group_id: group.data('group-id'),
-                group:    group.data('group-old')
+                id:   page.attr('data-id'),
+                name: page.attr('data-old')
             };
 
             // Send the POST request
-            $.post(ajax + 'delete_group.php', data, function(response) {
+            $.post(ajax + 'group_delete.php', data, function(response) {
 
                 // Toggle the modal
                 $('.modal').modal('toggle');
@@ -96,7 +112,7 @@ $(function() {
                 else {
 
                     // Re-enable the button
-                    button.lbtn(true, 'Delete Group');
+                    button.lBtn(true, 'Delete');
 
                 }
 

@@ -20,8 +20,11 @@
 // |  02110-1301, USA.                                                       |
 // +-------------------------------------------------------------------------+
 
-// Include and create a new Dynamic Suite Instance
+// Include dependencies
 require_once $_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php';
+
+// Check for valid request
+$ds->checkRequest('ds_task_scheduler', ['task']);
 
 // If the user has the proper permissions and session
 // And the proper POST data is present

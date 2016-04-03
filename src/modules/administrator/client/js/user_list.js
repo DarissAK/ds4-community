@@ -16,14 +16,15 @@ $(function () {
             )
         );
 
-        // Bind click event to user table for editing users
-        page.find('tbody tr').on('click', function() {
+        // Edit user
+        page.on('click', 'tbody tr', function() {
 
-            // Get the user from the 1st td in the row
-            var id = $(this).find('td:first').data('user-id');
+            // Get the user ID
+            var id = $(this).attr('data-id');
 
             // Redirect the user
-            document.location.href = '/administrator/users/list/edit/' + id;
+            document.location.href =
+                '/administrator/users/list/edit/' + id;
 
         });
 

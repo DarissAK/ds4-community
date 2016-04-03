@@ -1,6 +1,6 @@
 <?php
 // +-------------------------------------------------------------------------+
-// |  Script for deleting groups                                             |
+// |  Script for deleting permission groups                                  |
 // +-------------------------------------------------------------------------+
 // |  Copyright 2016 Simplusoft LLC                                          |
 // |  All Rights Reserved.                                                   |
@@ -20,29 +20,30 @@
 // |  02110-1301, USA.                                                       |
 // +-------------------------------------------------------------------------+
 
-// Include and create a new Dynamic Suite Instance
+// Include dependencies
 require_once $_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php';
 
-// On invalid request
-if(
-    !$ds->checkPermission('ds_admin_permission') ||
-    !isset($_POST['group_id']) ||
-    !isset($_POST['group'])
-)
-    die($ds->APIResponse());
+// Check for valid request
+$ds->checkRequest(
+    'ds_admin_permission',
+    ['id', 'name']
+);
+
+// Formatted name
+$name = htmlentities($_POST['name']);
 
 // API Responses
-define('OK', 'Group deleted successfully');
+define('OK', "Group $name Deleted");
 
 // Query for removing a group
 $query = 'DELETE FROM `ds_group_meta` WHERE `group_id` = ?';
 
 // On query failure
-if(!$ds->query($query, $_POST['group_id']))
+if(!$ds->query($query, $_POST['id']))
     die($ds->APIResponse());
 
 // Log the event
-$ds->logEvent("Group {$_POST['group']} Deleted", GROUP_DELETED);
+$ds->logEvent(OK, GROUP_DELETED);
 
 // OK Response
 die($ds->APIResponse('OK', 0, OK));

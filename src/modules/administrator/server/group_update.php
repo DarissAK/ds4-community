@@ -20,42 +20,41 @@
 // |  02110-1301, USA.                                                       |
 // +-------------------------------------------------------------------------+
 
-// Include and create a new Dynamic Suite Instance
+// Include dependencies
 require_once $_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php';
 
-// On valid request
-if(
-    !$ds->checkPermission('ds_admin_permission') ||
-    !isset($_POST['group']) ||
-    !isset($_POST['group_id']) ||
-    !isset($_POST['group_old']) ||
-    !isset($_POST['description'])
-)
-    die($ds->APIResponse());
+// Check for valid request
+$ds->checkRequest(
+    'ds_admin_permission',
+    ['id', 'name', 'old', 'description']
+);
+
+// Formatted name
+$name = htmlentities($_POST['name']);
 
 // API Responses
-define('GROUP_FAIL',   'Group already exists');
-define('GROUP_L_FAIL', 'Group name too short');
-define('DESC_L_FAIL',  'Description too short');
-define('OK',           'Group Updated');
+define('NAME_FAIL',   'Group already exists');
+define('NAME_L_FAIL', 'Group name too short');
+define('DESC_L_FAIL', 'Description too short');
+define('OK',          "Group {$_POST['name']} Updated");
 
 // Global Settings
 define('MIN_GROUP_LENGTH', 2);
 define('MIN_DESC_LENGTH',  4);
 
-// If the group name is changing
-if(strcasecmp($_POST['group'], $_POST['group_old'])) {
+// If the name is changing
+if(strcasecmp($_POST['name'], $_POST['old'])) {
 
     // Test query
     $test = 'SELECT * FROM `ds_group_meta` WHERE `name` = ?';
 
-    // Group name already in use
-    if(is_array($ds->query($test, $_POST['group'])))
-        die($ds->APIResponse('GROUP_FAIL', 3, GROUP_FAIL));
+    // Name is already in use
+    if(is_array($ds->query($test, $_POST['name'])))
+        die($ds->APIResponse('NAME_FAIL', 3, NAME_FAIL));
 
-    // Group name is too short
-    if(strlen($_POST['group']) < MIN_GROUP_LENGTH)
-        die($ds->APIResponse('GROUP_L_FAIL', 3, GROUP_L_FAIL));
+    // Name is too short
+    if(strlen($_POST['name']) < MIN_GROUP_LENGTH)
+        die($ds->APIResponse('NAME_L_FAIL', 3, NAME_L_FAIL));
 
 }
 
@@ -69,9 +68,9 @@ $query = 'UPDATE `ds_group_meta` SET `name` = ?, ' .
 
 // New metadata
 $data = [
-    $_POST['group'],
+    $_POST['name'],
     $_POST['description'],
-    $_POST['group_id']
+    $_POST['id']
 ];
 
 // Update the metadata
@@ -80,7 +79,7 @@ if(!$ds->query($query, $data))
 
 // Clear old permissions
 $query = 'DELETE FROM `ds_group_data` WHERE `group_id` = ?';
-if(!$ds->query($query, $_POST['group_id']))
+if(!$ds->query($query, $_POST['id']))
     die($ds->APIResponse());
 
 // If there are permissions to add
@@ -101,7 +100,7 @@ if(
     foreach($_POST['permissions'] as $permission) {
 
         // Get the permission ID
-        $group_id      = $_POST['group_id'];
+        $group_id      = $_POST['id'];
         $permission_id = explode('_', $permission['name'])[1];
 
         // Update the query
@@ -123,7 +122,7 @@ if(
 }
 
 // Log the event
-$ds->logEvent("Group {$_POST['group']} Updated", GROUP_UPDATED);
+$ds->logEvent(OK, GROUP_UPDATED);
 
 // OK response
-die($ds->APIResponse('OK', 0, OK));
+die($ds->APIResponse('OK', 0, OK, $name));

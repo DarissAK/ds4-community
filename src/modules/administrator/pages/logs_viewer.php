@@ -41,14 +41,19 @@ if(is_array($logs = $ds->query($query))) {
         $log_time =
             $ds->timestampSQL2Format($log['time']);
 
+        // Clean values
+        $creator  = htmlentities($log['creator']);
+        $affected = htmlentities($log['affected']);
+        $event    = htmlentities($log['event']);
+
         // Create the body row
         $tbody .= '<tr>';
         $tbody .= "<td>{$log['log_id']}</td>";
         $tbody .= "<td>$log_time</td>";
         $tbody .= "<td>{$log['type']}</td>";
-        $tbody .= "<td>{$log['creator']}</td>";
-        $tbody .= "<td>{$log['affected']}</td>";
-        $tbody .= "<td>{$log['event']}</td>";
+        $tbody .= "<td>$creator</td>";
+        $tbody .= "<td>$affected</td>";
+        $tbody .= "<td>$event</td>";
         $tbody .= "<td>{$log['ip']}</td>";
         $tbody .= '</tr>';
 

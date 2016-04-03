@@ -942,6 +942,63 @@ class dsInstance
     }
 
     /**
+     * Check a given POST request for permissions and post values
+     * 
+     * @param $permissions
+     * @param $post
+     * @return array|bool
+     */
+    public function checkRequest($permissions, $post = []) {
+
+        // Default state
+        $check = true;
+
+        // Check all given permissions
+        foreach((array) $permissions as $permission) {
+            if(!$this->checkPermission($permission)) $check = false;
+        }
+
+        // Check all given post variables
+        if(!$this->checkPost((array) $post)) $check = false;
+
+        // If the check fails
+        if(!$check) die($this->APIResponse());
+
+        // Check succeeded
+        return $check;
+
+    }
+
+    /**
+     * Check to see if there is a POST variable set for a given
+     * each string in a given array
+     *
+     * @param $post
+     * @return bool
+     */
+    public function checkPost($post) {
+
+        // Empty arguments return false
+        if(!is_array($post)) return false;
+
+        // Iterate through all given strings and check if there is an
+        // associated $_POST value set
+        foreach($post as $value) {
+
+            // Skip non string members
+            if(!is_string($value)) continue;
+
+            // Check to see if the post value is set
+            if(!isset($_POST[$value])) return false;
+
+        }
+
+        // All post values were found
+        return true;
+
+    }
+
+    /**
      * Checks the given permission for the current user
      * Also checks for a session
      *
@@ -969,7 +1026,7 @@ class dsInstance
 
         // If the permission exists, and the user has it
         foreach($this->permissions as $data) {
-            if($data['name'] === $permission) {
+            if(in_array($data['name'], (array) $permission)) {
                 if($data['has']) return true;
             }
         }

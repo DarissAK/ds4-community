@@ -19,14 +19,14 @@ $(function() {
             )
         );
 
-        // Bind click event to add group button
-        page.find('#header-area button').on('click', function() {
+        // Add group modal
+        page.on('click', '#header-area button', function() {
 
             // Clear any errors
-            ds_clear_errors(true);
+            ds_clear_errors();
 
             // Reset the inputs
-            $('#group').val('');
+            $('#name').val('');
             $('#description').val('');
 
             // Toggle the add modal
@@ -34,11 +34,11 @@ $(function() {
 
         });
 
-        // Bind click event to group table for editing groups
-        page.find('tbody tr').on('click', function() {
+        // Edit group
+        page.on('click', 'tbody tr', function() {
 
-            // Get the permission from the 1st td in the row
-            var id = $(this).find('td:first').data('group-id');
+            // Get the permission ID
+            var id = $(this).attr('data-id');
 
             // Redirect the user
             document.location.href =
@@ -46,36 +46,35 @@ $(function() {
 
         });
 
-        // On add group
-        page.find('.modal .btn-primary').on('click', function() {
+        // Add group
+        page.on('click', '.modal .btn-primary', function() {
 
             // Reset feedback
-            ds_clear_errors(true);
+            ds_clear_errors();
 
             // Set the button
             var button = $(this);
 
             // Disable the button and add the spinner
-            button.lbtn(false, 'Adding Group...');
+            button.lBtn(false, 'Adding...');
 
             // POST request data
             var data = {
-                group:       $('#group').val(),
+                name:        $('#name').val(),
                 description: $('#description').val()
             };
 
             // Send the POST request
-            $.post(ajax + 'add_group.php', data, function(response) {
+            $.post(ajax + 'group_add.php', data, function(response) {
 
                 // Set error location
-                var error = '.modal-body input:eq(1)';
+                var error = '.modal-body input:last';
 
                 // Add Success
                 if(response.status === 'OK') {
 
                     // Counter updates
-                    var counter = page.find('#search-area strong');
-                    counter.html(parseInt(counter.html()) + 1);
+                    page.find('#search-area strong').cUpdate();
 
                     // Append the new group to the table
                     page.find('table tbody').append(response.data);
@@ -93,16 +92,16 @@ $(function() {
 
                 // Feedback for group failure
                 if(
-                    response.status === 'GROUP_FAIL' ||
-                    response.status === 'GROUP_L_FAIL'
-                ) ds_error('.group-grp');
+                    response.status === 'NAME_FAIL' ||
+                    response.status === 'NAME_L_FAIL'
+                ) ds_error('.name-grp');
 
                 // Feedback for description failure
                 if(response.status === 'DESC_L_FAIL')
                     ds_error('.description-grp');
 
-                // Re-enable the button and remove the spinner
-                button.lbtn(true, 'Add Group');
+                // Set button state
+                button.lBtn(true, 'Add');
 
             });
 

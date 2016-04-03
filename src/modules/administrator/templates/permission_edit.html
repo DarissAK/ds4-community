@@ -1,4 +1,5 @@
-<div class="ds-permission-edit">
+<div class="ds-permission-edit" data-id="{{id}}" data-old="{{name}}">
+
     <div class="alert alert-warning">
         <i>
             Editing permissions is a low level function that should only be done
@@ -7,29 +8,28 @@
             Deleting permissions will remove them from any attached users or groups
         </i>
     </div>
-    <div class="form-group permission-grp">
-        <label for="permission">Permission</label>
-        <input value="{{permission}}" type="text" class="form-control"
-               id="permission" data-permission-old="{{permission}}"
-               data-permission-id="{{id}}">
+
+    <div class="form-group name-grp">
+        <label for="name">Permission</label>
+        <input value="{{name}}" type="text" class="form-control" id="name">
     </div>
     <div class="form-group description-grp">
         <label for="description">Description</label>
         <input value="{{description}}" type="text" class="form-control" id="description">
     </div>
 
-    <button class="btn btn-primary" id="update-permission">Update Permission</button>
-    <button class="btn btn-danger" data-toggle="modal" data-target="#delete-permission">Delete Permission</button>
+    <button class="btn btn-primary" id="update">Save Changes</button>
+    <button class="btn btn-danger" id="delete">Delete</button>
 
     <div class="modal fade" id="delete-permission">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                    <button class="close" data-dismiss="modal"><span>&times;</span></button>
                     <h4 class="modal-title">Delete Permission?</h4>
                 </div>
                 <div class="modal-body">
-                    <p>Are you sure you want to delete the permission <strong>{{permission}}</strong>?</p>
+                    <p>Are you sure you want to delete the permission <strong>{{name}}</strong>?</p>
                     <p>
                         Event logs for the permission will NOT be deleted and it will be
                         detached from any users or groups
@@ -37,8 +37,8 @@
                     <p><i>This cannot be undone!</i></p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-danger">Delete Permission</button>
+                    <button class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button class="btn btn-danger">Delete</button>
                 </div>
             </div>
         </div>

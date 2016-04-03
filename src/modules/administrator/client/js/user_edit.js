@@ -10,35 +10,28 @@ $(function() {
     // If the page exists
     if(page.length) {
 
-        // Bind the click event to the password area header
-        page.find('#password-collapse').on('click', function() {
+        // Set tab text
+        $('#ds-nav-administrator-users-list').find('a').html('Edit User');
 
-            // Toggle the icon class if the area isn't collapsing
-            if(!$('.collapsing').length)
-                $(this).find('i').toggleClass('fa-plus, fa-minus');
-
-            // Toggle the password area
-            $('#password-area').collapse('toggle');
-
+        // Bind the click event to toggle the password area
+        page.find('#reset-password a').on('click', function() {
+            $('#password-area').toggleClass('hide');
         });
-
-        // Username selector
-        var username = $('#username');
 
         // Set error location
         var error = '.ds-user-edit > .btn-danger';
 
-        // On update user
-        page.find('#update-user').on('click', function() {
+        // Update user
+        page.on('click', '#update', function() {
 
             // Clear any errors
-            ds_clear_errors(true);
+            ds_clear_errors();
 
             // Set the button
             var button = $(this);
 
             // Disable the button to prevent multiple updates
-            button.lbtn(false, 'Updating User...');
+            button.lBtn(false, 'Saving...');
 
             // Password selectors
             var password_1 = $('#password-1');
@@ -46,13 +39,13 @@ $(function() {
 
             // POST data
             var data = {
-                user_id:      username.data('user-id'),
-                username:     username.val(),
-                username_old: username.data('username-old'),
-                status:       $('#status').val(),
-                group:        $('#group').val(),
-                password_1:   password_1.val(),
-                password_2:   password_2.val()
+                id:         page.attr('data-id'),
+                username:   $('#username').val(),
+                old:        page.attr('data-old'),
+                status:     $('#status').val(),
+                group:      $('#group').val(),
+                password_1: password_1.val(),
+                password_2: password_2.val()
             };
 
             // Administrator selector
@@ -64,13 +57,14 @@ $(function() {
             }
 
             // Send the POST request
-            $.post(ajax + 'update_user.php', data, function(response) {
+            $.post(ajax + 'user_update.php', data, function(response) {
 
                 // OK Response
                 if(response.status === 'OK') {
 
-                    // Set the old username to the new username
-                    username.data('username-old', username.val());
+                    // Update old values
+                    page.attr('data-old', response.data);
+                    page.find('.modal strong').html(response.data);
 
                     // Set password fields to blank
                     password_1.val('');
@@ -81,42 +75,51 @@ $(function() {
                 // Display alert message
                 ds_alert(response.message, response.severity, error);
 
-                // If there are password errors
+                // Set feedback
                 if(
                     response.status === 'PASSWORD_L_FAIL' ||
                     response.status === 'PASSWORD_FAIL'
                 ) ds_error('.password-grp');
-
-                // If there are password errors
                 if(
                     response.status === 'USER_FAIL' ||
                     response.status === 'USER_L_FAIL'
                 ) ds_error('.username-grp');
 
                 // Re-enable the update button
-                button.lbtn(true, 'Update User');
+                button.lBtn(true, 'Update User');
 
             });
 
         });
 
-        // On delete user
-        page.find('.modal .btn-danger').on('click', function() {
+        // Delete user modal
+        page.on('click', '#delete', function() {
+
+            // Clear any errors
+            ds_clear_errors();
+
+            // Open the modal
+            $('.modal').modal();
+
+        });
+
+        // Delete user
+        page.on('click', '.modal .btn-danger', function() {
 
             // Button for deleting users
             var button = $(this);
 
             // Disable the button
-            button.lbtn(false, 'Deleting User...');
+            button.lBtn(false, 'Deleting...');
 
             // User to be deleted
             var data = {
-                user_id:  username.data('user-id'),
-                username: username.data('username-old')
+                id:       page.attr('data-id'),
+                username: page.attr('data-old')
             };
 
             // Send the POST request
-            $.post(ajax + 'delete_user.php', data, function(response) {
+            $.post(ajax + 'user_delete.php', data, function(response) {
 
                 // Request successful
                 if(response.status === 'OK') {
@@ -135,7 +138,7 @@ $(function() {
                 else {
 
                     // Re-enable the button
-                    button.lbtn(true, 'Delete User');
+                    button.lBtn(true, 'Delete User');
 
                 }
 
@@ -143,7 +146,7 @@ $(function() {
                 ds_alert(response.message, response.severity, error);
 
                 // Close the modal
-                $('.modal').modal('toggle');
+                $('.modal').modal('hide');
 
             });
 

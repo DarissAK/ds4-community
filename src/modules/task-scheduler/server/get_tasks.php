@@ -24,12 +24,11 @@
 // This module will run/add tasks ONLY FOR THE PHP USER (apache user)
 // This module is not designed for running system tasks/non-php tasks
 
-// Include and create a new Dynamic Suite Instance
+// Include dependencies
 require_once $_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php';
 
-// If the user has the proper permissions and session
-if(!$ds->checkPermission('ds_task_scheduler'))
-    die($ds->APIResponse());
+// Check for valid request
+$ds->checkRequest('ds_task_scheduler');
 
 // API Responses
 define('OK', 'Success');

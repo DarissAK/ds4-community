@@ -20,32 +20,27 @@
 // |  02110-1301, USA.                                                       |
 // +-------------------------------------------------------------------------+
 
-// Include and create a new Dynamic Suite Instance
+// Include dependencies
 require_once $_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php';
 
-// On valid request
-if(
-    !$ds->checkPermission('ds_admin_permission') ||
-    !isset($_POST['permission_old']) ||
-    !isset($_POST['permission_id'])
-)
-    die($ds->APIResponse());
+// Check for valid request
+$ds->checkRequest('ds_admin_permission', ['id', 'name']);
 
-// API Responses
-define('OK', 'Permission deleted successfully');
+// Formatted name
+$name = htmlentities($_POST['name']);
+
+// API responses
+define('OK', "Permission $name Deleted");
 
 // Query for deleting the permission
 $query = 'DELETE FROM `ds_permissions` WHERE `permission_id` = ?';
 
 // On query failure
-if(!$ds->query($query, $_POST['permission_id']))
+if(!$ds->query($query, $_POST['id']))
     die($ds->APIResponse());
 
-// Old name for logs
-$old = $_POST['permission_old'];
-
 // Log the event
-$ds->logEvent("Permission $old Deleted", PERMISSION_DELETED);
+$ds->logEvent(OK, PERMISSION_DELETED);
 
-// OK Response
+// OK response
 die($ds->APIResponse('OK', 0, OK));
