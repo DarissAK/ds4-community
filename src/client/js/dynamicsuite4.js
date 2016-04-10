@@ -69,6 +69,17 @@ function ds_clear_errors() {
 // String count - Optional visible row indicator selector
 function ds_table_search(table, input, count) {
 
+    // Function to set table height
+    var tableScroll = function() {
+        var doc = $(window).height();
+        var top = $('.table-container table').offset().top;
+        $('.table-container').height(doc - top);
+    };
+
+    // Initial and change events
+    $(window).resize(tableScroll);
+    $(tableScroll);
+
     // If a count container is given, update it (initial)
     if(typeof count !== 'undefined') {
         count.html(table.find('tbody tr:visible').length);

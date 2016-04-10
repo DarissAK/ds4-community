@@ -183,4 +183,12 @@ html, body {
   background: #6685a3;
   color: #fff !important; }
 
+/* Modal Header Margins */
+.modal-header h4 {
+  margin-top: 0 !important; }
+
+/* Disable webkit scroll bar */
+::-webkit-scrollbar {
+  display: none; }
+
 /*# sourceMappingURL=dynamicsuite4.css.map */
