@@ -175,7 +175,7 @@ html, body {
 
 /* Module Content */
 #ds-body-content {
-  padding: 0 1em 1em 1em;
+  padding: 0 1em 0 1em;
   overflow: auto; }
 
 /* Active navigation tab add class */
