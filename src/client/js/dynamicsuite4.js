@@ -200,9 +200,6 @@ $(function() {
     // Navigation bar selector
     var nav = $('#ds-nav-main');
 
-    // Main body selector
-    var body_main = $('#ds-body-main');
-
     // Body content selector
     var body = $('#ds-body-content');
 
@@ -247,20 +244,14 @@ $(function() {
     // Body resizing (if body exists)
     if(body.length) {
 
-        // Height to subtract from content area
-        var sH = body.position().top;
-
-        // Current body height
-        var wH = body_main.height();
-
         // Set module content height
-        body.css('height', wH - sH + 'px');
+        body.css('height', $(window).height() - body.position().top + 'px');
 
         // On window resize, reset module content height
         $(window).resize(function () {
 
             // Set new height
-            body.css('height', body_main.height() - sH + 'px');
+            body.css('height', $(window).height() - body.position().top + 'px');
 
         });
 
