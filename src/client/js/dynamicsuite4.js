@@ -71,7 +71,7 @@ function ds_clear_errors() {
 function ds_scroll_table(selector, height, input) {
 
     // Column width hack
-    $(selector).find('tbody tr:visible:first td').css('width', '1000px');
+    $(selector).find('tbody tr:visible:first td').css('width', '5000px');
 
     // Set table header widths
     var setTh = function() {
@@ -111,7 +111,7 @@ function ds_scroll_table(selector, height, input) {
     // If there is an attached sortable input
     if(typeof input !== 'undefined') {
         $('input').on('input', function() {
-            $(selector).find('tbody tr:visible:first td').css('width', '1000px');
+            $(selector).find('tbody tr:visible:first td').css('width', '5000px');
             setTh();
         });
     }
