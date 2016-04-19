@@ -26,7 +26,6 @@
 
 // Include the dsInstance class (creates as $ds)
 require_once $_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php';
 
 // Validate the view
 if($ds->validateView()) {
