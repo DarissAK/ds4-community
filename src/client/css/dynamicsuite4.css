@@ -187,15 +187,4 @@ html, body {
 .modal-header h4 {
   margin-top: 0 !important; }
 
-/* Scrollable container */
-.table-container table {
-  margin-bottom: 0 !important;
-  padding-bottom: 0 !important; }
-.table-container thead, .table-container tbody {
-  display: block; }
-.table-container tbody {
-  overflow-x: hidden;
-  overflow-y: auto;
-  white-space: nowrap; }
-
 /*# sourceMappingURL=dynamicsuite4.css.map */
