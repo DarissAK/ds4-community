@@ -30,7 +30,7 @@ $(function() {
             // Set the button
             var button = $(this);
 
-            // Disable the button to prevent multiple updates
+            // Set button state
             button.lBtn(false, 'Saving...');
 
             // Password selectors
@@ -72,20 +72,15 @@ $(function() {
 
                 }
 
-                // Display alert message
-                ds_alert(response.message, response.severity, error);
+                // Display alert
+                ds_alert(
+                    response.message,
+                    response.severity,
+                    error,
+                    response.status
+                );
 
-                // Set feedback
-                if(
-                    response.status === 'PASSWORD_L_FAIL' ||
-                    response.status === 'PASSWORD_FAIL'
-                ) ds_error('.password-grp');
-                if(
-                    response.status === 'USER_FAIL' ||
-                    response.status === 'USER_L_FAIL'
-                ) ds_error('.username-grp');
-
-                // Re-enable the update button
+                // Set button state
                 button.lBtn(true, 'Update User');
 
             });
@@ -109,7 +104,7 @@ $(function() {
             // Button for deleting users
             var button = $(this);
 
-            // Disable the button
+            // Set button state
             button.lBtn(false, 'Deleting...');
 
             // User to be deleted
@@ -137,7 +132,7 @@ $(function() {
                 // Request failed
                 else {
 
-                    // Re-enable the button
+                    // Set button state
                     button.lBtn(true, 'Delete User');
 
                 }

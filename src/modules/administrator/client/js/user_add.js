@@ -13,10 +13,13 @@ $(function() {
         // Add user
         page.on('click', 'button', function() {
 
+            // Clear any errors
+            ds_clear_errors();
+
             // Button to disable
             var button = $(this);
 
-            // Disable the button
+            // Set button state
             button.lBtn(false, 'Adding...');
 
             // Request data
@@ -27,9 +30,6 @@ $(function() {
                 status:     $('#status').val(),
                 group:      $('#group').val()
             };
-
-            // Clear any errors
-            ds_clear_errors();
 
             // Send the request
             $.post(ajax + 'user_add.php', data, function(response) {
@@ -49,33 +49,18 @@ $(function() {
 
                 else {
 
-                    // Re-enable the button
+                    // Set button state
                     button.lBtn(true, 'Add User');
 
                 }
 
-                // Display alert message
+                // Display alert
                 ds_alert(
                     response.message,
                     response.severity,
-                    '.btn-primary'
+                    '.btn-primary',
+                    response.status
                 );
-
-                // Username error
-                if(
-                    response.status === 'USER_L_FAIL' ||
-                    response.status === 'USER_FAIL'
-                ) {
-                    ds_error('.username-grp')
-                }
-
-                // Password Error
-                if(
-                    response.status === 'PASSWORD_L_FAIL' ||
-                    response.status === 'PASSWORD_FAIL'
-                ) {
-                    ds_error('.password-grp')
-                }
 
             });
 

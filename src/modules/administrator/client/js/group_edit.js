@@ -30,7 +30,7 @@ $(function() {
             // Set the button
             var button = $(this);
 
-            // Disable the button
+            // Set button state
             button.lBtn(false, 'Saving...');
 
             // POST request data
@@ -51,23 +51,15 @@ $(function() {
                     $('.modal-body strong').html(response.data);
                 }
 
-                // Set feedback
-                if(
-                    response.status === 'NAME_FAIL' || 
-                    response.status === 'NAME_L_FAIL'
-                ) ds_error('.name-grp');
-                if(
-                    response.status === 'DESC_L_FAIL'
-                ) ds_error('.description-grp');
-
-                // Display alert message
+                // Display alert
                 ds_alert(
                     response.message,
                     response.severity,
-                    '.ds-group-edit > .btn-danger'
+                    '.ds-group-edit > .btn-danger',
+                    response.status
                 );
 
-                // Re-enable the button
+                // Set button state
                 button.lBtn(true, 'Save Changes');
 
             });

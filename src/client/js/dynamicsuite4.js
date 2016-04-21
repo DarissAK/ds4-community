@@ -25,7 +25,7 @@
 // String after   - Put the alert after the given selector
 // String id      - Set the ID of the alert
 // String group   - Optional bootstrap input group for feedback
-function ds_alert(message, severity, after, id, group) {
+function ds_alert(message, severity, after, group, id) {
 
     // Optional elements
     if(typeof group !== 'undefined') ds_error(group);
@@ -43,7 +43,8 @@ function ds_alert(message, severity, after, id, group) {
     else type = 'alert-info';
 
     // Generate the alert tag
-    var alert = '<div id="' + id + '" class="alert ds-alert ' + type +
+    var alert =
+        '<div id="' + id + '" class="alert ds-alert ' + type +
         '" role="alert">' + message + '</div>';
 
     // Place the alert after the given element
@@ -54,68 +55,13 @@ function ds_alert(message, severity, after, id, group) {
 // Bootstrap feedback error
 // String selector - The selector to add feedback too
 function ds_error(selector) {
-    $(selector).addClass('has-error has-feedback');
+    $('.' + selector).addClass('has-error has-feedback');
 }
 
 // Clear bootstrap feedback errors and ds_alert alerts
 function ds_clear_errors() {
     $('.ds-alert').remove();
     $('.has-error, .has-feedback').removeClass('has-error has-feedback');
-}
-
-// Make a table scrollable with a sticky header
-// Tables must be wrapped in a div with a given ID
-// String selector - Table Selector
-// Int height - Table height (optional)
-// String input - Table sorting input (optional)
-function ds_scroll_table(selector, height, input) {
-
-    // Column width hack
-    $(selector).find('tbody tr:visible:first td').css('width', '5000px');
-
-    // Set table header widths
-    var setTh = function() {
-
-        // Initialize the table and cells
-        var table = $(selector).find('table');
-        var cells = table.find('tbody tr:visible:first').children();
-
-        // Get the tbody columns width array
-        var width = cells.map(function() {
-            return $(this).width();
-        }).get();
-
-        // Set the width of thead columns
-        table.find('thead tr').children().each(function(i, v) {
-            $(v).width(width[i]);
-        });
-
-    };
-
-    // Function to set table height
-    var tableScroll = function() {
-        var tbl = $(selector).find('tbody');
-        if(typeof height === 'undefined' || height === null) {
-            var doc = $(window).height();
-            var top = tbl.offset().top;
-            if(tbl.get(0).scrollWidth >= tbl.width()) top = top + 17;
-            tbl.height(doc - top);
-        } else {
-            tbl.height(height);
-        }
-    };
-
-    // Initial and change events
-    $(window).resize(function() { tableScroll(); setTh(); }).resize();
-
-    // If there is an attached sortable input
-    if(typeof input !== 'undefined') {
-        $('input').on('input', function() {
-            $(selector).find('tbody tr:visible:first td').css('width', '5000px');
-            setTh();
-        });
-    }
-
 }
 
 // Filter tables by an input string (bind event)
@@ -235,13 +181,9 @@ $(function() {
                 ds_alert(
                     response.message,
                     response.severity,
-                    'form div div:first'
+                    'form div div:first',
+                    response.status
                 );
-
-                // Set input group error
-                if(response.status === 'ACCT_FAIL') {
-                    ds_error('.input-group')
-                }
 
                 // Re-enable the login button
                 button.attr('disabled', false).val('Login');

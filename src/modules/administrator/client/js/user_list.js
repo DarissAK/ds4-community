@@ -8,11 +8,11 @@ $(function () {
     if(page.length) {
 
         // Bind filter event and update user count
-        page.find('strong').html(
+        page.find('#search-area strong').html(
             ds_table_search(
                 page.find('table'),
-                page.find('input'),
-                page.find('strong')
+                page.find('#search-area input'),
+                page.find('#search-area strong')
             )
         );
 

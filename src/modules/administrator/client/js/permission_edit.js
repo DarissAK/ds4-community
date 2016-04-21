@@ -19,10 +19,10 @@ $(function() {
             // Set the button
             var button = $(this);
 
-            // Disable the button
+            // Set button state
             button.lBtn(false, 'Saving...');
 
-            // POST request data
+            // Request data
             var data = {
                 id:          page.attr('data-id'),
                 name:        $('#name').val(),
@@ -30,7 +30,7 @@ $(function() {
                 description: $('#description').val()
             };
 
-            // Send the POST request
+            // Send the request
             $.post(ajax + 'permission_update.php', data, function(response) {
 
                 // Update the old values
@@ -43,19 +43,11 @@ $(function() {
                 ds_alert(
                     response.message,
                     response.severity,
-                    '.ds-permission-edit > .btn-danger'
+                    '.ds-permission-edit > .btn-danger',
+                    response.status
                 );
 
-                // Set feedback
-                if(
-                    response.status === 'NAME_FAIL' ||
-                    response.status === 'NAME_L_FAIL'
-                ) ds_error('.name-grp');
-                if(
-                    response.status === 'DESC_L_FAIL'
-                ) ds_error('.description-grp');
-
-                // Re-enable the button
+                // Set button state
                 button.lBtn(true, 'Save Changes');
 
             });

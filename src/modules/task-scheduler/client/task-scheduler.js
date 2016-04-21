@@ -137,18 +137,9 @@ $(function() {
                     ds_alert(
                         response.message,
                         response.severity,
-                        '#alert-entry'
+                        '#alert-entry',
+                        status
                     );
-
-                    // Set feedback errors
-                    if(status === 'DESC_FAIL')  ds_error('.description-grp');
-                    if(status === 'CMD_FAIL')   ds_error('.command-grp');
-                    if(status === 'ARG_FAIL')   ds_error('.argument-grp');
-                    if(status === 'MIN_FAIL')   ds_error('.minute-grp');
-                    if(status === 'HR_FAIL')    ds_error('.hour-grp');
-                    if(status === 'DOM_FAIL')   ds_error('.day-of-month-grp');
-                    if(status === 'MONTH_FAIL') ds_error('.month-grp');
-                    if(status === 'DOW_FAIL')   ds_error('.day-of-week-grp');
 
                 }
 
@@ -264,18 +255,9 @@ $(function() {
                     ds_alert(
                         response.message,
                         response.severity,
-                        '#alert-entry'
+                        '#alert-entry',
+                        status
                     );
-
-                    // Set feedback errors
-                    if(status === 'DESC_FAIL')  ds_error('.description-grp');
-                    if(status === 'CMD_FAIL')   ds_error('.command-grp');
-                    if(status === 'ARG_FAIL')   ds_error('.argument-grp');
-                    if(status === 'MIN_FAIL')   ds_error('.minute-grp');
-                    if(status === 'HR_FAIL')    ds_error('.hour-grp');
-                    if(status === 'DOM_FAIL')   ds_error('.day-of-month-grp');
-                    if(status === 'MONTH_FAIL') ds_error('.month-grp');
-                    if(status === 'DOW_FAIL')   ds_error('.day-of-week-grp');
 
                 }
 

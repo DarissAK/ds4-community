@@ -11,10 +11,10 @@ $(function() {
     if(page.length) {
 
         // Bind filter event and update group count
-        page.find('strong').html(
+        page.find('#search-area strong').html(
             ds_table_search(
                 page.find('table'),
-                page.find('input:eq(0)'),
+                page.find('#search-area input'),
                 page.find('#search-area strong')
             )
         );
@@ -87,18 +87,13 @@ $(function() {
 
                 }
 
-                // Display alert message
-                ds_alert(response.message, response.severity, error);
-
-                // Feedback for group failure
-                if(
-                    response.status === 'NAME_FAIL' ||
-                    response.status === 'NAME_L_FAIL'
-                ) ds_error('.name-grp');
-
-                // Feedback for description failure
-                if(response.status === 'DESC_L_FAIL')
-                    ds_error('.description-grp');
+                // Display alert
+                ds_alert(
+                    response.message,
+                    response.severity,
+                    error,
+                    response.status
+                );
 
                 // Set button state
                 button.lBtn(true, 'Add');

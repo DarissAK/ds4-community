@@ -11,11 +11,11 @@ $(function() {
     if(page.length) {
 
         // Bind filter event and update permission count
-        page.find('strong').html(
+        page.find('#search-area strong').html(
             ds_table_search(
                 page.find('table'),
                 page.find('#search-area input'),
-                page.find('strong')
+                page.find('#search-area strong')
             )
         );
 
@@ -43,16 +43,16 @@ $(function() {
             // Set the button
             var button = $(this);
 
-            // Disable the button
+            // Set button state
             button.lBtn(false, 'Adding...');
 
-            // POST request data
+            // Request data
             var data = {
                 name:        $('#name').val(),
                 description: $('#description').val()
             };
 
-            // Send the POST request
+            // Send the request
             $.post(ajax + 'permission_add.php', data, function(response) {
 
                 // Set error location
@@ -75,23 +75,15 @@ $(function() {
 
                 }
 
-                    // Set feedback errors
-                    if(
-                        response.status === 'NAME_FAIL' ||
-                        response.status === 'NAME_L_FAIL'
-                    ) ds_error('.name-grp');
-                    if(
-                        response.status === 'DESC_L_FAIL'
-                    ) ds_error('.description-grp');
+                // Display alert
+                ds_alert(
+                    response.message,
+                    response.severity,
+                    error,
+                    response.status
+                );
 
-                    // Display alert message
-                    ds_alert(
-                        response.message,
-                        response.severity,
-                        error
-                    );
-
-                // Re-enable the button
+                // Set button state
                 button.lBtn(true, 'Add');
 
             });

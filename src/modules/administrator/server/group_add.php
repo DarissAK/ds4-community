@@ -26,7 +26,10 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php';
 // Check for valid request
 $ds->checkRequest(
     'ds_admin_permission',
-    ['name', 'description']
+    [
+        'name',
+        'description'
+    ]
 );
 
 // Formatted name
@@ -44,7 +47,7 @@ define('MIN_DESC_LENGTH',  4);
 
 // Group name is too short
 if(strlen($_POST['name']) < MIN_NAME_LENGTH)
-    die($ds->APIResponse('GROUP_L_FAIL', 3, NAME_L_FAIL));
+    die($ds->APIResponse('NAME_L_FAIL', 3, NAME_L_FAIL));
 
 // Description is too short
 if(strlen($_POST['description']) < MIN_DESC_LENGTH)
@@ -53,7 +56,7 @@ if(strlen($_POST['description']) < MIN_DESC_LENGTH)
 // If the group already exists
 foreach($ds->getPermissionGroups() as $group) {
     if(!strcasecmp($group['name'], $_POST['name']))
-        die($ds->APIResponse('GROUP_FAIL', 3, NAME_FAIL));
+        die($ds->APIResponse('NAME_FAIL', 3, NAME_FAIL));
 }
 
 // Query for adding groups
