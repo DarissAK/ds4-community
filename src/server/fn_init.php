@@ -1692,7 +1692,7 @@ class dsInstance
 
         // Return blank if time is blank, or a formatted
         // time if not
-        return  $time === '00:00:00' || empty($time)
+        return empty($time)
             ? 'Never'
             : date($this->cfg['time_format'], strtotime($time));
 
