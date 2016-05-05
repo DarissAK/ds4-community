@@ -35,8 +35,20 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
 // Include the optional database wrapper
 require_once $_SERVER['DOCUMENT_ROOT'] . '/server/sdc.class.php';
 
-// Include log definitions
-require_once $_SERVER['DOCUMENT_ROOT'] . '/server/log_definitions.php';
+// Log definitions
+define('USER_LOGIN',               1);
+define('USER_ADDED',               2);
+define('USER_UPDATED',             3);
+define('USER_DELETED',             4);
+define('PERMISSION_ADDED',         5);
+define('PERMISSION_UPDATED',       6);
+define('PERMISSION_DELETED',       7);
+define('GROUP_ADDED',              8);
+define('GROUP_UPDATED',            9);
+define('GROUP_DELETED',           10);
+define('TASK_ADDED',              11);
+define('TASK_UPDATED',            12);
+define('TASK_DELETED',            13);
 
 class dsInstance
 {

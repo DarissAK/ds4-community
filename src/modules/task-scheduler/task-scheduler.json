@@ -7,15 +7,12 @@
     "perm"    : "ds_task_scheduler",
     "active"  : true,
     "icon"    : "fa-calendar",
-    "css" : {
-      "0" : "/modules/task-scheduler/client/task-scheduler.css"
-    },
-    "js" : {
-      "0" : "/modules/task-scheduler/client/task-scheduler.js"
-    },
-    "include" : {
-      "0" : "/modules/task-scheduler/server/st.class.php"
-    },
+    "css" : [
+      "/modules/task-scheduler/client/task-scheduler.css"
+    ],
+    "js" : [
+      "/modules/task-scheduler/client/task-scheduler.js"
+    ],
     "content" : {
       "scheduler" : {
         "name"    : "Scheduled Tasks",
