@@ -64,52 +64,6 @@ function ds_clear_errors() {
     $('.has-error, .has-feedback').removeClass('has-error has-feedback');
 }
 
-// Filter tables by an input string (bind event)
-// String table - Table Selector
-// String input - Input Selector
-// String count - Optional visible row indicator selector
-function ds_table_search(table, input, count) {
-
-    // If a count container is given, update it (initial)
-    if(typeof count !== 'undefined') {
-        count.html(table.find('tbody tr:visible').length);
-    }
-
-    // Bind the event
-    input.on('input', function() {
-
-        // Get the search value from the input
-        var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
-
-        // Get all of the table rows
-        var rows = table.find('tbody tr');
-
-        // Show rows, then filter out non-matching ones
-        rows.show().filter(function() {
-
-            // Get the row string value
-            var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
-
-            // Return the index of the input on the row
-            return !~text.indexOf(val);
-
-        }).hide();
-
-        // If a count container is given, update it
-        if(typeof count !== 'undefined') {
-            count.html(table.find('tbody tr:visible').length);
-        }
-
-        // If the table is striped, re-stripe it
-        if(table.hasClass('table-striped')) {
-            table.find('tbody tr:visible:even').css('background', '#f9f9f9', 'important');
-            table.find('tbody tr:visible:odd').css('background', 'inherit', 'important');
-        }
-
-    });
-
-}
-
 // Set button state and loading values
 // Boolean enabled - If the button is enabled or disabled
 // String html - The text to show on the button
@@ -130,23 +84,18 @@ $.fn.lBtn = function(enabled, html) {
 
 };
 
-// Set counter value up or down by one from the current
-$.fn.cUpdate = function(type) {
-
-    // If type if false, increment the counter
-    if(type !== true) {
-        this.html(parseInt(this.html()) + 1);
-    }
-
-    // if type is true, decrement the counter
-    else {
-        this.html(parseInt(this.html()) - 1);
-    }
-
-};
-
 // Dynamic Suite Global Javascript
 $(function() {
+
+    // Get the timeout length
+    var timeout = parseInt($('#ds-body-main').attr('data-timeout'));
+
+    // Set page timeout
+    if(timeout) {
+        setTimeout(function() {
+            document.location.href = '/login';
+        }, timeout * 1000);
+    }
 
     // Login Function
     $('.ds-login').find('input:submit').on('click', function() {

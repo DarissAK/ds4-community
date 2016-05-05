@@ -48,11 +48,14 @@ if($ds->validateView()) {
     // Render navbar and header
     else {
 
+        // Get the page timeout length
+        $timeout = $ds->getTimeout();
+
         // Render the navigation bar
         echo $ds->html_nav;
 
         // Render the body content
-        echo "<div id='ds-body-main'>";
+        echo "<div id='ds-body-main' data-timeout='$timeout'>";
 
         // Render the HTML header ribbon
         echo "<div id='ds-body-header'>$ds->html_header</div>";

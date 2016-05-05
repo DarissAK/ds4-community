@@ -224,6 +224,15 @@ class dsInstance
     }
 
     /**
+     * Get the session timeout length
+     *
+     * @return int
+     */
+    public function getTimeout() {
+        return (int) ini_get('session.gc_maxlifetime');
+    }
+
+    /**
      * Hard file error logging
      *
      * @param $error
