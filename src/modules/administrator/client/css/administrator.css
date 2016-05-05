@@ -12,13 +12,6 @@
     cursor: pointer;
     float: right;
     margin-top: 1em; }
-.ds-users-list #search-area, .ds-permission-list #search-area, .ds-group-list #search-area {
-  padding: 0.1em 0 0.25em 0; }
-  .ds-users-list #search-area div:nth-child(1), .ds-permission-list #search-area div:nth-child(1), .ds-group-list #search-area div:nth-child(1) {
-    padding: 0; }
-  .ds-users-list #search-area div:nth-child(2), .ds-permission-list #search-area div:nth-child(2), .ds-group-list #search-area div:nth-child(2) {
-    text-align: right;
-    padding: 0.25em 0 0.25em 0; }
 .ds-users-list #alert-area, .ds-permission-list #alert-area, .ds-group-list #alert-area {
   padding: 0; }
 
@@ -28,15 +21,6 @@
   padding: 0.1em 0 1em 0; }
   .ds-logs-view > div:nth-child(1) div {
     margin-bottom: 0; }
-  .ds-logs-view > div:nth-child(1) h3 {
-    margin-top: 0.25em; }
-.ds-logs-view > div:nth-child(2) {
-  padding: 0.1em 0 0.25em 0; }
-  .ds-logs-view > div:nth-child(2) div:nth-child(1) {
-    padding: 0; }
-  .ds-logs-view > div:nth-child(2) div:nth-child(2) {
-    text-align: right;
-    padding: 0.25em 0 0.25em 0; }
 
 .ds-user-edit, .ds-permission-edit, .ds-group-edit {
   margin: 1em 0 7em 0; }

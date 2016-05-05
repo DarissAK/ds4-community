@@ -2,7 +2,7 @@
 $(function() {
 
     // Ajax script directory
-    var ajax = '/modules/administrator/server/';
+    var ajax = '/modules/administrator/server/api/groups/';
 
     // Set the current page
     var page = $('.ds-group-edit');
@@ -17,7 +17,7 @@ $(function() {
             ds_clear_errors();
 
             // Open the modal
-            $('.modal').modal();
+            $('.modal').modal('show');
 
         });
 
@@ -43,7 +43,7 @@ $(function() {
             };
 
             // Send the POST request
-            $.post(ajax + 'group_update.php', data, function(response) {
+            $.post(ajax + 'update.php', data, function(response) {
 
                 // Update the old values
                 if (response.status === 'OK') {
@@ -82,7 +82,7 @@ $(function() {
             };
 
             // Send the POST request
-            $.post(ajax + 'group_delete.php', data, function(response) {
+            $.post(ajax + 'delete.php', data, function(response) {
 
                 // Toggle the modal
                 $('.modal').modal('toggle');

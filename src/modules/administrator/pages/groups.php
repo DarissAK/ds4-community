@@ -35,7 +35,7 @@ if(
 ) {
 
     // Template file
-    $file = '/modules/administrator/templates/group_edit.html';
+    $file = '/modules/administrator/templates/groups/edit.html';
 
     // Load the template
     $template = $ds->loadTemplate($file);
@@ -84,7 +84,7 @@ if(
 else {
 
     // Template file
-    $file = '/modules/administrator/templates/group_list.html';
+    $file = '/modules/administrator/templates/groups/list.html';
 
     // Load the template
     $template = $ds->loadTemplate($file);

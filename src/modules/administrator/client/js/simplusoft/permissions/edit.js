@@ -2,7 +2,7 @@
 $(function() {
 
     // Ajax script directory
-    var ajax = '/modules/administrator/server/';
+    var ajax = '/modules/administrator/server/api/permissions/';
 
     // Set the current page
     var page = $('.ds-permission-edit');
@@ -31,7 +31,7 @@ $(function() {
             };
 
             // Send the request
-            $.post(ajax + 'permission_update.php', data, function(response) {
+            $.post(ajax + 'update.php', data, function(response) {
 
                 // Update the old values
                 if(response.status === 'OK') {
@@ -61,7 +61,7 @@ $(function() {
             ds_clear_errors();
 
             // Open the modal
-            $('.modal').modal();
+            $('.modal').modal('show');
 
         });
 
@@ -81,7 +81,7 @@ $(function() {
             };
 
             // Send the POST request
-            $.post(ajax + 'permission_delete.php', data, function(response) {
+            $.post(ajax + 'delete.php', data, function(response) {
 
                 // Close the modal
                 $('.modal').modal('hide');

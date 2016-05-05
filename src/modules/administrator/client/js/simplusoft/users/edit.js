@@ -2,7 +2,7 @@
 $(function() {
 
     // Ajax script directory
-    var ajax = '/modules/administrator/server/';
+    var ajax = '/modules/administrator/server/api/users/';
 
     // Set current page
     var page = $('.ds-user-edit');
@@ -57,7 +57,7 @@ $(function() {
             }
 
             // Send the POST request
-            $.post(ajax + 'user_update.php', data, function(response) {
+            $.post(ajax + 'update.php', data, function(response) {
 
                 // OK Response
                 if(response.status === 'OK') {
@@ -94,7 +94,7 @@ $(function() {
             ds_clear_errors();
 
             // Open the modal
-            $('.modal').modal();
+            $('.modal').modal('show');
 
         });
 
@@ -114,7 +114,7 @@ $(function() {
             };
 
             // Send the POST request
-            $.post(ajax + 'user_delete.php', data, function(response) {
+            $.post(ajax + 'delete.php', data, function(response) {
 
                 // Request successful
                 if(response.status === 'OK') {

@@ -7,14 +7,11 @@ $(function () {
     // If the page exists
     if(page.length) {
 
-        // Bind filter event and update user count
-        page.find('#search-area strong').html(
-            ds_table_search(
-                page.find('table'),
-                page.find('#search-area input'),
-                page.find('#search-area strong')
-            )
-        );
+        // Data table init
+        page.find('table').DataTable({
+            pageLength: 9,
+            lengthMenu: [9, 25, 50, 100]
+        });
 
         // Edit user
         page.on('click', 'tbody tr', function() {
@@ -23,8 +20,9 @@ $(function () {
             var id = $(this).attr('data-id');
 
             // Redirect the user
-            document.location.href =
-                '/administrator/users/list/edit/' + id;
+            if(typeof id !== 'undefined')
+                document.location.href =
+                    '/administrator/users/list/edit/' + id;
 
         });
 

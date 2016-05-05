@@ -2,7 +2,7 @@
 $(function() {
 
     // Ajax script directory
-    var ajax = '/modules/administrator/server/';
+    var ajax = '/modules/administrator/server/api/users/';
 
     // Set the current page
     var page = $('.ds-user-add');
@@ -32,7 +32,7 @@ $(function() {
             };
 
             // Send the request
-            $.post(ajax + 'user_add.php', data, function(response) {
+            $.post(ajax + 'add.php', data, function(response) {
 
                 // User added successfully
                 if(response.status === 'OK') {

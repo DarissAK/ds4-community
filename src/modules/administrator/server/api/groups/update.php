@@ -1,6 +1,6 @@
 <?php
 // +-------------------------------------------------------------------------+
-// |  Script for adding new permission groups                                |
+// |  Script for updating permission groups                                  |
 // +-------------------------------------------------------------------------+
 // |  Copyright 2016 Simplusoft LLC                                          |
 // |  All Rights Reserved.                                                   |
@@ -26,10 +26,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php';
 // Check for valid request
 $ds->checkRequest(
     'ds_admin_permission',
-    [
-        'name',
-        'description'
-    ]
+    ['id', 'name', 'old', 'description']
 );
 
 // Formatted name
@@ -39,51 +36,93 @@ $name = htmlentities($_POST['name']);
 define('NAME_FAIL',   'Group already exists');
 define('NAME_L_FAIL', 'Group name too short');
 define('DESC_L_FAIL', 'Description too short');
-define('OK',          "Group $name Added");
+define('OK',          "Group {$_POST['name']} Updated");
 
 // Global Settings
-define('MIN_NAME_LENGTH', 2);
+define('MIN_GROUP_LENGTH', 2);
 define('MIN_DESC_LENGTH',  4);
 
-// Group name is too short
-if(strlen($_POST['name']) < MIN_NAME_LENGTH)
-    die($ds->APIResponse('NAME_L_FAIL', 3, NAME_L_FAIL));
+// If the name is changing
+if(strcasecmp($_POST['name'], $_POST['old'])) {
+
+    // Test query
+    $test = 'SELECT * FROM `ds_group_meta` WHERE `name` = ?';
+
+    // Name is already in use
+    if(is_array($ds->query($test, $_POST['name'])))
+        die($ds->APIResponse('NAME_FAIL', 3, NAME_FAIL));
+
+    // Name is too short
+    if(strlen($_POST['name']) < MIN_GROUP_LENGTH)
+        die($ds->APIResponse('NAME_L_FAIL', 3, NAME_L_FAIL));
+
+}
 
 // Description is too short
 if(strlen($_POST['description']) < MIN_DESC_LENGTH)
     die($ds->APIResponse('DESC_L_FAIL', 3, DESC_L_FAIL));
 
-// If the group already exists
-foreach($ds->getPermissionGroups() as $group) {
-    if(!strcasecmp($group['name'], $_POST['name']))
-        die($ds->APIResponse('NAME_FAIL', 3, NAME_FAIL));
-}
+// Query for updating metadata
+$query = 'UPDATE `ds_group_meta` SET `name` = ?, ' .
+         '`description` = ? WHERE `group_id` = ?';
 
-// Query for adding groups
-$query = 'INSERT INTO `ds_group_meta` ' .
-         '(`name`, `description`) VALUES (?, ?)';
-
-// Group data
+// New metadata
 $data = [
     $_POST['name'],
-    $_POST['description']
+    $_POST['description'],
+    $_POST['id']
 ];
 
-// On query failure
+// Update the metadata
 if(!$ds->query($query, $data))
     die($ds->APIResponse());
 
-// New row data
-$id = $ds->db_conn->lastInsertId();
+// Clear old permissions
+$query = 'DELETE FROM `ds_group_data` WHERE `group_id` = ?';
+if(!$ds->query($query, $_POST['id']))
+    die($ds->APIResponse());
+
+// If there are permissions to add
+if(
+    isset($_POST['permissions']) &&
+    is_array($_POST['permissions']) &&
+    !empty($_POST['permissions'])
+) {
+
+    // Begin query for adding data
+    $query = 'INSERT INTO `ds_group_data` ' .
+             '(`group_id`, `permission_id`) VALUES ';
+
+    // Group data
+    $data = [];
+
+    // Loop through all of the given permissions
+    foreach($_POST['permissions'] as $permission) {
+
+        // Get the permission ID
+        $group_id      = $_POST['id'];
+        $permission_id = explode('_', $permission['name'])[1];
+
+        // Update the query
+        $query .= '(?, ?),';
+
+        // Add the data
+        $data[] = $group_id;
+        $data[] = $permission_id;
+
+    }
+
+    // Trim off the trailing comma
+    $query = rtrim($query, ',');
+
+    // Update the data
+    if(!$ds->query($query, $data))
+        die($ds->APIResponse());
+
+}
 
 // Log the event
-$ds->logEvent(OK, GROUP_ADDED);
+$ds->logEvent(OK, GROUP_UPDATED);
 
-// Row to append to the group table
-$tr  = "<tr data-id='$id'>";
-$tr .= "<td>$name</td>";
-$tr .= '<td>' . htmlentities($_POST['description']) . '</td>';
-$tr .= '</tr>';
-
-// Group add success
-die($ds->APIResponse('OK', 0, OK, $tr));
+// OK response
+die($ds->APIResponse('OK', 0, OK, $name));

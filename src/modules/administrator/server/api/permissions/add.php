@@ -70,14 +70,15 @@ if(!$ds->query($query, $data))
 // New permission ID
 $id = $ds->db_conn->lastInsertId();
 
-// New table row
-$tr  = "<tr data-id='$id'>";
-$tr .= "<td>$name</td>";
-$tr .= '<td>' . htmlentities($_POST['description']) . '</td>';
-$tr .= '</tr>';
-
 // Log the event
 $ds->logEvent(OK, PERMISSION_ADDED);
 
+// Response data
+$data = [
+    'id'          => $id,
+    'name'        => $name,
+    'description' => htmlentities($_POST['description'])
+];
+
 // OK Response
-die($ds->APIResponse('OK', 0, OK, $tr));
+die($ds->APIResponse('OK', 0, OK, $data));

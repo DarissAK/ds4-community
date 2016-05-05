@@ -1,6 +1,6 @@
 <?php
 // +-------------------------------------------------------------------------+
-// |  Script for deleting permission groups                                  |
+// |  Script for adding new permission groups                                |
 // +-------------------------------------------------------------------------+
 // |  Copyright 2016 Simplusoft LLC                                          |
 // |  All Rights Reserved.                                                   |
@@ -26,24 +26,65 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php';
 // Check for valid request
 $ds->checkRequest(
     'ds_admin_permission',
-    ['id', 'name']
+    [
+        'name',
+        'description'
+    ]
 );
 
 // Formatted name
 $name = htmlentities($_POST['name']);
 
 // API Responses
-define('OK', "Group $name Deleted");
+define('NAME_FAIL',   'Group already exists');
+define('NAME_L_FAIL', 'Group name too short');
+define('DESC_L_FAIL', 'Description too short');
+define('OK',          "Group $name Added");
 
-// Query for removing a group
-$query = 'DELETE FROM `ds_group_meta` WHERE `group_id` = ?';
+// Global Settings
+define('MIN_NAME_LENGTH', 2);
+define('MIN_DESC_LENGTH',  4);
+
+// Group name is too short
+if(strlen($_POST['name']) < MIN_NAME_LENGTH)
+    die($ds->APIResponse('NAME_L_FAIL', 3, NAME_L_FAIL));
+
+// Description is too short
+if(strlen($_POST['description']) < MIN_DESC_LENGTH)
+    die($ds->APIResponse('DESC_L_FAIL', 3, DESC_L_FAIL));
+
+// If the group already exists
+foreach($ds->getPermissionGroups() as $group) {
+    if(!strcasecmp($group['name'], $_POST['name']))
+        die($ds->APIResponse('NAME_FAIL', 3, NAME_FAIL));
+}
+
+// Query for adding groups
+$query = 'INSERT INTO `ds_group_meta` ' .
+         '(`name`, `description`) VALUES (?, ?)';
+
+// Group data
+$data = [
+    $_POST['name'],
+    $_POST['description']
+];
 
 // On query failure
-if(!$ds->query($query, $_POST['id']))
+if(!$ds->query($query, $data))
     die($ds->APIResponse());
 
-// Log the event
-$ds->logEvent(OK, GROUP_DELETED);
+// New row data
+$id = $ds->db_conn->lastInsertId();
 
-// OK Response
-die($ds->APIResponse('OK', 0, OK));
+// Log the event
+$ds->logEvent(OK, GROUP_ADDED);
+
+// Response data
+$data = [
+    'id'          => $id,
+    'name'        => $name,
+    'description' => htmlentities($_POST['description'])
+];
+
+// Group add success
+die($ds->APIResponse('OK', 0, OK, $data));

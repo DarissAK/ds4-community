@@ -1,15 +1,15 @@
 {
   "administrator" : {
     "name"    : "Administrator",
-    "version" : "1.0",
+    "version" : "1.1",
     "author"  : "Simplusoft LLC",
     "about"   : "A module for managing users and logs",
     "perm"    : "ds_admin",
     "active"  : true,
     "icon"    : "fa-cogs",
-    "css" : {
-      "0" : "/modules/administrator/client/css/administrator.css"
-    },
+    "css" : [
+      "/modules/administrator/client/css/administrator.css"
+    ],
     "content" : {
       "users" : {
         "name"   : "User Management",
@@ -21,20 +21,24 @@
             "name"    : "Users",
             "perm"    : "ds_admin_user",
             "active"  : true,
-            "js"      : {
-              "0" : "/modules/administrator/client/js/user_list.js",
-              "1" : "/modules/administrator/client/js/user_edit.js"
-            },
-            "content" : "/modules/administrator/pages/user_list.php"
+            "css"     : [
+              "/modules/administrator/client/css/vendor/datatables.min.css"
+            ],
+            "js"      : [
+              "/modules/administrator/client/js/vendor/datatables.min.js",
+              "/modules/administrator/client/js/simplusoft/users/list.js",
+              "/modules/administrator/client/js/simplusoft/users/edit.js"
+            ],
+            "content" : "/modules/administrator/pages/users_list.php"
           },
           "add" : {
             "name"    : "Add User",
             "perm"    : "ds_admin_user",
             "active"  : true,
-            "js"      : {
-              "0" : "/modules/administrator/client/js/user_add.js"
-            },
-            "content" : "/modules/administrator/pages/user_add.php"
+            "js"      : [
+              "/modules/administrator/client/js/simplusoft/users/add.js"
+            ],
+            "content" : "/modules/administrator/pages/users_add.php"
           }
         }
       },
@@ -48,21 +52,29 @@
             "name"    : "Groups",
             "perm"    : "ds_admin_permission",
             "active"  : true,
-            "js"      : {
-              "0" : "/modules/administrator/client/js/group_list.js",
-              "1" : "/modules/administrator/client/js/group_edit.js"
-            },
-            "content" : "/modules/administrator/pages/group_list.php"
+            "css"     : [
+              "/modules/administrator/client/css/vendor/datatables.min.css"
+            ],
+            "js"      : [
+              "/modules/administrator/client/js/vendor/datatables.min.js",
+              "/modules/administrator/client/js/simplusoft/groups/list.js",
+              "/modules/administrator/client/js/simplusoft/groups/edit.js"
+            ],
+            "content" : "/modules/administrator/pages/groups.php"
           },
           "list" : {
             "name"    : "Permissions",
             "perm"    : "ds_admin_permission",
             "active"  : true,
-            "js"      : {
-              "0" : "/modules/administrator/client/js/permission_list.js",
-              "1" : "/modules/administrator/client/js/permission_edit.js"
-            },
-            "content" : "/modules/administrator/pages/permission_list.php"
+            "css"     : [
+              "/modules/administrator/client/css/vendor/datatables.min.css"
+            ],
+            "js"      : [
+              "/modules/administrator/client/js/vendor/datatables.min.js",
+              "/modules/administrator/client/js/simplusoft/permissions/list.js",
+              "/modules/administrator/client/js/simplusoft/permissions/edit.js"
+            ],
+            "content" : "/modules/administrator/pages/permissions.php"
           }
         }
       },
@@ -71,10 +83,14 @@
         "perm"   : "ds_admin_logs",
         "active" : true,
         "icon"   : "fa-list",
-        "js"      : {
-          "0" : "/modules/administrator/client/js/logs_viewer.js"
-        },
-        "content" : "/modules/administrator/pages/logs_viewer.php"
+        "css"     : [
+          "/modules/administrator/client/css/vendor/datatables.min.css"
+        ],
+        "js"      : [
+          "/modules/administrator/client/js/vendor/datatables.min.js",
+          "/modules/administrator/client/js/simplusoft/logs/list.js"
+        ],
+        "content" : "/modules/administrator/pages/logs.php"
       }
     }
   }

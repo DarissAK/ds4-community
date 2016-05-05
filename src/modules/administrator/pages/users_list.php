@@ -35,7 +35,7 @@ if(
 ) {
 
     // Template file location
-    $file = '/modules/administrator/templates/user_list_edit.html';
+    $file = '/modules/administrator/templates/users/edit.html';
 
     // Load the template
     $template = $ds->loadTemplate($file);
@@ -116,6 +116,12 @@ elseif (
     $ds->url[3] === 'inactive'
 ) {
 
+    // Template file to load
+    $file = '/modules/administrator/templates/users/list_inactive.html';
+
+    // Load the template
+    $template = $ds->loadTemplate($file);
+
     // Get inactive users
     $users = $ds->getUsers(false);
 
@@ -135,12 +141,6 @@ elseif (
 
     }
 
-    // Template file to load
-    $file = '/modules/administrator/templates/user_list_inactive.html';
-
-    // Load the template
-    $template = $ds->loadTemplate($file);
-
     // Location of the inactive users list
     $view_href = "{$ds->domain}/administrator/users/list";
 
@@ -154,6 +154,12 @@ elseif (
 
 // Default view, show active user list
 else {
+
+    // Template file to load
+    $file = '/modules/administrator/templates/users/list_active.html';
+
+    // Load the template
+    $template =$ds->loadTemplate($file);
 
     // Get all of the active users
     $users = $ds->getUsers();
@@ -173,12 +179,6 @@ else {
         $tbody .= '</tr>';
 
     }
-
-    // Template file to load
-    $file = '/modules/administrator/templates/user_list_active.html';
-
-    // Load the template
-    $template =$ds->loadTemplate($file);
 
     // Location of the inactive users list
     $view_href = "{$ds->domain}/administrator/users/list/inactive";

@@ -1,6 +1,6 @@
 <?php
 // +-------------------------------------------------------------------------+
-// |  Administrator module - Add user page                                   |
+// |  Administrator module - Log viewer                                      |
 // +-------------------------------------------------------------------------+
 // |  Copyright 2016 Simplusoft LLC                                          |
 // |  All Rights Reserved.                                                   |
@@ -20,28 +20,59 @@
 // |  02110-1301, USA.                                                       |
 // +-------------------------------------------------------------------------+
 
-// If permission or session is not valid
-$ds->validatePermission('ds_admin_user');
+// If the user has the proper permissions and session
+$ds->validatePermission('ds_admin_logs');
 
-// Get permission groups
-$groups = $ds->getPermissionGroups();
+// Table body
+$tbody = '';
 
-// Option string
-$options = '<option></option>';
+// Query for getting all of the active users
+$query = 'SELECT * FROM `ds_logs` ' .
+         'ORDER BY `log_id` DESC ' .
+         'LIMIT 2000';
 
-// Build the option string for each permission group
-foreach($groups as $group => $data) {
-    $options .= "<option value='$group'>{$data['name']}</option>";
+// Execute the query and continue if success
+if(is_array($logs = $ds->query($query))) {
+
+    // Loop through last 250 logs
+    foreach($logs as $log) {
+
+        // Format the timestamp
+        $log_time =
+            $ds->timestampSQL2Format($log['time']);
+
+        // Clean values
+        $creator  = htmlentities($log['creator']);
+        $affected = htmlentities($log['affected']);
+        $event    = htmlentities($log['event']);
+
+        // Create the body row
+        $tbody .= '<tr>';
+        $tbody .= "<td>{$log['log_id']}</td>";
+        $tbody .= "<td>$log_time</td>";
+        $tbody .= "<td>{$log['type']}</td>";
+        $tbody .= "<td>$creator</td>";
+        $tbody .= "<td>$affected</td>";
+        $tbody .= "<td>$event</td>";
+        $tbody .= "<td>{$log['ip']}</td>";
+        $tbody .= '</tr>';
+
+    }
+
+    // Template file to load
+    $file = '/modules/administrator/templates/logs/list.html';
+
+    // Load the template
+    $template = $ds->loadTemplate($file);
+
+    // Add the table body to the template, then display it
+    echo str_replace('{{tbody}}', $tbody, $template);
+
 }
 
-// Template file to load
-$file = '/modules/administrator/templates/user_add.html';
+// Error loading logs
+else {
 
-// Load the template
-$template = $ds->loadTemplate($file);
+    echo 'Error loading logs';
 
-// Update the template
-$template = str_replace('{{group}}', $options, $template);
-
-// Render the template
-echo $template;
+}

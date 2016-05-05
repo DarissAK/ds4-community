@@ -2,7 +2,7 @@
 $(function() {
 
     // Ajax script directory
-    var ajax = '/modules/administrator/server/';
+    var ajax = '/modules/administrator/server/api/permissions/';
 
     // Set the current page
     var page = $('.ds-permission-list');
@@ -10,14 +10,11 @@ $(function() {
     // If the page exists
     if(page.length) {
 
-        // Bind filter event and update permission count
-        page.find('#search-area strong').html(
-            ds_table_search(
-                page.find('table'),
-                page.find('#search-area input'),
-                page.find('#search-area strong')
-            )
-        );
+        // Data table init
+        var t = page.find('table').DataTable({
+            pageLength: 9,
+            lengthMenu: [9, 25, 50, 100]
+        });
 
         // Add permission modal
         page.on('click', '#header-area button', function() {
@@ -25,12 +22,24 @@ $(function() {
             // Clear any errors
             ds_clear_errors();
 
-            // Reset the inputs and errors
-            $('#name').val('');
-            $('#description').val('');
+            // Reset the inputs
+            $('#name, #description').val('');
 
             // Toggle the add modal
-            $('.modal').modal();
+            $('.modal').modal('show');
+
+        });
+
+        // Edit permission
+        page.on('click', 'tbody tr', function() {
+
+            // Get the permission ID
+            var id = $(this).attr('data-id');
+
+            // Redirect the user
+            if(typeof id !== 'undefined')
+                document.location.href =
+                    '/administrator/permissions/list/edit/' + id;
 
         });
 
@@ -53,7 +62,7 @@ $(function() {
             };
 
             // Send the request
-            $.post(ajax + 'permission_add.php', data, function(response) {
+            $.post(ajax + 'add.php', data, function(response) {
 
                 // Set error location
                 var error = '.modal-body input:last';
@@ -61,14 +70,17 @@ $(function() {
                 // Add Success
                 if(response.status === 'OK') {
 
-                    // Counter updates
-                    page.find('#search-area strong').cUpdate();
+                    // Append the new row to the table
+                    var row = t.row.add([
+                        response.data.name,
+                        response.data.description
+                    ]).draw().node();
 
-                    // Append the new row
-                    page.find('table tbody').append(response.data);
+                    // Update the ID
+                    $(row).attr('data-id', response.data.id);
 
                     // Close the modal
-                    $('.modal').modal('toggle');
+                    $('.modal').modal('hide');
 
                     // Set error location
                     error = '#alert-entry';
@@ -87,18 +99,6 @@ $(function() {
                 button.lBtn(true, 'Add');
 
             });
-
-        });
-
-        // Edit permission
-        page.on('click', 'tbody tr', function() {
-
-            // Get the permission ID
-            var id = $(this).attr('data-id');
-
-            // Redirect the user
-            document.location.href =
-                '/administrator/permissions/list/edit/' + id;
 
         });
 

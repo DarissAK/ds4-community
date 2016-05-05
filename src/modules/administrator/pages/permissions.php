@@ -35,7 +35,7 @@ if(
 ) {
 
     // Template file location
-    $file = '/modules/administrator/templates/permission_edit.html';
+    $file = '/modules/administrator/templates/permissions/edit.html';
 
     // Load the template
     $template = $ds->loadTemplate($file);
@@ -58,7 +58,7 @@ if(
 else {
 
     // Template file location
-    $file = '/modules/administrator/templates/permission_list.html';
+    $file = '/modules/administrator/templates/permissions/list.html';
 
     // Load the template
     $template = $ds->loadTemplate($file);

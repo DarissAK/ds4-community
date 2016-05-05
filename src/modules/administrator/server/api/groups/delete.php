@@ -1,6 +1,6 @@
 <?php
 // +-------------------------------------------------------------------------+
-// |  Administrator module - Log viewer                                      |
+// |  Script for deleting permission groups                                  |
 // +-------------------------------------------------------------------------+
 // |  Copyright 2016 Simplusoft LLC                                          |
 // |  All Rights Reserved.                                                   |
@@ -20,59 +20,27 @@
 // |  02110-1301, USA.                                                       |
 // +-------------------------------------------------------------------------+
 
-// If the user has the proper permissions and session
-$ds->validatePermission('ds_admin_logs');
+// Include dependencies
+require_once $_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php';
 
-// Table body
-$tbody = '';
+// Check for valid request
+$ds->checkRequest('ds_admin_permission', ['id', 'name']);
 
-// Query for getting all of the active users
-$query = 'SELECT * FROM `ds_logs` ' .
-         'ORDER BY `log_id` DESC ' .
-         'LIMIT 250';
+// Formatted name
+$name = htmlentities($_POST['name']);
 
-// Execute the query and continue if success
-if(is_array($logs = $ds->query($query))) {
+// API Responses
+define('OK', "Group $name Deleted");
 
-    // Loop through last 250 logs
-    foreach($logs as $log) {
+// Query for removing a group
+$query = 'DELETE FROM `ds_group_meta` WHERE `group_id` = ?';
 
-        // Format the timestamp
-        $log_time =
-            $ds->timestampSQL2Format($log['time']);
+// On query failure
+if(!$ds->query($query, $_POST['id']))
+    die($ds->APIResponse());
 
-        // Clean values
-        $creator  = htmlentities($log['creator']);
-        $affected = htmlentities($log['affected']);
-        $event    = htmlentities($log['event']);
+// Log the event
+$ds->logEvent(OK, GROUP_DELETED);
 
-        // Create the body row
-        $tbody .= '<tr>';
-        $tbody .= "<td>{$log['log_id']}</td>";
-        $tbody .= "<td>$log_time</td>";
-        $tbody .= "<td>{$log['type']}</td>";
-        $tbody .= "<td>$creator</td>";
-        $tbody .= "<td>$affected</td>";
-        $tbody .= "<td>$event</td>";
-        $tbody .= "<td>{$log['ip']}</td>";
-        $tbody .= '</tr>';
-
-    }
-
-    // Template file to load
-    $file = '/modules/administrator/templates/logs_view.html';
-
-    // Load the template
-    $template = $ds->loadTemplate($file);
-
-    // Add the table body to the template, then display it
-    echo str_replace('{{tbody}}', $tbody, $template);
-
-}
-
-// Error loading logs
-else {
-
-    echo 'Error loading logs';
-
-}
+// OK Response
+die($ds->APIResponse('OK', 0, OK));
