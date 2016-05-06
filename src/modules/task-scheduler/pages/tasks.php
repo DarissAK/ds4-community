@@ -23,6 +23,16 @@
 // If the user has the proper permissions and session
 $ds->validatePermission('ds_task_scheduler');
 
+// Temporary areas
+$tmp_dir = $_SERVER['DOCUMENT_ROOT'] . '/modules/task-scheduler/tmp';
+$tmp_file = 'cron.tmp';
+
+// Check permissions
+if(!is_writable($tmp_dir))
+    die('Module /tmp directory not writeable, module cannot load');
+if(file_exists("$tmp_dir/$tmp_file") && !is_writable($tmp_file))
+    die('cron.tmp not writeable, module cannot load');
+
 // Template file to load
 $file = '/modules/task-scheduler/templates/tasks.html';
 

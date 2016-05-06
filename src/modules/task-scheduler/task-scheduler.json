@@ -1,7 +1,7 @@
 {
   "task-scheduler" : {
     "name"    : "Task Scheduler",
-    "version" : "1.0",
+    "version" : "1.1",
     "author"  : "Simplusoft LLC",
     "about"   : "A cron task manager",
     "perm"    : "ds_task_scheduler",
