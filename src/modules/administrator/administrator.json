@@ -29,7 +29,7 @@
               "/modules/administrator/client/js/simplusoft/users/list.js",
               "/modules/administrator/client/js/simplusoft/users/edit.js"
             ],
-            "content" : "/modules/administrator/pages/users_list.php"
+            "content" : "/modules/administrator/pages/users/list.php"
           },
           "add" : {
             "name"    : "Add User",
@@ -38,7 +38,7 @@
             "js"      : [
               "/modules/administrator/client/js/simplusoft/users/add.js"
             ],
-            "content" : "/modules/administrator/pages/users_add.php"
+            "content" : "/modules/administrator/pages/users/add.php"
           }
         }
       },
@@ -60,7 +60,7 @@
               "/modules/administrator/client/js/simplusoft/groups/list.js",
               "/modules/administrator/client/js/simplusoft/groups/edit.js"
             ],
-            "content" : "/modules/administrator/pages/groups.php"
+            "content" : "/modules/administrator/pages/groups/groups.php"
           },
           "list" : {
             "name"    : "Permissions",
@@ -74,7 +74,7 @@
               "/modules/administrator/client/js/simplusoft/permissions/list.js",
               "/modules/administrator/client/js/simplusoft/permissions/edit.js"
             ],
-            "content" : "/modules/administrator/pages/permissions.php"
+            "content" : "/modules/administrator/pages/permissions/permissions.php"
           }
         }
       },
@@ -90,7 +90,7 @@
           "/modules/administrator/client/js/vendor/datatables.min.js",
           "/modules/administrator/client/js/simplusoft/logs/list.js"
         ],
-        "content" : "/modules/administrator/pages/logs.php"
+        "content" : "/modules/administrator/pages/logs/logs.php"
       }
     }
   }

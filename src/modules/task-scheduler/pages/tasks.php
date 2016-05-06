@@ -30,7 +30,7 @@ $tmp_file = 'cron.tmp';
 // Check permissions
 if(!is_writable($tmp_dir))
     die('Module /tmp directory not writeable, module cannot load');
-if(file_exists("$tmp_dir/$tmp_file") && !is_writable($tmp_file))
+if(file_exists("$tmp_dir/$tmp_file") && !is_writable("$tmp_dir/$tmp_file"))
     die('cron.tmp not writeable, module cannot load');
 
 // Template file to load
