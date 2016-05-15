@@ -8,7 +8,7 @@ html, body {
 
 /* Center element vertically */
 .ds-y-center {
-  margin-top: 15%; }
+  padding-top: 15%; }
 
 /* Error page padding */
 .ds-error {
