@@ -98,7 +98,7 @@ $(function() {
     }
 
     // Login Function
-    $('.ds-login').find('input:submit').on('click', function() {
+    $('.ds-login').on('click', 'input:submit', function() {
 
         // Clear any errors
         ds_clear_errors();
