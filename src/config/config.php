@@ -77,7 +77,7 @@ $cfg['system_title_default'] = 'Dynamic Suite';
 $cfg['system_title_prefix'] = 'DS4';
 
 // System version
-$cfg['system_version'] = '4.1';
+$cfg['system_version'] = '4.1.1';
 
 // +-------------------------------------------------------------------------+
 // |  Database Settings                                                      |
