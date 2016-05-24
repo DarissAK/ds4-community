@@ -7,8 +7,6 @@ $(function() {
     // If the page exists
     if(page.length) {
 
-        console.log(1);
-
         page.find('table').DataTable({
             pageLength: 9,
             lengthMenu: [9, 25, 50, 100],

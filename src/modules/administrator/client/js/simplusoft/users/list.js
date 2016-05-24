@@ -17,7 +17,7 @@ $(function () {
         page.on('click', 'tbody tr', function() {
 
             // Get the user ID
-            var id = $(this).attr('data-id');
+            var id = $(this).data('id');
 
             // Redirect the user
             if(typeof id !== 'undefined')

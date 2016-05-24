@@ -27,12 +27,8 @@ html, body
 /* Login Form */
 .ds-login
 
-  /* Can't login button spacing */
-  a
-    margin-left: 0.8em
-
   /* Login form header */
-  > div:nth-child(1)
+  .login-header
     border: 1px solid $ds-primary-txt
     border-radius: 0.2em 0.2em 0 0
     padding: 0.4em
@@ -42,21 +38,18 @@ html, body
     background: $ds-primary-txt-lighter
 
   /* The login form itself */
-  form
+  .login-form
+    border: 1px solid $ds-primary-txt
+    border-top: none
+    border-radius: 0 0 0.3em 0.3em
+    padding: 1em
 
-    /* Login form body */
-    > div
-      border: 1px solid $ds-primary-txt
-      border-top: none
-      border-radius: 0 0 0.3em 0.3em
-      padding: 1em
-
-      /* Addon adjustment */
-      .input-group-addon
-        min-width: 36px
+    /* Addon adjustment */
+    .input-group-addon
+      min-width: 36px
 
   /* Login form footer */
-  > div:nth-child(3)
+  .login-footer
     color: $ds-primary-txt-light
     text-align: center
     font-size: 0.8em

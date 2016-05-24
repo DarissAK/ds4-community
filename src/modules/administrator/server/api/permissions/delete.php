@@ -21,7 +21,7 @@
 // +-------------------------------------------------------------------------+
 
 // Include dependencies
-require_once $_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/server/lib/ds.class.php';
 
 // Check for valid request
 $ds->checkRequest('ds_admin_permission', ['id', 'name']);

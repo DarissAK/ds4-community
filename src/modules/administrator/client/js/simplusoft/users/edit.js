@@ -39,9 +39,9 @@ $(function() {
 
             // POST data
             var data = {
-                id:         page.attr('data-id'),
+                id:         page.data('id'),
                 username:   $('#username').val(),
-                old:        page.attr('data-old'),
+                old:        page.data('old'),
                 status:     $('#status').val(),
                 group:      $('#group').val(),
                 password_1: password_1.val(),
@@ -63,7 +63,7 @@ $(function() {
                 if(response.status === 'OK') {
 
                     // Update old values
-                    page.attr('data-old', response.data);
+                    page.data('old', response.data);
                     page.find('.modal strong').html(response.data);
 
                     // Set password fields to blank
@@ -109,8 +109,8 @@ $(function() {
 
             // User to be deleted
             var data = {
-                id:       page.attr('data-id'),
-                username: page.attr('data-old')
+                id:       page.data('id'),
+                username: page.data('old')
             };
 
             // Send the POST request

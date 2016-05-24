@@ -21,10 +21,10 @@
 // +-------------------------------------------------------------------------+
 
 // Include and create a new Dynamic Suite Instance
-require_once $_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/server/lib/ds.class.php';
 
 // Login API Responses
-define('MANUAL_LOCKOUT_FAIL', $cfg['lock_out_message']);
+define('MANUAL_LOCKOUT_FAIL', $ds->cfg['lock_out_message']);
 define('ACCT_FAIL',           'Invalid username or password');
 define('ACTIVE_FAIL',         'Account Inactive');
 define('LOCKOUT_FAIL',        'Too many login attempts');
@@ -57,7 +57,7 @@ $account = $account[0];
 // Block login attempt if a manual lockout is in effect
 // Administrators bypass lockout
 // See Dynamic Suite Configuration documentation for more information
-if($cfg['manual_lockout'] && !$account['administrator'])
+if($ds->cfg['manual_lockout'] && !$account['administrator'])
     die($ds->APIResponse('MANUAL_LOCKOUT_FAIL', 3, MANUAL_LOCKOUT_FAIL));
 
 // Update login metadata and increment login attempts
@@ -73,8 +73,8 @@ $last_attempt = strtotime($account['last_login_attempt']);
 // If the user has greater than or equal to the allowed login attempts
 // and hasn't waited out the login period
 if(
-    $account['login_attempts'] >= $cfg['login_attempts'] &&
-    time() - $last_attempt <= $cfg['login_timeout']
+    $account['login_attempts'] >= $ds->cfg['login_attempts'] &&
+    time() - $last_attempt <= $ds->cfg['login_timeout']
 )
     die($ds->APIResponse('LOCKOUT_FAIL', 3, LOCKOUT_FAIL));
 

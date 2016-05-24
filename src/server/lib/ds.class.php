@@ -33,7 +33,7 @@ $_SERVER['REMOTE_ADDR'] =
 require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
 
 // Include the optional database wrapper
-require_once $_SERVER['DOCUMENT_ROOT'] . '/server/sdc.class.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/server/lib/sdc.class.php';
 
 // Log definitions
 define('USER_LOGIN',               1);
@@ -50,8 +50,7 @@ define('TASK_ADDED',              11);
 define('TASK_UPDATED',            12);
 define('TASK_DELETED',            13);
 
-class dsInstance
-{
+class ds {
 
     // Primary Configuration Array
     public $cfg;
@@ -1722,4 +1721,4 @@ class dsInstance
 }
 
 // Create a new Dynamic Suite Instance
-$ds = new dsInstance($cfg);
+$ds = new ds($cfg);

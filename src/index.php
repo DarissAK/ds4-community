@@ -24,8 +24,8 @@
 // |  02110-1301, USA.                                                       |
 // +-------------------------------------------------------------------------+
 
-// Include the dsInstance class (creates as $ds)
-require_once $_SERVER['DOCUMENT_ROOT'] . '/server/fn_init.php';
+// Include the ds class (creates as $ds)
+require_once $_SERVER['DOCUMENT_ROOT'] . '/server/lib/ds.class.php';
 
 // Validate the view
 if($ds->validateView()) {

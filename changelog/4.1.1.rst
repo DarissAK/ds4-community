@@ -1,0 +1,10 @@
+Dynamic Suite 4.1.1 Change Log
+------------------------------
+
+- [Removed] Old unused css rules
+
+- [Change] Login javascript to its own function, no more login forms. See ds_login()
+- [Change] All uses of attr() for data attributes changed to use data(), don't trust the DOM!
+- [Change] Moved server files to lib and api directories
+- [Change] Renamed dsInstance to ds
+- [Change] Use of $ds->cfg instead of cfg

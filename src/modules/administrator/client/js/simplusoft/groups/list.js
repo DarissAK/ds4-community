@@ -34,7 +34,7 @@ $(function() {
         page.on('click', 'tbody tr', function() {
 
             // Get the permission ID
-            var id = $(this).attr('data-id');
+            var id = $(this).data('id');
 
             // Redirect the user
             if(typeof id !== 'undefined')
@@ -77,7 +77,7 @@ $(function() {
                     ]).draw().node();
 
                     // Update the ID
-                    $(row).attr('data-id', response.data.id);
+                    $(row).data('id', response.data.id);
 
                     // Close the modal
                     $('.modal').modal('hide');

@@ -16,13 +16,10 @@ html, body {
 
 /* Login Form */
 .ds-login {
-  /* Can't login button spacing */
   /* Login form header */
   /* The login form itself */
   /* Login form footer */ }
-  .ds-login a {
-    margin-left: 0.8em; }
-  .ds-login > div:nth-child(1) {
+  .ds-login .login-header {
     border: 1px solid #ddd;
     border-radius: 0.2em 0.2em 0 0;
     padding: 0.4em;
@@ -30,17 +27,15 @@ html, body {
     font-weight: bold;
     text-align: center;
     background: #eee; }
-  .ds-login form {
-    /* Login form body */ }
-    .ds-login form > div {
-      border: 1px solid #ddd;
-      border-top: none;
-      border-radius: 0 0 0.3em 0.3em;
-      padding: 1em;
-      /* Addon adjustment */ }
-      .ds-login form > div .input-group-addon {
-        min-width: 36px; }
-  .ds-login > div:nth-child(3) {
+  .ds-login .login-form {
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 0.3em 0.3em;
+    padding: 1em;
+    /* Addon adjustment */ }
+    .ds-login .login-form .input-group-addon {
+      min-width: 36px; }
+  .ds-login .login-footer {
     color: #777;
     text-align: center;
     font-size: 0.8em;

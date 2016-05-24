@@ -1,7 +1,7 @@
 // +-------------------------------------------------------------------------+
 // |  Core Javascript File                                                   |
 // +-------------------------------------------------------------------------+
-// |  Copyright 2014-2015 Simplusoft LLC                                     |
+// |  Copyright 2016 Simplusoft LLC                                          |
 // |  All Rights Reserved.                                                   |
 // +-------------------------------------------------------------------------+
 // |  This program is free software; you can redistribute it and/or modify   |
@@ -84,64 +84,72 @@ $.fn.lBtn = function(enabled, html) {
 
 };
 
+// The login function
+function ds_login() {
+
+    // Clear any errors
+    ds_clear_errors();
+
+    // Set the button
+    var button = $('.btn');
+
+    // Set button state
+    button.lBtn(false, 'Logging in...');
+
+    // Data for AJAX request
+    var data = {
+        username: $('#username').val(),
+        password: $('#password').val()
+    };
+
+    // AJAX request for login
+    $.post('/server/api/login.php', data, function(response) {
+
+        // On success, go to the default page
+        if(response.status === 'OK') {
+            window.location.href = response.data;
+        }
+
+        // On credential fail
+        else {
+
+            // Alert Message
+            ds_alert(
+                response.message,
+                response.severity,
+                '.error-entry',
+                response.status
+            );
+
+            // Re-enable the login button
+            button.lBtn(true, 'Login');
+
+        }
+
+    });
+
+}
+
 // Dynamic Suite Global Javascript
 $(function() {
 
-    // Get the timeout length
-    var timeout = parseInt($('#ds-body-main').attr('data-timeout'));
+    // The login page
+    var login = $('.ds-login');
 
-    // Set page timeout
-    if(timeout) {
-        setTimeout(function() {
-            document.location.href = '/login';
-        }, timeout * 1000);
-    }
+    // If the login exists
+    if(login.length) {
 
-    // Login Function
-    $('.ds-login').on('click', 'input:submit', function() {
-
-        // Clear any errors
-        ds_clear_errors();
-
-        // The login button
-        var button = $(this);
-
-        // Disable the login button
-        button.attr('disabled', true).val('Logging in...');
-
-        // Data for AJAX request
-        var data = {
-            username: $('#username').val(),
-            password: $('#password').val()
-        };
-
-        // AJAX request for login
-        $.post('server/fn_login.php', data, function(response) {
-
-            // On success, go to the default page
-            if(response.status === 'OK') {
-                window.location.href = response.data;
-            }
-
-            // On credential fail
-            else {
-
-                // Alert Message
-                ds_alert(
-                    response.message,
-                    response.severity,
-                    'form div div:first',
-                    response.status
-                );
-
-                // Re-enable the login button
-                button.attr('disabled', false).val('Login');
-
-            }
-
+        // Login on enter press
+        $(document).on('keydown', function(event) {
+            if(event.which === 13) ds_login();
         });
 
-    });
+        // Login on click
+        login.on('click', '.btn', function() {
+            ds_login();
+        });
+
+    }
 
     // Navigation bar selector
     var nav = $('#ds-nav-main');
@@ -152,43 +160,58 @@ $(function() {
     // Tab bar selector
     var tabs = $('#ds-body-tabs');
 
-    // On navigation tab click
-    nav.find('li a').on('click', function() {
+    // If the nav exists
+    if(nav.length) {
 
-        // Get the parent
-        var parent = $(this).parent().parent().parent().not(':has(div)').find('a');
+        // On navigation tab click
+        nav.find('li a').on('click', function() {
 
-        // Remove all active tabs that aren't the parent
-        $('.ds-nav-active').not(parent).removeClass('ds-nav-active');
+            // Get the parent
+            var parent = $(this).parent().parent().parent().not(':has(div)').find('a');
 
-        // Don't toggle if collapsing or if child button
-        if(!$('.collapsing').length && $(this).parent().find('ul').length) {
+            // Remove all active tabs that aren't the parent
+            $('.ds-nav-active').not(parent).removeClass('ds-nav-active');
 
-            // Toggle the chevron for this
-            $(this).find('> i:nth-child(2)')
-                .toggleClass('fa-chevron-right fa-chevron-down');
+            // Don't toggle if collapsing or if child button
+            if(!$('.collapsing').length && $(this).parent().find('ul').length) {
 
-            // Toggle other chevrons
-            $('.fa-chevron-down').not($(this).find('i:nth-child(2)'))
-                .toggleClass('fa-chevron-right fa-chevron-down');
+                // Toggle the chevron for this
+                $(this).find('> i:nth-child(2)')
+                    .toggleClass('fa-chevron-right fa-chevron-down');
 
-        }
+                // Toggle other chevrons
+                $('.fa-chevron-down').not($(this).find('i:nth-child(2)'))
+                    .toggleClass('fa-chevron-right fa-chevron-down');
 
-        // Don't collapse if there are no children
-        if($(this).parent().find('ul').length) {
+            }
 
-            // Collapse any open accordion menus
-            $('ul').not($(this).parent().parent()).collapse('hide');
+            // Don't collapse if there are no children
+            if($(this).parent().find('ul').length) {
 
-        }
+                // Collapse any open accordion menus
+                $('ul').not($(this).parent().parent()).collapse('hide');
 
-        // Toggle the active class on the clicked button
-        $(this).toggleClass('ds-nav-active');
+            }
 
-    });
+            // Toggle the active class on the clicked button
+            $(this).toggleClass('ds-nav-active');
 
-    // Body resizing (if body exists)
+        });
+
+    }
+
+    // If the body exists
     if(body.length) {
+
+        // Get the timeout length
+        var timeout = parseInt($('#ds-body-main').data('timeout'));
+
+        // Set page timeout
+        if(timeout) {
+            setTimeout(function() {
+                document.location.href = '/login';
+            }, timeout * 1000);
+        }
 
         // Set module content height
         body.css('height', $(window).height() - body.position().top + 'px');

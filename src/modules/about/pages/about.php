@@ -30,7 +30,7 @@ $file = '/modules/about/templates/about.html';
 $template = $ds->loadTemplate($file);
 
 // Update the template
-$template = str_replace('{{version}}', $cfg['system_version'], $template);
+$template = str_replace('{{version}}', $ds->cfg['system_version'], $template);
 
 // Render the template
 echo $template;

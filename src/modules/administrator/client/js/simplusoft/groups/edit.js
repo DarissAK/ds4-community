@@ -35,9 +35,9 @@ $(function() {
 
             // POST request data
             var data = {
-                id:          page.attr('data-id'),
+                id:          page.data('id'),
                 name:        $('#name').val(),
-                old:         page.attr('data-old'),
+                old:         page.data('old'),
                 description: $('#description').val(),
                 permissions: $('form').serializeArray()
             };
@@ -47,7 +47,7 @@ $(function() {
 
                 // Update the old values
                 if (response.status === 'OK') {
-                    page.attr('data-old', response.data);
+                    page.data('old', response.data);
                     $('.modal-body strong').html(response.data);
                 }
 
@@ -77,8 +77,8 @@ $(function() {
 
             // POST request data
             var data = {
-                id:   page.attr('data-id'),
-                name: page.attr('data-old')
+                id:   page.data('id'),
+                name: page.data('old')
             };
 
             // Send the POST request
