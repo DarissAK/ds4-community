@@ -1,5 +1,5 @@
 # ds4-community
-Dynamic Suite 4.1 Framework - Community Edition
+Dynamic Suite 4.1.1 Framework - Community Edition
 
 Copyright (C) 2016 Simplusoft LLC
 
