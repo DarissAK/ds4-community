@@ -1319,6 +1319,9 @@ class ds {
         // Get the main page start template
         $start = $this->loadTemplate('/templates/page_start.html');
 
+        // Set the ISO 639-1 language code
+        $start = str_replace('{{language}}', $this->cfg['language'], $start);
+
         // Set the page title
         $start = str_replace('{{title}}', $this->html_title, $start);
 
