@@ -1322,6 +1322,9 @@ class ds {
         // Set the ISO 639-1 language code
         $start = str_replace('{{language}}', $this->cfg['language'], $start);
 
+        // Set the ISO 639-1 language code
+        $start = str_replace('{{charset}}', $this->cfg['charset'], $start);
+
         // Set the page title
         $start = str_replace('{{title}}', $this->html_title, $start);
 
