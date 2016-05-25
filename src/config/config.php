@@ -110,6 +110,12 @@ $cfg['db_dsn'] = $cfg['db_type'] . ":host=" . $cfg['db_host'] . ";dbname=" .
 // |  Regional Settings                                                      |
 // +-------------------------------------------------------------------------+
 
+// ISO 639-1 Language code of the application
+$cfg['language'] = 'en';
+
+// Charset to use for the application
+$cfg['charset'] = 'UTF-8';
+
 // Timezone where the application is primarily used. Visit the link for a list
 // of values: http://php.net/manual/en/timezones.php
 date_default_timezone_set('America/Los_Angeles');
