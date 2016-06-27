@@ -1724,6 +1724,25 @@ class ds {
 
     }
 
+    /**
+     * Convert a decimal to a HH:MM time format
+     *
+     * @param $decimal
+     * @return string
+     */
+    public function timeDecimal2Time($decimal) {
+
+        // Format the values
+        $hour = floor($decimal);
+        $min  = round(60 * ($decimal - $hour));
+
+        // Return the formatted hours
+        return
+            str_pad($hour, 2, 0, STR_PAD_LEFT) . ':' .
+            str_pad($min, 2, 0, STR_PAD_LEFT);
+
+    }
+
 }
 
 // Create a new Dynamic Suite Instance
