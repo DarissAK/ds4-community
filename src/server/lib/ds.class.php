@@ -316,7 +316,9 @@ class ds {
             for($i = 0; $i < $argc; $i++) {
 
                 // Bind the argument to the parameter
-                $this->db_stmt->bindParam($i + 1, $args[$i]);
+                if(!$this->db_stmt->bindParam($i + 1, $args[$i]))
+                    $this->dsError('SQL ERROR: Query data does not match bound parameters!');
+                
             }
 
             // Execute the prepared statement
