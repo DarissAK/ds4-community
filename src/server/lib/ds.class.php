@@ -307,18 +307,28 @@ class ds {
         else {
 
             // For single arguments
-            $args = !is_array($args) ? [$args] : $args;
+            if($args) {
 
-            // Argument count
-            $argc = count($args);
+                $args = !is_array($args) ? [$args] : $args;
 
-            // For every argument
-            for($i = 0; $i < $argc; $i++) {
+                // Argument count
+                $argc = count($args);
 
-                // Bind the argument to the parameter
-                if(!$this->db_stmt->bindParam($i + 1, $args[$i]))
-                    $this->dsError('SQL ERROR: Query data does not match bound parameters!');
-                
+                for($i = 0; $i < $argc; $i++) {
+
+                    // Bind the argument to the parameter
+                    if(!$this->db_stmt->bindParam($i + 1, $args[$i])) {
+
+                        // On bind failure
+                        $error = 'SQL ERROR: Query data does ' .
+                                 'not match bound parameters! On ' .
+                                 "'$query'";
+                        $this->dsError($error);
+
+                    }
+
+                }
+
             }
 
             // Execute the prepared statement
