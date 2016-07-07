@@ -32,11 +32,8 @@ class sdc {
     // Database Statement Object
     public $db_stmt;
 
-    // Database Error State (if any)
-    public $db_error = false;
-
-    // Database Error Message (if any)
-    public $db_error_info;
+    // Database Error object (PDOException)
+    public $db_error;
 
     /**
      * sdc constructor.
@@ -52,7 +49,8 @@ class sdc {
         $pass,
         $options = [
             PDO::ATTR_TIMEOUT => 1,
-            PDO::ATTR_EMULATE_PREPARES => false
+            PDO::ATTR_EMULATE_PREPARES => false,
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
         ]
     ) {
 
@@ -66,14 +64,11 @@ class sdc {
             );
         }
 
-        // On database connection (PDOException) failure
+        // On database connection failure
         catch (PDOException $e) {
 
-            // Set database error state to true
-            $this->db_error = true;
-
-            // Set database error message
-            $this->db_error_info = $this->db_conn->errorInfo();
+            // Set error object
+            $this->db_error = $e;
 
         }
 
@@ -82,11 +77,14 @@ class sdc {
     /**
      * Generic SQL query function
      *
-     * All data is returned as an associative array unless options are specified
+     * All data is returned as an associative array
      * For other return types, you can use PDO functions using the
-     * PDO object "db_conn" within this class
+     * PDO object "db_conn" within this class or call in a new
+     * instance of the $sdc class
      *
-     * Note: on failure, this method will return false
+     * Note: If this query returns an empty data set, it will return
+     * a boolean of TRUE to not that the query succeeded, even though
+     * there is no data.
      *
      * @param $query
      * @param bool $args
@@ -94,86 +92,79 @@ class sdc {
      */
     public function query($query, $args = false) {
 
-        // If the query is empty, return false
-        if(empty($query)) {
-
-            // Set database error state to true
-            $this->db_error = true;
-
-            // Set database error message
-            $this->db_error_info = $this->db_conn->errorInfo();
-
-            // Return fail
+        // No query given
+        if(empty($query))
             return false;
-
-        }
 
         // Prepare the statement
-        $this->db_stmt = $this->db_conn->prepare($query);
-
-        // If the statement failed to prepare
-        if(!$this->db_stmt) {
-
-            // Set database error state to true
-            $this->db_error = true;
-
-            // Set database error message
-            $this->db_error_info = $this->db_conn->errorInfo();
-
-            // Return fail
-            return false;
-
+        try {
+            $this->db_stmt = $this->db_conn->prepare($query);
         }
-        // If the statement prepared successfully
-        else {
 
-            // For single argument strings
+            // Prepare failed
+        catch(PDOException $e) {
+            return $this->sdcError($e);
+        }
+
+        // Bind arguments
+        if($args) {
+
+            // For single arguments
             $args = !is_array($args) ? [$args] : $args;
 
             // Argument count
             $argc = count($args);
 
-            // For every argument
+            // Bind the arguments to the parameters
             for($i = 0; $i < $argc; $i++) {
 
-                // Bind the argument to the parameter
-                $this->db_stmt->bindParam($i + 1, $args[$i]);
+                // Attempt to bind
+                try {
+                    $this->db_stmt->bindParam($i + 1, $args[$i]);
+                }
 
-            }
-
-            // Execute the prepared statement
-            $this->db_stmt->execute();
-
-            // If the SQLSTATE error code is not set
-            if(!$this->db_conn->errorInfo()[1]) {
-
-                // Fetch the queried data (Associative)
-                $data = $this->db_stmt->fetchAll(PDO::FETCH_ASSOC);
-
-                // No Error
-                $this->db_error = false;
-
-                // Return the data
-                return count($data) ? $data : true;
-
-            }
-
-            // If the query failed
-            else {
-
-                // Set database error state to true
-                $this->db_error = true;
-
-                // Set database error message
-                $this->db_error_info = $this->db_conn->errorInfo();
-
-                // Return fail
-                return false;
+                    // On bind failure
+                catch(PDOException $e) {
+                    return $this->sdcError($e);
+                }
 
             }
 
         }
 
+        // Execute the prepared statement
+        try {
+
+            // Execute statement
+            $this->db_stmt->execute();
+
+            // Fetch the queried data (Associative)
+            $data = $this->db_stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // No Error
+            $this->db_error = null;
+
+            // Return the data
+            return count($data) ? $data : true;
+
+        }
+
+        // Execute fail
+        catch(PDOException $e) {
+            return $this->sdcError($e);
+        }
+
+    }
+
+    /**
+     * Set error states
+     *
+     * @param $exception
+     * @return bool
+     */
+    private function sdcError($exception) {
+        $this->db_error = $exception;
+        return false;
     }
 
 }

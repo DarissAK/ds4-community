@@ -9,20 +9,17 @@
 // |  Copyright 2016 Simplusoft LLC                                          |
 // |  All Rights Reserved.                                                   |
 // +-------------------------------------------------------------------------+
-// |  This program is free software; you can redistribute it and/or modify   |
-// |  it under the terms of the GNU General Public License as published by   |
-// |  the Free Software Foundation version 2.                                |
-// |                                                                         |
-// |  This program is distributed in the hope  that  it will be useful, but  |
-// |  WITHOUT  ANY  WARRANTY;   without   even   the  implied  warranty  of  |
-// |  MERCHANTABILITY  or  FITNESS  FOR  A PARTICULAR PURPOSE.  See the GNU  |
-// |  General Public License for more details.                               |
-// |                                                                         |
-// |  You should have received a copy of the  GNU  General  Public  License  |
-// |  along  with  this  program;   if  not,  write  to  the  Free Software  |
-// |  Foundation,  Inc.,  51  Franklin  Street,  Fifth  Floor,  Boston,  MA  |
-// |  02110-1301, USA.                                                       |
+// |  NOTICE: All information contained herein is, and remains the property  |
+// |  of Simplusoft Corporation and its suppliers, if any. The intellectual  |
+// |  and technical concepts contained herein are proprietary to Simplusoft  |
+// |  Corporation and its suppliers and are protected by trade secret or     |
+// |  copyright law. Dissemination of this information or reproduction of    |
+// |  this material is strictly forbidden unless prior written permission    |
+// |  is obtained.                                                           |
 // +-------------------------------------------------------------------------+
+
+// Begin debug time
+$debug_start = microtime();
 
 // Include the ds class (creates as $ds)
 require_once $_SERVER['DOCUMENT_ROOT'] . '/server/lib/ds.class.php';
@@ -42,7 +39,6 @@ if($ds->validateView()) {
     // If the current location is error, include the error page
     elseif($ds->url[0] === 'error') {
         require_once $ds->dir . '/pages/error.php';
-        echo $ds->html_page_end;
     }
 
     // Render navbar and header
@@ -81,6 +77,7 @@ if($ds->validateView()) {
 
                     // If the header file exists, include it
                     if(file_exists($ds->dir . $file)) {
+                        /** @noinspection PhpIncludeInspection */
                         require_once $ds->dir . $file;
 
                     }
@@ -107,6 +104,19 @@ if($ds->validateView()) {
 
         // End body content
         echo "</div>";
+
+        // If debug is turned on
+        if($cfg['debug']) {
+
+            // Get end time
+            $debug_time = round((microtime() - $debug_start) * 1000, 4);
+
+            // Insert debug time
+            echo "<div class='ds-debug'>";
+            echo "<div>$debug_time</div>";
+            echo "</div>";
+
+        }
 
         // Render Page End
         echo $ds->html_page_end;
