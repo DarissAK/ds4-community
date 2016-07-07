@@ -62,10 +62,7 @@ class ds {
     public $db_stmt;
 
     // Database Error State (if any)
-    public $db_error = false;
-
-    // Database Error Message (if any)
-    public $db_error_info;
+    public $db_error;
 
     // Clean URL for Apache rewrite
     public $url = [];
@@ -174,19 +171,15 @@ class ds {
                 $cfg['db_pass'],
                 [
                     PDO::ATTR_TIMEOUT => $cfg['pdo_exception_timeout'],
-                    PDO::ATTR_EMULATE_PREPARES => false
+                    PDO::ATTR_EMULATE_PREPARES => false,
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
                 ]
             );
         }
 
-        // On database connection (PDOException) failure
-        catch (PDOException $e) {
-
-            // Hard log the database connection error
-            $this->dsError($e->getMessage());
-
-            // Set database error state
-            $this->db_error = true;
+            // On database connection failure
+        catch(PDOException $e) {
+            return $this->dbError($e, 'Dynamic Suite Initialization');
         }
 
         // If a valid Dynamic Suite user session is set
@@ -246,21 +239,20 @@ class ds {
     /**
      * Hard file error logging
      *
+     * Note: Make sure that the php user can write to the log directory
+     *
      * @param $error
      */
     public function dsError($error) {
 
-        // Shortcut if it is an SQL error
-        $error = $error === 'sql'
-            ? "SQL ERROR: [{$this->db_error_info[0]}] " .
-              "[{$this->db_error_info[1]}] " .
-              "{$this->db_error_info[2]}"
-            : $error;
-
-        // Log the error, make sure that the php user can write to the log directory
-        file_put_contents($this->cfg['log_dir'],
+        // Log the error
+        file_put_contents(
+            $this->cfg['log_dir'],
             "[DYNAMIC SUITE ERROR] {$_SERVER['REMOTE_ADDR']} " . date('Y-m-d H:i:s') .
-            " | " . $error  . PHP_EOL, FILE_APPEND);
+            " | " . $error  . PHP_EOL,
+            FILE_APPEND
+        );
+
     }
 
     /**
@@ -268,9 +260,12 @@ class ds {
      *
      * All data is returned as an associative array
      * For other return types, you can use PDO functions using the
-     * PDO object "db_conn" within this class
+     * PDO object "db_conn" within this class or call in a new
+     * instance of the $sdc class
      *
-     * Note: on failure, this method will return an empty array
+     * Note: If this query returns an empty data set, it will return
+     * a boolean of TRUE to not that the query succeeded, even though
+     * there is no data.
      *
      * @param $query
      * @param bool $args
@@ -278,104 +273,90 @@ class ds {
      */
     public function query($query, $args = false) {
 
-        // If the query is empty, return false
-        if(empty($query)) {
-
-            // Set the database error state, message, and log the error
-            $this->dbError();
-
-            // Return fail
+        // No query given
+        if(empty($query))
             return false;
-
-        }
 
         // Prepare the statement
-        $this->db_stmt = $this->db_conn->prepare($query);
-
-        // If the statement failed to prepare
-        if(!$this->db_stmt) {
-
-            // Set the database error state, message, and log the error
-            $this->dbError();
-
-            // Return fail
-            return false;
-
+        try {
+            $this->db_stmt = $this->db_conn->prepare($query);
         }
 
-        // If the statement prepared successfully
-        else {
+            // Prepare failed
+        catch(PDOException $e) {
+            return $this->dbError($e, $query);
+        }
+
+        // Bind arguments
+        if($args) {
 
             // For single arguments
-            if($args) {
+            $args = !is_array($args) ? [$args] : $args;
 
-                $args = !is_array($args) ? [$args] : $args;
+            // Argument count
+            $argc = count($args);
 
-                // Argument count
-                $argc = count($args);
+            // Bind the arguments to the parameters
+            for($i = 0; $i < $argc; $i++) {
 
-                for($i = 0; $i < $argc; $i++) {
+                // Attempt to bind
+                try {
+                    $this->db_stmt->bindParam($i + 1, $args[$i]);
+                }
 
-                    // Bind the argument to the parameter
-                    if(!$this->db_stmt->bindParam($i + 1, $args[$i])) {
-
-                        // On bind failure
-                        $error = 'SQL ERROR: Query data does ' .
-                                 'not match bound parameters! On ' .
-                                 "'$query'";
-                        $this->dsError($error);
-
-                    }
-
+                    // On bind failure
+                catch(PDOException $e) {
+                    return $this->dbError($e, $query);
                 }
 
             }
 
-            // Execute the prepared statement
+        }
+
+        // Execute the prepared statement
+        try {
+
+            // Execute statement
             $this->db_stmt->execute();
 
-            // If the SQLSTATE error code is not set
-            if(!$this->db_conn->errorInfo()[1]) {
+            // Fetch the queried data (Associative)
+            $data = $this->db_stmt->fetchAll(PDO::FETCH_ASSOC);
 
-                // Fetch the queried data (Associative)
-                $data = $this->db_stmt->fetchAll(PDO::FETCH_ASSOC);
+            // No Error
+            $this->db_error = null;
 
-                // No Error
-                $this->db_error = false;
+            // Return the data
+            return count($data) ? $data : true;
 
-                // Return the data
-                return count($data) ? $data : true;
+        }
 
-            }
-
-            // If the query failed
-            else {
-
-                // Set the database error state, message, and log the error
-                $this->dbError();
-
-                // Return fail
-                return false;
-
-            }
-
+            // Execute fail
+        catch(PDOException $e) {
+            return $this->dbError($e, $query);
         }
 
     }
 
     /**
      * Set the database error state, message, and log the error
+     *
+     * @param $exception
+     * @param $query
+     * @return bool
      */
-    private function dbError() {
+    private function dbError($exception, $query) {
 
-        // Set database error state to true
-        $this->db_error = true;
+        // Set database error object
+        $this->db_error = $exception;
 
-        // Set database error message
-        $this->db_error_info = $this->db_conn->errorInfo();
+        // SQL error message
+        $error = "SQL ERROR: {$exception->getMessage()} for $query";
 
         // Hard log the SQL error
-        $this->dsError('sql');
+        $this->dsError($error);
+
+        // Return failure
+        return false;
 
     }
 
@@ -393,8 +374,8 @@ class ds {
 
         // Log query
         $query = 'INSERT INTO `ds_logs` ' .
-                 '(`type`, `creator`, `affected`,`event`, `ip`, `session`) ' .
-                 'VALUES (?,?,?,?,?,?)';
+            '(`type`, `creator`, `affected`,`event`, `ip`, `session`) ' .
+            'VALUES (?,?,?,?,?,?)';
 
         // Event creator
         $creator = is_null($this->account)
@@ -435,7 +416,7 @@ class ds {
         $status   = 'IN_ERROR',
         $severity = 3,
         $message  = 'An internal error occurred, ' .
-                    'please contact your system administrator',
+        'please contact your system administrator',
         $data     = null
     ) {
 
@@ -463,8 +444,8 @@ class ds {
         // If the URI contains "?" GET character
         if(strpos($_SERVER['REQUEST_URI'], '?')) {
             $url = explode('/',
-                   trim(substr($_SERVER['REQUEST_URI'],0,
-                   strpos($_SERVER['REQUEST_URI'],'?')),'/')
+                trim(substr($_SERVER['REQUEST_URI'],0,
+                    strpos($_SERVER['REQUEST_URI'],'?')),'/')
             );
         }
 
@@ -805,7 +786,7 @@ class ds {
 
                 // Set content location
                 $content = $this->module['content'][$this->url[1]]['content']
-                    [key($this->module['content'][$this->url[1]]['content'])];
+                [key($this->module['content'][$this->url[1]]['content'])];
 
                 // If the module content css is found in the JSON, and an array
                 if(isset($content['css']) && is_array($content['css'])) {
@@ -903,10 +884,10 @@ class ds {
 
         // Query for getting all of the users and group name
         $query = 'SELECT `users`.*, `groups`.`name` AS `group_name` ' .
-                 'FROM `ds_users` AS `users` ' .
-                 'LEFT JOIN `ds_group_meta` AS `groups` ' .
-                 'ON `groups`.`group_id` = `users`.`group` ' .
-                 'WHERE `users`.`status` = ?';
+            'FROM `ds_users` AS `users` ' .
+            'LEFT JOIN `ds_group_meta` AS `groups` ' .
+            'ON `groups`.`group_id` = `users`.`group` ' .
+            'WHERE `users`.`status` = ?';
 
         // On query failure
         if(!$users = $this->query($query, [$type]))
@@ -929,12 +910,12 @@ class ds {
 
         // Query for getting the permission for the given user based on their group
         $query = 'SELECT `m`.*, `p`.`group_id`, ' .
-                 '(SELECT `administrator` FROM `ds_users` ' .
-                 'WHERE `user_id` = ?) AS `administrator` ' .
-                 'FROM `ds_permissions` `m` ' .
-                 'LEFT JOIN `ds_group_data` `p` ON `p`.`group_id` = ' .
-                 '(SELECT `group` FROM `ds_users` WHERE `user_id` = ?) ' .
-                 'AND `m`.`permission_id` = `p`.`permission_id`';
+            '(SELECT `administrator` FROM `ds_users` ' .
+            'WHERE `user_id` = ?) AS `administrator` ' .
+            'FROM `ds_permissions` `m` ' .
+            'LEFT JOIN `ds_group_data` `p` ON `p`.`group_id` = ' .
+            '(SELECT `group` FROM `ds_users` WHERE `user_id` = ?) ' .
+            'AND `m`.`permission_id` = `p`.`permission_id`';
 
         // On query error
         if(!$permissions = $this->query($query, [$id, $id]))
@@ -975,7 +956,7 @@ class ds {
 
     /**
      * Check a given POST request for permissions and post values
-     * 
+     *
      * @param $permissions
      * @param $post
      * @return array|bool
@@ -1131,8 +1112,8 @@ class ds {
 
         // Group data query
         $data = 'SELECT * FROM `ds_group_data` LEFT JOIN ' .
-                '`ds_permissions` ON `ds_group_data`.`permission_id` = ' .
-                '`ds_permissions`.`permission_id`';
+            '`ds_permissions` ON `ds_group_data`.`permission_id` = ' .
+            '`ds_permissions`.`permission_id`';
 
         // Return the array of groups on success
         if(
@@ -1157,7 +1138,7 @@ class ds {
 
                             // Add the current permission to the group
                             $groups[$group['group_id']]['permissions']
-                                [$permission['name']] = $permission['description'];
+                            [$permission['name']] = $permission['description'];
 
                         }
 
@@ -1188,10 +1169,10 @@ class ds {
 
         // Query for updating loin metadata
         $query = 'UPDATE `ds_users` SET ' .
-                 '`last_login_attempt` = NOW(),' .
-                 '`login_attempts` = `login_attempts` + 1, ' .
-                 '`last_login_ip` = ? ' .
-                 'WHERE `user_id`=?';
+            '`last_login_attempt` = NOW(),' .
+            '`login_attempts` = `login_attempts` + 1, ' .
+            '`last_login_ip` = ? ' .
+            'WHERE `user_id`=?';
 
         // On query failure
         if(!$this->query($query, [$_SERVER['REMOTE_ADDR'], $id]))
@@ -1214,7 +1195,7 @@ class ds {
 
         // Query for resetting login attempts
         $query = 'UPDATE `ds_users` SET `login_attempts` = 0, ' .
-                 '`last_login_success` = NOW() WHERE `user_id` = ?';
+            '`last_login_success` = NOW() WHERE `user_id` = ?';
 
         // On query failure
         if(!$this->query($query, $id))
@@ -1331,14 +1312,14 @@ class ds {
         // Get the main page start template
         $start = $this->loadTemplate('/templates/page_start.html');
 
+        // Set the page title
+        $start = str_replace('{{title}}', $this->html_title, $start);
+
         // Set the ISO 639-1 language code
         $start = str_replace('{{language}}', $this->cfg['language'], $start);
 
         // Set the ISO 639-1 language code
         $start = str_replace('{{charset}}', $this->cfg['charset'], $start);
-
-        // Set the page title
-        $start = str_replace('{{title}}', $this->html_title, $start);
 
         // Set the HTML base
         $start = str_replace('{{base}}', $this->html_base, $start);
@@ -1545,7 +1526,7 @@ class ds {
                     $href = $this->cfg['install_domain'] . "/{$loc[0]}/{$loc[1]}/$tab";
 
                     $tabs .= "<li role='presentation' id='ds-nav-{$loc[0]}-{$loc[1]}-$tab'>" .
-                             "<a href='$href' target='_self'>{$tab_cfg['name']}</a></li>";
+                        "<a href='$href' target='_self'>{$tab_cfg['name']}</a></li>";
 
                 }
 
@@ -1632,7 +1613,7 @@ class ds {
             !isset($this->url[1]) ||
             empty($this->url) ||
             !array_key_exists($this->url[1],
-            $this->modules[$this->url[0]]['content'])
+                $this->modules[$this->url[0]]['content'])
         ) {
             reset($this->modules[$this->url[0]]['content']);
             $page = key($this->modules[$this->url[0]]['content']);
