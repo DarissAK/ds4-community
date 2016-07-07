@@ -33,6 +33,9 @@ ini_set("display_errors", 1);
 // Zend X-Debug HTML Errors
 ini_set('html_errors', 1);
 
+// Display debug info in the bottom left
+$cfg['debug'] = true;
+
 // Hard error log file.
 // Make sure the file is writeable
 $cfg['log_dir'] = '/path/to/error.log';
