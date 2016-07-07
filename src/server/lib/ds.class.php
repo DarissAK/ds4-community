@@ -319,8 +319,10 @@ class ds {
             // Execute statement
             $this->db_stmt->execute();
 
-            // Fetch the queried data (Associative)
-            $data = $this->db_stmt->fetchAll(PDO::FETCH_ASSOC);
+            // Only fetch for SELECT statements
+            $data = substr($query, 0, 6) === 'SELECT'
+                ? $this->db_stmt->fetchAll(PDO::FETCH_ASSOC)
+                : [];
 
             // No Error
             $this->db_error = null;
@@ -330,7 +332,7 @@ class ds {
 
         }
 
-            // Execute fail
+        // Execute fail
         catch(PDOException $e) {
             return $this->dbError($e, $query);
         }
