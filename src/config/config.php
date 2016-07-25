@@ -88,9 +88,10 @@ $cfg['system_version'] = '4.1.1';
 
 // This framework was developed and tested on MySQL, although since it uses
 // PHP PDO, theoretically other database types should work.
-// YMMV with other database deployments such as MSSQL, PostgreSQL, etc
+// 2016-07-25 - Have tested MSSQL using ODBC
+// YMMV with other database deployments such as Oracle, PostgreSQL, etc
 
-// PDO database type (Tested: 'mysql')
+// PDO database type (Tested: 'mysql' and mssql via 'odbc')
 $cfg['db_type'] = 'mysql';
 
 // The host address of the database
@@ -105,9 +106,16 @@ $cfg['db_user'] = 'username';
 // Database password
 $cfg['db_pass'] = 'password';
 
+//ODBC Name
+$cfg['odbc_name'] = 'ODBC_Name';
+
 // Database DSN
-$cfg['db_dsn'] = $cfg['db_type'] . ":host=" . $cfg['db_host'] . ";dbname=" .
-                 $cfg['db_name'];
+if ($cfg['db_type'] == 'mysql') {
+    $cfg['db_dsn'] = $cfg['db_type'] . ":host=" . $cfg['db_host'] . ";dbname=" .
+        $cfg['db_name'];
+} elseif ($cfg['db_type'] == 'odbc') {
+    $cfg['db_dsn'] = $cfg['db_type'] . ":" . $cfg['odbc_name'];
+}
 
 // +-------------------------------------------------------------------------+
 // |  Regional Settings                                                      |
