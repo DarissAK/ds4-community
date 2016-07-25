@@ -256,6 +256,27 @@ class ds {
     }
 
     /**
+     * Hard file logging
+     *
+     * Note: Make sure that the php user can write to the log directory
+     * Note: $error_level is a string, but standards say we should use DEBUG, INFO, WARNING, ERROR, CRITICAL.
+     *
+     * @param $error_level
+     * @param $log_message
+     */
+    public function dsLog($error_level, $log_message) {
+
+        // Log the error
+        file_put_contents(
+            $this->cfg['log_dir'],
+            "[DYNAMIC SUITE {$error_level}] {$_SERVER['REMOTE_ADDR']} " . date('Y-m-d H:i:s') .
+            " | " . $log_message  . PHP_EOL,
+            FILE_APPEND
+        );
+
+    }
+
+    /**
      * Generic SQL query function
      *
      * All data is returned as an associative array
